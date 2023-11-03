@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ftmithaimart/dbHelper/mongodb.dart';
+import 'package:ftmithaimart/model/customer_model.dart';
+import "package:mongo_dart/mongo_dart.dart" as M;
 
 import 'login_page.dart';
 
@@ -9,6 +12,14 @@ class signup extends StatefulWidget{
 }
 
 class _signupState extends State<signup> {
+
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController contactController = TextEditingController();
+  bool isloading = false;  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,6 +82,7 @@ class _signupState extends State<signup> {
                     ],
                   ),
                   TextFormField(
+                    controller: firstNameController,
                     decoration: InputDecoration(
                       labelText: "First Name",
                       hintText: "Enter Your First Name",
@@ -92,6 +104,7 @@ class _signupState extends State<signup> {
                   ),
 
                   TextFormField(
+                    controller: lastNameController,
                     decoration: InputDecoration(
                       labelText: "Last Name",
                       hintText: "Enter Your Last Name",
@@ -113,6 +126,7 @@ class _signupState extends State<signup> {
                   ),
 
                   TextFormField(
+                    controller: emailController,
                     decoration: InputDecoration(
                       labelText: "Email",
                       hintText: "someone@example.com",
@@ -134,6 +148,7 @@ class _signupState extends State<signup> {
                   ),
 
                   TextFormField(
+                    controller: passwordController,
                     decoration: InputDecoration(
                       labelText: "Password",
                       hintText: "Password",
@@ -156,6 +171,7 @@ class _signupState extends State<signup> {
                   ),
 
                   TextFormField(
+                    controller: contactController,
                     decoration: InputDecoration(
                       labelText: "Contact Number",
                       hintText: "Start with +92",
@@ -170,24 +186,38 @@ class _signupState extends State<signup> {
                   ),
 
                   ElevatedButton.icon(
-                    onPressed: () {
+                    onPressed: () async {
+                      setState(() {
+                        isloading = true;
+                      });
+                      var id = M.ObjectId();  
+                      final data = CustomerModel(
+                        name: "${firstNameController.text} ${lastNameController.text}", 
+                        email: emailController.text,
+                        password: passwordController.text,
+                        contact: contactController.text
+                        );
+                      var result = await MongoDatabase.insert(data);
+                      setState(() {
+                        isloading = false;
+                      });
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => login()));
                     },
-                    icon: const Icon(
+                    icon: !isloading ? const Icon(
                       Icons.verified_outlined,
                       size: 24.0,
                       color: Colors.white,
-                    ),
+                    ) : SizedBox(),
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xff801924),
                         fixedSize: Size(360, 55),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         )),
-                    label: const Text(
+                    label: !isloading ? const Text(
                       "Register",
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -195,7 +225,7 @@ class _signupState extends State<signup> {
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
-                    ),
+                    ) : CircularProgressIndicator(color: Colors.white,),
                   ),
 
                 ],

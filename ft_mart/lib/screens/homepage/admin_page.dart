@@ -19,15 +19,15 @@ class _adminState extends State<admin> {
 
   void initState() {
     super.initState();
-    getData().then((value) {
-      setState(() {
-        text = value;
-      });
-    });
+    // getData().then((value) {
+    //   setState(() {
+    //     text = value;
+    //   });
+    // });
   }
   @override
   Widget build(BuildContext context) {
-    String _admin = text as String;
+    // String _admin = text as String;
    return Scaffold(
      appBar: AppBar(
        toolbarHeight: 110,
@@ -161,7 +161,8 @@ class _adminState extends State<admin> {
          children: [
          Padding(padding: EdgeInsets.only(top: 80, left: 20)),
      Text(
-       "Welcome, $_admin!",
+      "Welcome Admin",
+      //  "Welcome, $_admin!",
        style: TextStyle(
          color: Colors.black,
          fontSize: 24,

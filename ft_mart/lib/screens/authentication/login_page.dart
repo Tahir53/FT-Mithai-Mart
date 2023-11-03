@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/src/material/icons.dart';
 
+import '../../dbHelper/mongodb.dart';
 import '../homepage/admin_page.dart';
 import '../homepage/home_page.dart';
 import 'signup_page.dart';
@@ -20,6 +22,12 @@ class _loginState extends State<login> {
   final EmailController = TextEditingController();
   final PasswordController = TextEditingController();
   bool hidePassword = true;
+  bool isLoading = false;
+
+  Future<Map<String, dynamic>> data(String email, String password) async {
+    print("data() called in login_page");
+    return await MongoDatabase.getData(email, password);
+  }
 
   Widget build(BuildContext context) {
     return Form(
@@ -74,14 +82,14 @@ class _loginState extends State<login> {
                           if (value == null || value.isEmpty) {
                             return "Please type username or Email!";
                           }
-                          if (!RegExp(r"\b[\w\.-]+@szabist.pk")
+                          if (!RegExp(r"[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}")
                               .hasMatch(value)) {
                             return "Email not in correct format";
                           }
                           return null;
                         },
                         onChanged: (value) {
-                          if (!RegExp(r"\b[\w\.-]+@szabist.pk")
+                          if (!RegExp(r"[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}")
                               .hasMatch(value)) {
                             setState(() {
                               errorMessage = "Email not in correct format";
@@ -144,35 +152,74 @@ class _loginState extends State<login> {
                         children: [
                           ElevatedButton(
                             onPressed: () async {
-                              // if (_loginkey.currentState!.validate()) {
-                                // final SharedPreferences pref =
-                                //     await SharedPreferences.getInstance();
-                                // await pref.setString("user", "Tahir");
+                              if (EmailController.text == "admin" &&
+                                  PasswordController.text == "admin") {
                                 Navigator.pushReplacement(context,
                                     MaterialPageRoute(
                                   builder: (context) {
                                     return admin();
                                   },
                                 ));
+                              }
+                              if (_loginkey.currentState!.validate()) {
+                                setState(() {
+                                  isLoading = true;
+                                });
+                                var res = await data(
+                                    EmailController.text.toString(),
+                                    PasswordController.text.toString());
+                                if (res["error"] == null) {
+                                  Navigator.pushReplacement(context,
+                                      MaterialPageRoute(
+                                    builder: (context) {
+                                      return homepage(name: res["name"],);
+                                    },
+                                  ));
+                                } else {
+                                  setState(() {
+                                    isLoading = false;
+                                  });
+                                  Fluttertoast.showToast(
+                                    msg: "Invalid username or password",
+                                    backgroundColor: Color(0xff63131C),
+                                    textColor: Colors.white,
+                                    gravity: ToastGravity.BOTTOM,
+                                    toastLength: Toast.LENGTH_LONG
+                                  );
+                                }
+                              }
+                              // if (_loginkey.currentState!.validate()) {
+                              // final SharedPreferences pref =
+                              //     await SharedPreferences.getInstance();
+                              // await pref.setString("user", "Tahir");
+                              // Navigator.pushReplacement(context,
+                              //     MaterialPageRoute(
+                              //   builder: (context) {
+                              //     return admin();
+                              //   },
+                              // ));
                               // }
                             },
-                           
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Color(0xff801924),
                                 fixedSize: Size(360, 55),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 )),
-                            child: const Text(
-                              "Login",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontFamily: 'Montserrat',
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
+                            child: !isLoading
+                                ? const Text(
+                                    "Login",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontFamily: 'Montserrat',
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  )
+                                : CircularProgressIndicator(
+                                    color: Colors.white,
+                                  ),
                           ),
                           Padding(padding: EdgeInsets.all(10)),
                           TextButton(
@@ -225,15 +272,15 @@ class _loginState extends State<login> {
                           ),
                           ElevatedButton.icon(
                             onPressed: () {
-                                // final SharedPreferences pref =
-                                // await SharedPreferences.getInstance();
-                                // await pref.setString("user", "User");
-                                Navigator.pushReplacement(context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return homepage();
-                                      },
-                                    ));
+                              // final SharedPreferences pref =
+                              // await SharedPreferences.getInstance();
+                              // await pref.setString("user", "User");
+                              Navigator.pushReplacement(context,
+                                  MaterialPageRoute(
+                                builder: (context) {
+                                  return homepage(name: "User",);
+                                },
+                              ));
                             },
                             icon: const Icon(
                               Icons.people,

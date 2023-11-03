@@ -13,6 +13,8 @@ dependencies:
   flutter_swipable:
   shared_preferences: ^2.2.2
   flutter_carousel_widget: ^2.1.2
+  mongo_dart: ^0.9.3
+  fluttertoast: ^8.2.2
 
 
 dev_dependencies:

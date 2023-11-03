@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:ftmithaimart/components/carousel_card.dart';
@@ -10,12 +9,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../authentication/login_page.dart';
 
 class homepage extends StatefulWidget {
+
+  final String name; 
+  homepage({required this.name});
+
   @override
   State<homepage> createState() => _homepageState();
 }
 
 class _homepageState extends State<homepage> {
-  final TextEditingController _searchController = TextEditingController();
+  // final TextEditingController _searchController = TextEditingController();
   final controller = PageController(initialPage: 0);
   String? text;
   String selectedCat = "classic";
@@ -25,16 +28,17 @@ class _homepageState extends State<homepage> {
     return data.getString("user");
   }
 
-
+@override
   void initState() {
     super.initState();
+    
     // getData().then((value) {
       // setState(() {
         // text = value;
       // });
     // });
   }
-
+@override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -71,10 +75,10 @@ class _homepageState extends State<homepage> {
             ),
             const Padding(padding: EdgeInsets.only(top:10)),
             ListTile(
-              tileColor: Color(0xffE8BBBF),
-              iconColor: Color(0xff801924),
-              textColor: Color(0xff801924),
-              contentPadding: EdgeInsets.all(5),
+              tileColor: const Color(0xffE8BBBF),
+              iconColor: const Color(0xff801924),
+              textColor: const Color(0xff801924),
+              contentPadding: const EdgeInsets.all(5),
               leading: const Icon(
                 Icons.restaurant_menu,
               ),
@@ -83,14 +87,14 @@ class _homepageState extends State<homepage> {
                 fontWeight: FontWeight.w600,
               )),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>homepage()));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>homepage(name: widget.name,)));
               },
             ),
             const Padding(padding: EdgeInsets.only(top:10)),
             ListTile(
-              iconColor: Color(0xff801924),
-              textColor: Color(0xff801924),
-              contentPadding: EdgeInsets.all(5),
+              iconColor: const Color(0xff801924),
+              textColor: const Color(0xff801924),
+              contentPadding: const EdgeInsets.all(5),
               leading: const Icon(
                 Icons.comment,
               ),
@@ -105,9 +109,9 @@ class _homepageState extends State<homepage> {
 
             const Padding(padding: EdgeInsets.only(top:10)),
             ListTile(
-              iconColor: Color(0xff801924),
-              textColor: Color(0xff801924),
-              contentPadding: EdgeInsets.all(5),
+              iconColor: const Color(0xff801924),
+              textColor: const Color(0xff801924),
+              contentPadding: const EdgeInsets.all(5),
               leading: const Icon(
                 Icons.info_outline,
               ),
@@ -116,17 +120,17 @@ class _homepageState extends State<homepage> {
                 fontWeight: FontWeight.w600,
               )),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>homepage()));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>homepage(name: widget.name,)));
               },
             ),
 
 
-            Padding(padding: EdgeInsets.only(top:10)),
+            const Padding(padding: EdgeInsets.only(top:10)),
             ListTile(
-              iconColor: Color(0xff801924),
-              textColor: Color(0xff801924),
-              contentPadding: EdgeInsets.all(5),
-              leading: Icon(
+              iconColor: const Color(0xff801924),
+              textColor: const Color(0xff801924),
+              contentPadding: const EdgeInsets.all(5),
+              leading: const Icon(
                 Icons.privacy_tip_outlined,
               ),
               title: const Text('Privacy Policy',style: TextStyle(
@@ -134,17 +138,17 @@ class _homepageState extends State<homepage> {
                 fontWeight: FontWeight.w600,
               )),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>homepage()));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>homepage(name: widget.name)));
               },
             ),
 
 
-            Padding(padding: EdgeInsets.only(top: 10)),
+            const Padding(padding: EdgeInsets.only(top: 10)),
             ListTile(
-              iconColor: Color(0xff801924),
-              textColor: Color(0xff801924),
-              contentPadding: EdgeInsets.all(5),
-              leading: Icon(
+              iconColor: const Color(0xff801924),
+              textColor: const Color(0xff801924),
+              contentPadding: const EdgeInsets.all(5),
+              leading: const Icon(
                 Icons.logout,
               ),
               title: const Text('Logout',style: TextStyle(
@@ -152,7 +156,7 @@ class _homepageState extends State<homepage> {
                 fontWeight: FontWeight.w600,
               )),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>login()));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>const  login()));
               },
             ),
 
@@ -164,12 +168,11 @@ class _homepageState extends State<homepage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20,),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 15.0, bottom: 10),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15.0, bottom: 10),
                     child: Text(
-                      "Welcome, User!",
-                      // "Welcome, $username!",
-                      style: TextStyle(
+                      "Welcome, ${widget.name}!",
+                      style: const TextStyle(
                         color: Color(0xFF63131C),
                         fontSize: 24,
                         fontWeight: FontWeight.w600,
@@ -252,7 +255,7 @@ class _homepageState extends State<homepage> {
                         ProductCard(assetPath: "assets/gulabjaman.png", price: 300, productName: "Gulab Jamun",),
                       ],
                     ),
-                    const SizedBox(height: 10,),
+                    SizedBox(height: 10,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
