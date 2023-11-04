@@ -154,12 +154,7 @@ class _loginState extends State<login> {
                             onPressed: () async {
                               if (EmailController.text == "admin" &&
                                   PasswordController.text == "admin") {
-                                Navigator.pushReplacement(context,
-                                    MaterialPageRoute(
-                                  builder: (context) {
-                                    return admin();
-                                  },
-                                ));
+                               
                               }
                               if (_loginkey.currentState!.validate()) {
                                 setState(() {
@@ -169,12 +164,20 @@ class _loginState extends State<login> {
                                     EmailController.text.toString(),
                                     PasswordController.text.toString());
                                 if (res["error"] == null) {
+                                  if (res["admin"] == true){
+                                     Navigator.pushReplacement(context,
+                                    MaterialPageRoute(
+                                  builder: (context) {
+                                    return admin();
+                                  },
+                                ));
+                                  } else {
                                   Navigator.pushReplacement(context,
                                       MaterialPageRoute(
                                     builder: (context) {
                                       return homepage(name: res["name"],);
                                     },
-                                  ));
+                                  ));}
                                 } else {
                                   setState(() {
                                     isLoading = false;

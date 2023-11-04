@@ -6,6 +6,7 @@ import 'package:ftmithaimart/components/product_card.dart';
 import 'package:ftmithaimart/components/search_textfield.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../components/drawer.dart';
 import '../authentication/login_page.dart';
 
 class homepage extends StatefulWidget {
@@ -62,107 +63,7 @@ class _homepageState extends State<homepage> {
 
         backgroundColor: const Color(0xff801924),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-             DrawerHeader(
-              decoration: const BoxDecoration(
-                color: Color(0xff801924),
-              ),
-
-              child: Image.asset("assets/Logo.png",scale: 7),
-            ),
-            const Padding(padding: EdgeInsets.only(top:10)),
-            ListTile(
-              tileColor: const Color(0xffE8BBBF),
-              iconColor: const Color(0xff801924),
-              textColor: const Color(0xff801924),
-              contentPadding: const EdgeInsets.all(5),
-              leading: const Icon(
-                Icons.restaurant_menu,
-              ),
-              title: const Text('Menu',style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              )),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>homepage(name: widget.name,)));
-              },
-            ),
-            const Padding(padding: EdgeInsets.only(top:10)),
-            ListTile(
-              iconColor: const Color(0xff801924),
-              textColor: const Color(0xff801924),
-              contentPadding: const EdgeInsets.all(5),
-              leading: const Icon(
-                Icons.comment,
-              ),
-              title: const Text('My Complaints',style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              )),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-
-            const Padding(padding: EdgeInsets.only(top:10)),
-            ListTile(
-              iconColor: const Color(0xff801924),
-              textColor: const Color(0xff801924),
-              contentPadding: const EdgeInsets.all(5),
-              leading: const Icon(
-                Icons.info_outline,
-              ),
-              title: const Text('About Us',style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              )),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>homepage(name: widget.name,)));
-              },
-            ),
-
-
-            const Padding(padding: EdgeInsets.only(top:10)),
-            ListTile(
-              iconColor: const Color(0xff801924),
-              textColor: const Color(0xff801924),
-              contentPadding: const EdgeInsets.all(5),
-              leading: const Icon(
-                Icons.privacy_tip_outlined,
-              ),
-              title: const Text('Privacy Policy',style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              )),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>homepage(name: widget.name)));
-              },
-            ),
-
-
-            const Padding(padding: EdgeInsets.only(top: 10)),
-            ListTile(
-              iconColor: const Color(0xff801924),
-              textColor: const Color(0xff801924),
-              contentPadding: const EdgeInsets.all(5),
-              leading: const Icon(
-                Icons.logout,
-              ),
-              title: const Text('Logout',style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              )),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>const  login()));
-              },
-            ),
-
-          ],
-        ),
-      ),
+      drawer: CustomDrawer(name: widget.name,),
       body:  SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,6 +86,7 @@ class _homepageState extends State<homepage> {
               FlutterCarousel.builder(
                 itemCount: 2, 
               itemBuilder: ((context, index, realIndex) {
+                        // return widgetList[index];
                         return const CarouselCard();
                       }), options: CarouselOptions(
                         height: 200,
@@ -258,7 +160,8 @@ class _homepageState extends State<homepage> {
                     SizedBox(height: 10,),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                      children: 
+                      [
                         ProductCard(assetPath: "assets/motichoor.png", price: 700, productName: "Motichoor Ladoo",),
                         SizedBox(width: 17,),
                         ProductCard(assetPath: "assets/gulabjaman.png", price: 300, productName: "Gulab Jamun",),

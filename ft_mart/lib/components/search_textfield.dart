@@ -13,9 +13,12 @@ class SearchTextField extends StatelessWidget {
           color: const Color(0xFFFFF8E6), 
           borderRadius: BorderRadius.circular(8.0),
         ),
-        child: const Padding(
+        child:  Padding(
           padding:  EdgeInsets.symmetric(horizontal: 15),
           child:  TextField(
+            onChanged: (a){
+              
+            },
             style: TextStyle(
               fontFamily: 'Montserrat', 
             ),
