@@ -55,7 +55,7 @@ class _splashscreenState extends State<splashscreen> {
             ),
             nextScreen: login(),
             splashTransition: SplashTransition.fadeTransition,
-            duration: 3000,
+            duration: 2000,
             backgroundColor: Color(0xffFFF8E6),
             // Background color of the splash screen
           ),

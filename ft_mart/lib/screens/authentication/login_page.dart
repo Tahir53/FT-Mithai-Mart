@@ -68,13 +68,19 @@ class _loginState extends State<login> {
                       TextFormField(
                         controller: EmailController,
                         decoration: InputDecoration(
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(width: 2, color: Color(0xff63131C)),
+                          ),
                           labelText: "Username/Email",
+                          labelStyle: TextStyle(
+                            color: Color(0xff63131C),
+                          ),
                           hintText: " someone@example.com",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                           prefixIcon: IconButton(
-                            icon: Icon(Icons.person),
+                            icon: Icon(Icons.person,color: Color(0xff63131C),),
                             onPressed: () {},
                           ),
                         ),
@@ -82,14 +88,14 @@ class _loginState extends State<login> {
                           if (value == null || value.isEmpty) {
                             return "Please type username or Email!";
                           }
-                          if (!RegExp(r"[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}")
+                          if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")
                               .hasMatch(value)) {
                             return "Email not in correct format";
                           }
                           return null;
                         },
                         onChanged: (value) {
-                          if (!RegExp(r"[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}")
+                          if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")
                               .hasMatch(value)) {
                             setState(() {
                               errorMessage = "Email not in correct format";
@@ -110,6 +116,12 @@ class _loginState extends State<login> {
                         obscuringCharacter: '*',
                         decoration: InputDecoration(
                           labelText: "Password",
+                          labelStyle: TextStyle(
+                            color: Color(0xff63131C),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(width: 2, color: Color(0xff63131C)),
+                          ),
                           suffixIcon: IconButton(
                             icon: Icon(hidePassword
                                 ? Icons.visibility_off
@@ -122,7 +134,7 @@ class _loginState extends State<login> {
                             color: Color(0xff63131C),
                           ),
                           prefixIcon: IconButton(
-                            icon: Icon(Icons.lock),
+                            icon: Icon(Icons.lock,color: Color(0xff63131C),),
                             onPressed: () {},
                           ),
                           hintText: "Enter Your Password",
@@ -152,10 +164,6 @@ class _loginState extends State<login> {
                         children: [
                           ElevatedButton(
                             onPressed: () async {
-                              if (EmailController.text == "admin" &&
-                                  PasswordController.text == "admin") {
-                               
-                              }
                               if (_loginkey.currentState!.validate()) {
                                 setState(() {
                                   isLoading = true;
@@ -191,17 +199,6 @@ class _loginState extends State<login> {
                                   );
                                 }
                               }
-                              // if (_loginkey.currentState!.validate()) {
-                              // final SharedPreferences pref =
-                              //     await SharedPreferences.getInstance();
-                              // await pref.setString("user", "Tahir");
-                              // Navigator.pushReplacement(context,
-                              //     MaterialPageRoute(
-                              //   builder: (context) {
-                              //     return admin();
-                              //   },
-                              // ));
-                              // }
                             },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Color(0xff801924),
@@ -275,9 +272,6 @@ class _loginState extends State<login> {
                           ),
                           ElevatedButton.icon(
                             onPressed: () {
-                              // final SharedPreferences pref =
-                              // await SharedPreferences.getInstance();
-                              // await pref.setString("user", "User");
                               Navigator.pushReplacement(context,
                                   MaterialPageRoute(
                                 builder: (context) {
@@ -367,7 +361,7 @@ class _loginState extends State<login> {
       setState(() {
         errorMessage = "Email can not be empty";
       });
-    } else if (!RegExp(r"^[\w-\.]+@szabist.pk").hasMatch(val)) {
+    } else if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(val)) {
       setState(() {
         errorMessage = "Invalid Email Address";
       });
@@ -392,10 +386,6 @@ class _loginState extends State<login> {
       setState(() {
         errorMessage = "Passsword can not be empty";
       });
-      // } else if (!RegExp(r"^[\w-\.]+@szabist.pk").hasMatch(val)) {
-      //   setState(() {
-      //     errorMessage = "Invalid Email Address";
-      //   });
     } else {
       setState(() {
         errorMessage = "";

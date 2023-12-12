@@ -1,115 +1,137 @@
 import 'package:flutter/material.dart';
+import 'package:ftmithaimart/components/complaint_box.dart';
+import 'package:provider/provider.dart';
 
+import '../main.dart';
 import '../screens/authentication/login_page.dart';
+import '../screens/homepage/about_us.dart';
 import '../screens/homepage/home_page.dart';
 
 class CustomDrawer extends StatelessWidget {
-  
+  CustomDrawer({super.key, required this.name});
+
   final String name;
-  const CustomDrawer({super.key, required this.name});
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-             DrawerHeader(
-              decoration: const BoxDecoration(
-                color: Color(0xff801924),
-              ),
-
-              child: Image.asset("assets/Logo.png",scale: 7),
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: const BoxDecoration(
+              color: Color(0xff801924),
             ),
-            const Padding(padding: EdgeInsets.only(top:10)),
-            ListTile(
-              tileColor: const Color(0xffE8BBBF),
+            child: Image.asset("assets/Logo.png", scale: 7),
+          ),
+          const Padding(padding: EdgeInsets.only(top: 10)),
+          Container(
+            child: ListTile(
+              tileColor: Color(0xffE8BBBF),
               iconColor: const Color(0xff801924),
               textColor: const Color(0xff801924),
               contentPadding: const EdgeInsets.all(5),
               leading: const Icon(
                 Icons.restaurant_menu,
               ),
-              title: const Text('Menu',style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              )),
+              title: const Text('Menu',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  )),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>homepage(name: name,)));
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => homepage(name: "User")));
+
+                // Navigate to the home page
               },
             ),
-            const Padding(padding: EdgeInsets.only(top:10)),
-            ListTile(
+          ),
+          const Padding(padding: EdgeInsets.only(top: 10)),
+          Container(
+            child: ListTile(
               iconColor: const Color(0xff801924),
               textColor: const Color(0xff801924),
               contentPadding: const EdgeInsets.all(5),
               leading: const Icon(
                 Icons.comment,
               ),
-              title: const Text('My Complaints',style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              )),
+              title: const Text('My Complaints',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  )),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => complaintbox()));
               },
             ),
-
-            const Padding(padding: EdgeInsets.only(top:10)),
-            ListTile(
+          ),
+          const Padding(padding: EdgeInsets.only(top: 10)),
+          Container(
+            child: ListTile(
               iconColor: const Color(0xff801924),
               textColor: const Color(0xff801924),
               contentPadding: const EdgeInsets.all(5),
               leading: const Icon(
                 Icons.info_outline,
               ),
-              title: const Text('About Us',style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              )),
+              title: const Text('About Us',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  )),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>homepage(name: name,)));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => aboutus(name: "User")));
               },
             ),
-
-
-            const Padding(padding: EdgeInsets.only(top:10)),
-            ListTile(
-              iconColor: const Color(0xff801924),
-              textColor: const Color(0xff801924),
-              contentPadding: const EdgeInsets.all(5),
-              leading: const Icon(
-                Icons.privacy_tip_outlined,
-              ),
-              title: const Text('Privacy Policy',style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              )),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>homepage(name:name)));
-              },
+          ),
+          const Padding(padding: EdgeInsets.only(top: 10)),
+          ListTile(
+            textColor: const Color(0xff801924),
+            contentPadding: const EdgeInsets.all(5),
+            leading: const Icon(
+              Icons.privacy_tip_outlined, color: Color(0xff801924),
             ),
-
-
-            const Padding(padding: EdgeInsets.only(top: 10)),
-            ListTile(
-              iconColor: const Color(0xff801924),
-              textColor: const Color(0xff801924),
-              contentPadding: const EdgeInsets.all(5),
-              leading: const Icon(
-                Icons.logout,
-              ),
-              title: const Text('Logout',style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              )),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>const  login()));
-              },
+            title: const Text('Privacy Policy',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                )),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => homepage(name: name)));
+            },
+          ),
+          const Padding(padding: EdgeInsets.only(top: 10)),
+          ListTile(
+            iconColor: const Color(0xff801924),
+            textColor: const Color(0xff801924),
+            contentPadding: const EdgeInsets.all(5),
+            leading: const Icon(
+              Icons.logout,
             ),
-
-          ],
-        ),
-      );
+            title: const Text('Logout',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                )),
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const login()));
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

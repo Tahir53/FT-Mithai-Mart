@@ -1,10 +1,6 @@
 
-
-
 import 'dart:developer';
-
 import 'package:mongo_dart/mongo_dart.dart';
-
 import '../constant.dart';
 import '../model/customer_model.dart';
 
@@ -48,5 +44,4 @@ class MongoDatabase{
     }
     return {"error" : "Invalid username or password"}; 
   }
-
 }

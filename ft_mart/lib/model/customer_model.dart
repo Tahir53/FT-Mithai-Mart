@@ -1,5 +1,6 @@
 import 'package:mongo_dart/mongo_dart.dart';
 
+
 class CustomerModel {
   ObjectId? id;
   final String? name;
@@ -8,7 +9,8 @@ class CustomerModel {
   final String? contact;
   final String? password;
 
-  CustomerModel({this.id, this.name, this.email, this.address, this.contact, this.password});
+  CustomerModel(
+      {this.id, this.name, this.email, this.address, this.contact, this.password});
 
   factory CustomerModel.fromJson(Map<String, dynamic> json) {
     return CustomerModel(
@@ -31,3 +33,5 @@ class CustomerModel {
     return data;
   }
 }
+
+

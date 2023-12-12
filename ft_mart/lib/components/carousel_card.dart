@@ -15,7 +15,7 @@ class CarouselCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.0),
         color: const Color(0xFFFFC937), // Background color
       ),
-      child: const Padding(
+      child:  Padding(
         padding:  EdgeInsets.only(left: 20, top: 20),
         child:  Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,15 +46,17 @@ class CarouselCard extends StatelessWidget {
                 color: Colors.black
               ),
             ),
-            SizedBox(height: 8.0), // Add some space
             Row(
               children: [
-                Text(
-                  'Get started',
+                TextButton(
+                  onPressed: (){},
+                  child:
+                  Text('Get started',
                   style: TextStyle(
                     fontSize: 13.0,
                     fontWeight: FontWeight.w400,
                     color: Colors.black
+                  ),
                   ),
                 ),
                 Icon(Icons.arrow_forward_sharp)

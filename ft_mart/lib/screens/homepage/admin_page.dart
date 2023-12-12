@@ -30,25 +30,18 @@ class _adminState extends State<admin> {
     // String _admin = text as String;
    return Scaffold(
      appBar: AppBar(
-       toolbarHeight: 110,
-       //automaticallyImplyLeading: false,
-       shape: RoundedRectangleBorder(
+       toolbarHeight: 100,
+       shape: const RoundedRectangleBorder(
          borderRadius: BorderRadius.only(bottomLeft: Radius.circular(16),bottomRight: Radius.circular(16)),
        ),
-       flexibleSpace: Container(
-         child: Row(
-           children: [
-             const Padding(padding: EdgeInsets.only(top: 100)),
-             Expanded(
-               flex: 3,
-               child: Image.asset(
-                 "assets/Logo.png",
-                 width: 38,
-                 height: 38,
-                 alignment: Alignment.center,
-               ),
-             ),
-           ],
+       centerTitle: true,
+       title: Padding(
+         padding: const EdgeInsets.all(0.0),
+         child: Image.asset(
+           "assets/Logo.png",
+           width: 50,
+           height: 50,
+           // alignment: Alignment.center,
          ),
        ),
        backgroundColor: const Color(0xff801924),
@@ -153,29 +146,25 @@ class _adminState extends State<admin> {
          ],
        ),
      ),
-
-     body: Center(
-         child: Column(
-             children: [
-         Row(
-         children: [
-         Padding(padding: EdgeInsets.only(top: 80, left: 20)),
-     Text(
-      "Welcome Admin",
-      //  "Welcome, $_admin!",
-       style: TextStyle(
-         color: Colors.black,
-         fontSize: 24,
-         fontWeight: FontWeight.w600,
-       ),
-     )
-     ],
+    body:  SingleChildScrollView(
+    child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+    const SizedBox(height: 20,),
+    Padding(
+    padding: const EdgeInsets.only(left: 15.0, bottom: 10),
+    child: Text(
+    "Welcome, Admin!",
+    style: const TextStyle(
+    color: Color(0xFF63131C),
+    fontSize: 24,
+    fontWeight: FontWeight.w600,
+    ),
+    ),
+    ),
+      ]
    ),
-    ],
     ),
-    ),
-
-
 
    );
   }

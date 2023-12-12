@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "722881978336",
+    "project_id": "ftmithaimart-4e059",
+    "storage_bucket": "ftmithaimart-4e059.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:722881978336:android:21e1bb38e3f2ab28c45585",
+        "android_client_info": {
+          "package_name": "com.example.ft_mart"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "722881978336-2qdnclgb4ei1gbga8b43jgvcn3mpfsj7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRPwp0O-kxX5wN5di787nUk5CNOdVcsH8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "722881978336-2qdnclgb4ei1gbga8b43jgvcn3mpfsj7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "722881978336-vc7oso948m4f8iv34t6il0cooal5mfqr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.ftMart"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

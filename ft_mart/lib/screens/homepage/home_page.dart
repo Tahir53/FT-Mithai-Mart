@@ -5,9 +5,7 @@ import 'package:ftmithaimart/components/category_container.dart';
 import 'package:ftmithaimart/components/product_card.dart';
 import 'package:ftmithaimart/components/search_textfield.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../components/drawer.dart';
-import '../authentication/login_page.dart';
 
 class homepage extends StatefulWidget {
 
@@ -92,7 +90,7 @@ class _homepageState extends State<homepage> {
                         height: 200,
                         enableInfiniteScroll: true,
                         autoPlay: true,
-                        enlargeCenterPage: true
+                        enlargeCenterPage: true,
                       ),
                     ),
                const SizedBox(height: 20,),
@@ -152,9 +150,8 @@ class _homepageState extends State<homepage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ProductCard(assetPath: "assets/motichoor.png", price: 700, productName: "Motichoor Ladoo",),
-                        SizedBox(width: 17,),
-                        ProductCard(assetPath: "assets/gulabjaman.png", price: 300, productName: "Gulab Jamun",),
+                        ProductCard(assetPath: "assets/BadamPak.jpg", price: 1500, productName: "Badam Pak",),
+                        ProductCard(assetPath: "assets/Mesub.jpg", price: 1300, productName: "Egg Mesub",),
                       ],
                     ),
                     SizedBox(height: 10,),
@@ -162,9 +159,8 @@ class _homepageState extends State<homepage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: 
                       [
-                        ProductCard(assetPath: "assets/motichoor.png", price: 700, productName: "Motichoor Ladoo",),
-                        SizedBox(width: 17,),
-                        ProductCard(assetPath: "assets/gulabjaman.png", price: 300, productName: "Gulab Jamun",),
+                        ProductCard(assetPath: "assets/Paira.jpg", price: 1250, productName: "Zafrani Paira",),
+                        ProductCard(assetPath: "assets/GulaabJaman.jpg", price: 1000, productName: "Gulaab Jaman",),
                       ],
                     ),
                   ],
