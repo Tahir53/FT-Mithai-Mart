@@ -8,10 +8,11 @@ import '../screens/homepage/about_us.dart';
 import '../screens/homepage/home_page.dart';
 
 class CustomDrawer extends StatelessWidget {
-  CustomDrawer({super.key, required this.name, this.email});
+  CustomDrawer({super.key, required this.name, this.email, this.contact});
 
   final String name;
   final String? email;
+  final String? contact;
 
   @override
   Widget build(BuildContext context) {

@@ -11,7 +11,8 @@ class homepage extends StatefulWidget {
 
   final String name; 
   final String? email;
-  homepage({required this.name, this.email});
+  final String? contact;
+  homepage({required this.name, this.email, this.contact});
 
   @override
   State<homepage> createState() => _homepageState();
@@ -62,7 +63,7 @@ class _homepageState extends State<homepage> {
 
         backgroundColor: const Color(0xff801924),
       ),
-      drawer: CustomDrawer(name: widget.name, email: widget.email,),
+      drawer: CustomDrawer(name: widget.name, email: widget.email, contact: widget.contact),
       body:  SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

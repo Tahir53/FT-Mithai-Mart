@@ -74,8 +74,9 @@ class ComplaintList extends StatelessWidget {
             children: [
               Text("Name: ${complaints[index].name}"),
               Text("Email: ${complaints[index].email}"),
+              Text("Contact: ${complaints[index].contact}"),
               Text("Description: ${complaints[index].description}"),
-            ],
+          ],
           ),
         );
       },

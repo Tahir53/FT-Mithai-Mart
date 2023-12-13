@@ -64,6 +64,7 @@ class MongoDatabase{
       complaints.add(Complaint(
         name: data["name"],
         email: data["email"],
+        contact: data["contact"],
         description: data["description"],
       ));
     }

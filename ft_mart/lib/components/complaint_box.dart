@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ftmithaimart/components/drawer.dart';
-import '../dbHelper/complaintrepository.dart';
 import '../dbHelper/mongodb.dart';
 import '../model/complaints_model.dart';
 
 class complaintbox extends StatefulWidget{
   final String? name;
   final String? email;
-  complaintbox({this.name, this.email});
+  final String? contact;
+  complaintbox({this.name, this.email, this.contact});
 
   @override
   State<complaintbox> createState() => _complaintboxState();
@@ -68,21 +68,19 @@ class _complaintboxState extends State<complaintbox> {
             SizedBox(height: 30),
             ElevatedButton.icon(
               onPressed: () async {
-                // final complaintRepository = ComplaintRepository(MongoDatabase as MongoDatabase);
-
-                // // Create a Complaint object with the entered data
                 setState(() {
                   complainLoading = true;
                 });
                 final complaint = Complaint(
                   name: widget.name ?? "user",
                   email: widget.email ?? "no email",
+                  contact: widget.contact ?? "no contact",
                   description: _complaintController.text,
                 );
                 var result = await MongoDatabase.saveComplaint(complaint);
                 if (result == 'Complaint submitted'){
                   _complaintController.text = "";
-                  
+                  submitComplaint(context);
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   backgroundColor: Color(0xff63131C),
                   content: Text("Your complain has been submitted succesfully!", style: TextStyle(color: Colors.white),)
@@ -98,12 +96,7 @@ class _complaintboxState extends State<complaintbox> {
                 setState(() {
                   complainLoading = false;
                 });
-                
-                // // Save the complaint to MongoDB
-                // await complaintRepository.saveComplaint(complaint);
 
-                // // Navigate back or show a success message
-                // Navigator.pop(context);
               },
               icon: const Icon(
                 Icons.check_circle_outline_sharp,
@@ -142,14 +135,14 @@ class _complaintboxState extends State<complaintbox> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Complaint Submitted! Looking forward to serve you better!'),
+          title: Text("Your complain has been submitted succesfully! Looking forward to serve you better!",style: TextStyle(color: Color(0xff63131C),),),
           content: Text(complaint),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('OK'),
+              child: Text('OK',style: TextStyle(color:Color(0xff63131C)),),
             ),
           ],
         );
