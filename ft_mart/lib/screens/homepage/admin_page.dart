@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ftmithaimart/screens/authentication/show_complaints.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../authentication/login_page.dart';
@@ -123,6 +124,7 @@ class _adminState extends State<admin> {
                fontWeight: FontWeight.w600,
              )),
              onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => ShowComplain()));
              },
            ),
 

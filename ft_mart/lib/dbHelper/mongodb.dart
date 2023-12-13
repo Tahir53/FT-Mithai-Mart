@@ -2,16 +2,18 @@
 import 'dart:developer';
 import 'package:mongo_dart/mongo_dart.dart';
 import '../constant.dart';
+import '../model/complaints_model.dart';
 import '../model/customer_model.dart';
 
 class MongoDatabase{
-  static var db, userCollection;
+  static var db, userCollection, complainCollection;
   
   static connect() async {
     db = await Db.create(MONGO_CONN_URL);
     await db.open();
     inspect(db);
     userCollection = db.collection(USER_COLLECTION);
+    complainCollection = db.collection('complaints');
 
   }
 
@@ -44,4 +46,29 @@ class MongoDatabase{
     }
     return {"error" : "Invalid username or password"}; 
   }
+
+
+  static Future<String> saveComplaint(Complaint complaint) async {
+    var result = await complainCollection.insertOne(complaint.toJson());
+    if (result.isSuccess){
+      return "Complaint submitted";
+    } else {
+      return "Something wrong while adding data";
+    }
+  }
+
+  static Future<List<Complaint>> getComplaints() async {
+    List<Map<String, dynamic>> dataList = await complainCollection.find().toList();
+    List<Complaint> complaints = [];
+    for (var data in dataList){
+      complaints.add(Complaint(
+        name: data["name"],
+        email: data["email"],
+        description: data["description"],
+      ));
+    }
+    return complaints;
+
+  }
+
 }

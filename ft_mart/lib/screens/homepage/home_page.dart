@@ -10,7 +10,8 @@ import '../../components/drawer.dart';
 class homepage extends StatefulWidget {
 
   final String name; 
-  homepage({required this.name});
+  final String? email;
+  homepage({required this.name, this.email});
 
   @override
   State<homepage> createState() => _homepageState();
@@ -61,7 +62,7 @@ class _homepageState extends State<homepage> {
 
         backgroundColor: const Color(0xff801924),
       ),
-      drawer: CustomDrawer(name: widget.name,),
+      drawer: CustomDrawer(name: widget.name, email: widget.email,),
       body:  SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

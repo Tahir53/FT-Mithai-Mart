@@ -6,12 +6,18 @@ import '../dbHelper/mongodb.dart';
 import '../model/complaints_model.dart';
 
 class complaintbox extends StatefulWidget{
+  final String? name;
+  final String? email;
+  complaintbox({this.name, this.email});
+
   @override
   State<complaintbox> createState() => _complaintboxState();
 }
 
 class _complaintboxState extends State<complaintbox> {
   final TextEditingController _complaintController = TextEditingController();
+  bool complainLoading = false;
+
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,18 +68,42 @@ class _complaintboxState extends State<complaintbox> {
             SizedBox(height: 30),
             ElevatedButton.icon(
               onPressed: () async {
-                final complaintRepository = ComplaintRepository(MongoDatabase as MongoDatabase);
+                // final complaintRepository = ComplaintRepository(MongoDatabase as MongoDatabase);
 
-                // Create a Complaint object with the entered data
+                // // Create a Complaint object with the entered data
+                setState(() {
+                  complainLoading = true;
+                });
                 final complaint = Complaint(
+                  name: widget.name ?? "user",
+                  email: widget.email ?? "no email",
                   description: _complaintController.text,
                 );
+                var result = await MongoDatabase.saveComplaint(complaint);
+                if (result == 'Complaint submitted'){
+                  _complaintController.text = "";
+                  
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  backgroundColor: Color(0xff63131C),
+                  content: Text("Your complain has been submitted succesfully!", style: TextStyle(color: Colors.white),)
+                  ));
+                }
 
-                // Save the complaint to MongoDB
-                await complaintRepository.saveComplaint(complaint);
+                else {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  backgroundColor: Color(0xff63131C),
+                  content: Text(result, style: TextStyle(color: Colors.white),)
+                  ));
+                }
+                setState(() {
+                  complainLoading = false;
+                });
+                
+                // // Save the complaint to MongoDB
+                // await complaintRepository.saveComplaint(complaint);
 
-                // Navigate back or show a success message
-                Navigator.pop(context);
+                // // Navigate back or show a success message
+                // Navigator.pop(context);
               },
               icon: const Icon(
                 Icons.check_circle_outline_sharp,
@@ -86,7 +116,10 @@ class _complaintboxState extends State<complaintbox> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   )),
-              label: const Text(
+              label: complainLoading ? SizedBox(
+                width: 10,
+                height: 10,
+                child: CircularProgressIndicator(color: Colors.white,)) : const Text(
                 "Submit",
                 textAlign: TextAlign.center,
                 style: TextStyle(

@@ -183,7 +183,7 @@ class _loginState extends State<login> {
                                   Navigator.pushReplacement(context,
                                       MaterialPageRoute(
                                     builder: (context) {
-                                      return homepage(name: res["name"],);
+                                      return homepage(name: res["name"],email: res["email"],);
                                     },
                                   ));}
                                 } else {

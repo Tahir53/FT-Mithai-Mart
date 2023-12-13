@@ -8,9 +8,10 @@ import '../screens/homepage/about_us.dart';
 import '../screens/homepage/home_page.dart';
 
 class CustomDrawer extends StatelessWidget {
-  CustomDrawer({super.key, required this.name});
+  CustomDrawer({super.key, required this.name, this.email});
 
   final String name;
+  final String? email;
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +68,7 @@ class CustomDrawer extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => complaintbox()));
+                        builder: (context) => complaintbox(name: name, email: email,)));
               },
             ),
           ),
