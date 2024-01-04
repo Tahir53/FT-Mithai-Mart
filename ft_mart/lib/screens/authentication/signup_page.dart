@@ -196,8 +196,10 @@ class _signupState extends State<signup> {
                   ),
                   TextFormField(
                     controller: passwordController,
+                    obscuringCharacter: '*',
                     decoration: InputDecoration(
                       hintText: "Password",
+
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),

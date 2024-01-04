@@ -1,11 +1,9 @@
-
-
-
 import 'package:flutter/material.dart';
 
 class CategoryContainer extends StatelessWidget {
-  
-  CategoryContainer({super.key, required this.categoryName, this.selected = false});
+  CategoryContainer(
+      {super.key, required this.categoryName, this.selected = false});
+
   final String categoryName;
   bool selected;
 
@@ -16,7 +14,8 @@ class CategoryContainer extends StatelessWidget {
       width: 180.0,
       height: 50.0,
       decoration: BoxDecoration(
-        color: selected ? const Color(0xFF801924) : const Color(0xFFFFF8E6) , // Background color
+        color: selected ? const Color(0xFF801924) : const Color(0xFFFFF8E6),
+        // Background color
         borderRadius: BorderRadius.circular(10.0), // Circular border radius
       ),
       child: Center(

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 class ProductCard extends StatelessWidget {
-  const ProductCard({super.key, required this.assetPath, required this.productName, required this.price});
+  const ProductCard(
+      {super.key,
+      required this.assetPath,
+      required this.productName,
+      required this.price});
+
   final String assetPath;
   final String productName;
   final int price;
@@ -14,8 +19,9 @@ class ProductCard extends StatelessWidget {
         height: 280,
         child: Card(
           shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(10.0), // Half of the width or height to make it circular
-  ),
+            borderRadius: BorderRadius.circular(
+                10.0), // Half of the width or height to make it circular
+          ),
           color: const Color(0xFFFFF8E6), // Background color of the card
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,7 +39,10 @@ class ProductCard extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding:  const EdgeInsets.only(left: 10.0, right: 0,),
+                padding: const EdgeInsets.only(
+                  left: 10.0,
+                  right: 0,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -57,7 +66,9 @@ class ProductCard extends StatelessWidget {
                             size: 32,
                             color: Color(0xFF212121), // Icon color
                           ),
-                          const SizedBox(height: 5,),
+                          const SizedBox(
+                            height: 5,
+                          ),
                           Container(
                             padding: const EdgeInsets.only(left: 7),
                             width: 40,

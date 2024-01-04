@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ftmithaimart/dbHelper/mongodb.dart';
 
+import '../../components/admindrawer.dart';
 import '../../components/drawer.dart';
 import '../../model/complaints_model.dart';
 
@@ -10,10 +11,9 @@ class ShowComplain extends StatefulWidget {
 }
 
 class _ShowComplainState extends State<ShowComplain> {
-
   bool complainLoading = true;
   List<Complaint> complaints = [];
-  
+
   void getComplain() async {
     complaints = await MongoDatabase.getComplaints();
     setState(() {
@@ -29,25 +29,32 @@ class _ShowComplainState extends State<ShowComplain> {
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 100,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16)),
-          ),
-          centerTitle: true,
-          title: Padding(
-            padding: const EdgeInsets.all(0.0),
-            child: Image.asset(
-              "assets/Logo.png",
-              width: 50,
-              height: 50,
-            ),
-          ),
-          backgroundColor: const Color(0xff801924),
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 100,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(16),
+              bottomRight: Radius.circular(16)),
         ),
-        drawer: CustomDrawer(name: "user"),
-        body: complainLoading ? const Center(child: CircularProgressIndicator(color: const Color(0xff801924),)) : ComplaintList(complaints: complaints),
+        centerTitle: true,
+        title: Padding(
+          padding: const EdgeInsets.all(0.0),
+          child: Image.asset(
+            "assets/Logo.png",
+            width: 50,
+            height: 50,
+          ),
+        ),
+        backgroundColor: const Color(0xff801924),
+      ),
+      drawer: AdminDrawer(name: "user"),
+      body: complainLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+              color: const Color(0xff801924),
+            ))
+          : ComplaintList(complaints: complaints),
     );
   }
 }
@@ -76,7 +83,7 @@ class ComplaintList extends StatelessWidget {
               Text("Email: ${complaints[index].email}"),
               Text("Contact: ${complaints[index].contact}"),
               Text("Description: ${complaints[index].description}"),
-          ],
+            ],
           ),
         );
       },

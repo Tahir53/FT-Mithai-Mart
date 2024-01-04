@@ -7,12 +7,19 @@ import '../screens/authentication/login_page.dart';
 import '../screens/homepage/about_us.dart';
 import '../screens/homepage/home_page.dart';
 
-class CustomDrawer extends StatelessWidget {
+class CustomDrawer extends StatefulWidget {
   CustomDrawer({super.key, required this.name, this.email, this.contact});
 
   final String name;
   final String? email;
   final String? contact;
+
+  @override
+  State<CustomDrawer> createState() => _CustomDrawerState();
+}
+
+class _CustomDrawerState extends State<CustomDrawer> {
+  int selectedtileindex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +76,11 @@ class CustomDrawer extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => complaintbox(name: name, email: email,)));
+                        builder: (context) => complaintbox(
+                              name: widget.name,
+                              email: widget.email,
+                              contact: widget.contact,
+                            )));
               },
             ),
           ),
@@ -96,23 +107,26 @@ class CustomDrawer extends StatelessWidget {
             ),
           ),
           const Padding(padding: EdgeInsets.only(top: 10)),
-          ListTile(
-            textColor: const Color(0xff801924),
-            contentPadding: const EdgeInsets.all(5),
-            leading: const Icon(
-              Icons.privacy_tip_outlined, color: Color(0xff801924),
+          Ink(
+            child: ListTile(
+              textColor: const Color(0xff801924),
+              contentPadding: const EdgeInsets.all(5),
+              leading: const Icon(
+                Icons.privacy_tip_outlined,
+                color: Color(0xff801924),
+              ),
+              title: const Text('Privacy Policy',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  )),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => homepage(name: widget.name)));
+              },
             ),
-            title: const Text('Privacy Policy',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                )),
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => homepage(name: name)));
-            },
           ),
           const Padding(padding: EdgeInsets.only(top: 10)),
           ListTile(
@@ -135,5 +149,11 @@ class CustomDrawer extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void updateSelectedTile(int index) {
+    setState(() {
+      selectedtileindex = index;
+    });
   }
 }

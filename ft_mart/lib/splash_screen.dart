@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 
 import 'screens/authentication/login_page.dart';
 
-
 class splashscreen extends StatefulWidget {
   const splashscreen({super.key});
 
@@ -21,46 +20,46 @@ class _splashscreenState extends State<splashscreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     // child: Scaffold(
-        body: SafeArea(
-          child: AnimatedSplashScreen(
-            splashIconSize: MediaQuery.of(context).size.height,
-            splash: Column(
+      // child: Scaffold(
+      body: SafeArea(
+        child: AnimatedSplashScreen(
+          splashIconSize: MediaQuery.of(context).size.height,
+          splash: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                      Image.asset('assets/Logo.png',width: 150, height: 150,),
-                  const Text(
-                    "F.T MITHAI MART",
-                    style: TextStyle(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/Logo.png',
+                  width: 150,
+                  height: 150,
+                ),
+                const Text(
+                  "F.T MITHAI MART",
+                  style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 24,
                       color: Color(0xffA4202E),
                       decoration: TextDecoration.underline,
                       decorationColor: Color(0xffB59703),
-                      fontFamily: 'Montserrat'
-                    ),
-                  ),
-                  // Padding(padding: EdgeInsets.all(5)),
-                  const Text(
-                    "Flavourful Traditions In Every Click",
-                    style: TextStyle(
+                      fontFamily: 'Montserrat'),
+                ),
+                // Padding(padding: EdgeInsets.all(5)),
+                const Text(
+                  "Flavourful Traditions In Every Click",
+                  style: TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 12,
                       color: Color(0xffA4202E),
-                      fontFamily: 'Montserrat'
-                    ),
-                  ),
-              ]
-            ),
-            nextScreen: login(),
-            splashTransition: SplashTransition.fadeTransition,
-            duration: 2000,
-            backgroundColor: Color(0xffFFF8E6),
-            // Background color of the splash screen
-          ),
+                      fontFamily: 'Montserrat'),
+                ),
+              ]),
+          nextScreen: login(),
+          splashTransition: SplashTransition.fadeTransition,
+          duration: 2000,
+          backgroundColor: Color(0xffFFF8E6),
+          // Background color of the splash screen
         ),
+      ),
     );
   }
 }
-

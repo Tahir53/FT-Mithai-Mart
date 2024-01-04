@@ -2,9 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../components/drawer.dart';
 
-class aboutus extends StatefulWidget{
+class aboutus extends StatefulWidget {
   final String name;
+
   aboutus({required this.name});
+
   @override
   State<aboutus> createState() => _aboutusState();
 }
@@ -16,24 +18,27 @@ class _aboutusState extends State<aboutus> {
       appBar: AppBar(
         toolbarHeight: 100,
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(bottomLeft: Radius.circular(16),bottomRight: Radius.circular(16)),
+          borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(16),
+              bottomRight: Radius.circular(16)),
         ),
         centerTitle: true,
         title: Padding(
           padding: const EdgeInsets.all(0.0),
-          child: Text("FT MITHAI MART",style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-
-          )
-            // alignment: Alignment.center,
-          ),
+          child: Text("FT MITHAI MART",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              )
+              // alignment: Alignment.center,
+              ),
         ),
-
         backgroundColor: const Color(0xff801924),
       ),
-      drawer: CustomDrawer(name: widget.name,),
+      drawer: CustomDrawer(
+        name: widget.name,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(

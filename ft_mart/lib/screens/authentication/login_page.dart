@@ -69,7 +69,8 @@ class _loginState extends State<login> {
                         controller: EmailController,
                         decoration: InputDecoration(
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(width: 2, color: Color(0xff63131C)),
+                            borderSide:
+                                BorderSide(width: 2, color: Color(0xff63131C)),
                           ),
                           labelText: "Username/Email",
                           labelStyle: TextStyle(
@@ -80,7 +81,10 @@ class _loginState extends State<login> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           prefixIcon: IconButton(
-                            icon: Icon(Icons.person,color: Color(0xff63131C),),
+                            icon: Icon(
+                              Icons.person,
+                              color: Color(0xff63131C),
+                            ),
                             onPressed: () {},
                           ),
                         ),
@@ -120,7 +124,8 @@ class _loginState extends State<login> {
                             color: Color(0xff63131C),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(width: 2, color: Color(0xff63131C)),
+                            borderSide:
+                                BorderSide(width: 2, color: Color(0xff63131C)),
                           ),
                           suffixIcon: IconButton(
                             icon: Icon(hidePassword
@@ -134,7 +139,10 @@ class _loginState extends State<login> {
                             color: Color(0xff63131C),
                           ),
                           prefixIcon: IconButton(
-                            icon: Icon(Icons.lock,color: Color(0xff63131C),),
+                            icon: Icon(
+                              Icons.lock,
+                              color: Color(0xff63131C),
+                            ),
                             onPressed: () {},
                           ),
                           hintText: "Enter Your Password",
@@ -172,31 +180,37 @@ class _loginState extends State<login> {
                                     EmailController.text.toString(),
                                     PasswordController.text.toString());
                                 if (res["error"] == null) {
-                                  if (res["admin"] == true){
-                                     Navigator.pushReplacement(context,
-                                    MaterialPageRoute(
-                                  builder: (context) {
-                                    return admin();
-                                  },
-                                ));
+                                  if (res["admin"] == true) {
+                                    Navigator.pushReplacement(context,
+                                        MaterialPageRoute(
+                                      builder: (context) {
+                                        return admin(
+                                            name: res["name"],
+                                            email: res["email"],
+                                            contact: res["contact"]);
+                                      },
+                                    ));
                                   } else {
-                                  Navigator.pushReplacement(context,
-                                      MaterialPageRoute(
-                                    builder: (context) {
-                                      return homepage(name: res["name"],email: res["email"],contact: res["contact"]);
-                                    },
-                                  ));}
+                                    Navigator.pushReplacement(context,
+                                        MaterialPageRoute(
+                                      builder: (context) {
+                                        return homepage(
+                                            name: res["name"],
+                                            email: res["email"],
+                                            contact: res["contact"]);
+                                      },
+                                    ));
+                                  }
                                 } else {
                                   setState(() {
                                     isLoading = false;
                                   });
                                   Fluttertoast.showToast(
-                                    msg: "Invalid username or password",
-                                    backgroundColor: Color(0xff63131C),
-                                    textColor: Colors.white,
-                                    gravity: ToastGravity.BOTTOM,
-                                    toastLength: Toast.LENGTH_LONG
-                                  );
+                                      msg: "Invalid username or password",
+                                      backgroundColor: Color(0xff63131C),
+                                      textColor: Colors.white,
+                                      gravity: ToastGravity.BOTTOM,
+                                      toastLength: Toast.LENGTH_LONG);
                                 }
                               }
                             },
@@ -275,7 +289,9 @@ class _loginState extends State<login> {
                               Navigator.pushReplacement(context,
                                   MaterialPageRoute(
                                 builder: (context) {
-                                  return homepage(name: "User",);
+                                  return homepage(
+                                    name: "User",
+                                  );
                                 },
                               ));
                             },
@@ -392,4 +408,5 @@ class _loginState extends State<login> {
       });
     }
   }
+
 }
