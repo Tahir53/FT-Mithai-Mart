@@ -12,7 +12,7 @@ class _CarouselCardState extends State<CarouselCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 400.0,
+      width: MediaQuery.sizeOf(context).width * 0.88,
       height: 175.0,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.0),
@@ -38,7 +38,8 @@ class _CarouselCardState extends State<CarouselCard> {
                   color: Color(0xFF212121),
                   fontWeight: FontWeight.w600),
             ),
-            SizedBox(height: 40.0), // Add more space
+            SizedBox(height: 30.0
+            ), // Add more space
             Text(
               'We are here to help!',
               style: TextStyle(
@@ -68,6 +69,7 @@ class _CarouselCardState extends State<CarouselCard> {
                 Icon(Icons.arrow_forward_sharp)
               ],
             ),
+            SizedBox(height: 10,)
           ],
         ),
       ),

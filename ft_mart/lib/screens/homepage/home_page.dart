@@ -24,11 +24,15 @@ class homepage extends StatefulWidget {
 class _homepageState extends State<homepage> {
   final ScrollController _scrollController = ScrollController();
   String? text;
-  String selectedCat = "classic";
+  String selectedCat = "Classic Sweets";
 
   Future<String?> getData() async {
     var data = await SharedPreferences.getInstance();
     return data.getString("user");
+  }
+
+  bool shouldShowProduct(Product product) {
+    return product.category == selectedCat;
   }
 
   @override
@@ -71,20 +75,19 @@ class _homepageState extends State<homepage> {
       ),
       drawer: CustomDrawer(
           name: widget.name, email: widget.email, contact: widget.contact),
-
       endDrawer: Drawer(
         child: Column(
           children: [
-        DrawerHeader(
-        child: Text(
-          'Cart',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-          ),
-        ),
-      ),
-      ],
+            DrawerHeader(
+              child: Text(
+                'Cart',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
       body: SingleChildScrollView(
@@ -110,21 +113,21 @@ class _homepageState extends State<homepage> {
             const SizedBox(
               height: 20,
             ),
-            // FlutterCarousel.builder(
-            //   itemCount: 2,
-            //   itemBuilder: ((context, index, realIndex) {
-            //     return CarouselCard(
-            //       scrollController: _scrollController,
-            //     );
-            //   }),
-            //   options: CarouselOptions(
-            //     height: 200,
-            //     enableInfiniteScroll: true,
-            //     autoPlay: true,
-            //     enlargeCenterPage: true,
-            //     autoPlayCurve: Curves.bounceInOut,
-            //   ),
-            // ),
+            FlutterCarousel.builder(
+              itemCount: 2,
+              itemBuilder: ((context, index, realIndex) {
+                return CarouselCard(
+                  scrollController: _scrollController,
+                );
+              }),
+              options: CarouselOptions(
+                height: MediaQuery.sizeOf(context).height * 0.24,
+                enableInfiniteScroll: true,
+                autoPlay: true,
+                enlargeCenterPage: true,
+                autoPlayCurve: Curves.bounceInOut,
+              ),
+            ),
             const SizedBox(
               height: 20,
             ),
@@ -137,35 +140,35 @@ class _homepageState extends State<homepage> {
                     GestureDetector(
                         onTap: () {
                           setState(() {
-                            selectedCat = "classic";
+                            selectedCat = "Classic Sweets";
                           });
                         },
                         child: CategoryContainer(
                             categoryName: "Classic Sweets",
-                            selected: selectedCat == "classic")),
+                            selected: selectedCat == "Classic Sweets")),
                     const SizedBox(
                       width: 5,
                     ),
                     GestureDetector(
                         onTap: () {
                           setState(() {
-                            selectedCat = "halwa";
+                            selectedCat = "Halwa Jaat";
                           });
                         },
                         child: CategoryContainer(
                             categoryName: "Halwa Jaat",
-                            selected: selectedCat == "halwa")),
+                            selected: selectedCat == "Halwa Jaat")),
                     const SizedBox(
                       width: 5,
                     ),
                     GestureDetector(
                         onTap: () {
-                          selectedCat = "malai";
+                          selectedCat = "Malai Khaja";
                           setState(() {});
                         },
                         child: CategoryContainer(
                             categoryName: "Malai Khaja",
-                            selected: selectedCat == "malai")),
+                            selected: selectedCat == "Malai Khaja")),
                   ],
                 ),
               ),
@@ -204,25 +207,28 @@ class _homepageState extends State<homepage> {
                   );
                 } else {
                   List<Product> products = snapshot.data!;
+                  List<Product> filteredProducts = products
+                      .where((product) => product.category == selectedCat)
+                      .toList();
+                  print(filteredProducts);
                   return SingleChildScrollView(
                     child: Column(
                       children: [
-                        for (int i = 0; i < products.length; i += 2)
+                        for (int i = 0; i < filteredProducts.length; i += 2)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               if (i < products.length)
                                 ProductCard(
-                                  assetPath: products[i].image,
-                                  price: int.parse(products[i].price),
-                                  productName: products[i].name,
+                                  assetPath: filteredProducts[i].image,
+                                  price: int.parse(filteredProducts[i].price),
+                                  productName: filteredProducts[i].name,
                                 ),
-
-                              if (i + 1 < products.length)
+                              if (i + 1 < filteredProducts.length)
                                 ProductCard(
-                                  assetPath: products[i + 1].image,
-                                  price: int.parse(products[i + 1].price),
-                                  productName: products[i + 1].name,
+                                  assetPath: filteredProducts[i + 1].image,
+                                  price: int.parse(filteredProducts[i + 1].price),
+                                  productName: filteredProducts[i + 1].name,
                                 ),
                             ],
                           ),
