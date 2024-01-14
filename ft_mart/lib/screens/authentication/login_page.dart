@@ -1,9 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/src/material/icons.dart';
-
 import '../../dbHelper/mongodb.dart';
 import '../homepage/admin_page.dart';
 import '../homepage/home_page.dart';
@@ -23,6 +23,8 @@ class _loginState extends State<login> {
   final PasswordController = TextEditingController();
   bool hidePassword = true;
   bool isLoading = false;
+  final GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
   Future<Map<String, dynamic>> data(String email, String password) async {
     print("data() called in login_page");
@@ -260,14 +262,16 @@ class _loginState extends State<login> {
                       Column(
                         children: [
                           ElevatedButton.icon(
-                              onPressed: () {},
-                              icon: const Icon(
-                                Icons.email,
-                                size: 24.0,
-                                color: Colors.black,
+                              onPressed: () {
+                                signInWithGoogle();
+                              },
+                              icon: Image.asset(
+                                'assets/google.png',
+                                height: 30,
+                                width: 30,
                               ),
                               style: ElevatedButton.styleFrom(
-                                  primary: Color(0xffD9D9D9),
+                                  backgroundColor: Color(0xffD9D9D9),
                                   fixedSize: Size(360, 55),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
@@ -301,7 +305,7 @@ class _loginState extends State<login> {
                               color: Colors.black,
                             ),
                             style: ElevatedButton.styleFrom(
-                                primary: Color(0xffffC937),
+                                backgroundColor: Color(0xffffC937),
                                 fixedSize: Size(360, 55),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
@@ -328,6 +332,7 @@ class _loginState extends State<login> {
                             },
                             icon: const Icon(
                               Icons.app_registration,
+                              color: Colors.white,
                               size: 24.0,
                             ),
                             style: ElevatedButton.styleFrom(
@@ -371,6 +376,28 @@ class _loginState extends State<login> {
     );
   }
 
+  Future<void> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount!.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
+      final UserCredential authResult =
+          await auth.signInWithCredential(credential);
+      final User? user = authResult.user;
+      print("User signed in with google: $user");
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => homepage(name: "user")));
+      // print("Signed in with google succesfully");
+    } catch (error) {
+      print("Google Sign-In Error: $error");
+    }
+  }
+
   void validateEmail() {
     final val = EmailController.text;
     if (val.isEmpty) {
@@ -408,5 +435,4 @@ class _loginState extends State<login> {
       });
     }
   }
-
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ftmithaimart/components/complaint_box.dart';
+import 'package:ftmithaimart/inventory/inventory.dart';
+import 'package:ftmithaimart/inventory/update_delete_products.dart';
 import '../screens/authentication/login_page.dart';
 import '../screens/authentication/show_complaints.dart';
 import '../screens/homepage/about_us.dart';
@@ -67,7 +69,12 @@ class AdminDrawer extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   )),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => inventory(
+                              name: 'admin',
+                            )));
               },
             ),
           ),
@@ -85,7 +92,9 @@ class AdminDrawer extends StatelessWidget {
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                   )),
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).pop();
+              },
             ),
           ),
           const Padding(padding: EdgeInsets.only(top: 10)),

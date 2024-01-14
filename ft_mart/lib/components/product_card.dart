@@ -1,18 +1,29 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
-class ProductCard extends StatelessWidget {
-  const ProductCard(
-      {super.key,
-      required this.assetPath,
-      required this.productName,
-      required this.price});
+class ProductCard extends StatefulWidget {
+  const ProductCard({
+    Key? key,
+    required this.assetPath,
+    required this.productName,
+    required this.price,
+  }) : super(key: key);
 
   final String assetPath;
   final String productName;
   final int price;
 
   @override
+  State<ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> {
+  double selectedWeight = 1.0;
+  @override
+
   Widget build(BuildContext context) {
+
     return SingleChildScrollView(
       child: SizedBox(
         width: 180,
@@ -20,7 +31,8 @@ class ProductCard extends StatelessWidget {
         child: Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(
-                10.0), // Half of the width or height to make it circular
+              10.0,
+            ), // Half of the width or height to make it circular
           ),
           color: const Color(0xFFFFF8E6), // Background color of the card
           child: Column(
@@ -30,8 +42,8 @@ class ProductCard extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 10.0),
                 child: Align(
                   alignment: Alignment.center,
-                  child: Image.asset(
-                    assetPath,
+                  child: Image.network(
+                    widget.assetPath,
                     width: 150,
                     height: 150,
                     fit: BoxFit.cover,
@@ -48,7 +60,7 @@ class ProductCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        productName,
+                        widget.productName,
                         style: const TextStyle(
                           fontSize: 16.0,
                           fontWeight: FontWeight.bold,
@@ -58,30 +70,7 @@ class ProductCard extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 15.0),
-                      child: Column(
-                        // crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          const Icon(
-                            Icons.add,
-                            size: 32,
-                            color: Color(0xFF212121), // Icon color
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          Container(
-                            padding: const EdgeInsets.only(left: 7),
-                            width: 40,
-                            child: const Text(
-                              'Add to Cart',
-                              style: TextStyle(
-                                fontSize: 8.0,
-                                color: Color(0xFF212121), // Text color
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      child: buildPopupMenuButton(),
                     ),
                   ],
                 ),
@@ -89,7 +78,7 @@ class ProductCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(left: 10.0),
                 child: Text(
-                  'Rs. ${price.toString()}/kg',
+                  'Rs. ${widget.price.toString()}/kg',
                   style: const TextStyle(
                     fontSize: 14.0,
                     color: Color(0xFF212121), // Text color
@@ -102,4 +91,42 @@ class ProductCard extends StatelessWidget {
       ),
     );
   }
+  Widget buildPopupMenuButton() {
+    return PopupMenuButton<double>(
+      onSelected: (value) {
+        setState(() {
+          selectedWeight = value;
+        });
+      },
+      itemBuilder: (BuildContext context) {
+        return [1.0, 0.5].map((double choice) {
+          return PopupMenuItem<double>(
+            value: choice,
+            child: Text('$choice kg'), // Display the value as a string
+          );
+        }).toList();
+      },
+      child: Column(
+        children: [
+          const Icon(
+            Icons.add,
+            color: Colors.black,
+            size: 28,
+          ),
+          Container(
+            padding: const EdgeInsets.only(left: 7),
+            width: 40,
+            child: const Text(
+              'Add to Cart',
+              style: TextStyle(
+                fontSize: 8.0,
+                color: Color(0xFF212121),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 }

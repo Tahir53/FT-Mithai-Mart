@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ftmithaimart/components/admindrawer.dart';
 import 'package:ftmithaimart/screens/authentication/show_complaints.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ftmithaimart/dbHelper/mongodb.dart';
 
 import '../authentication/login_page.dart';
 
@@ -27,11 +28,6 @@ class _adminState extends State<admin> {
 
   void initState() {
     super.initState();
-    // getData().then((value) {
-    //   setState(() {
-    //     text = value;
-    //   });
-    // });
   }
 
   @override
@@ -39,6 +35,7 @@ class _adminState extends State<admin> {
     // String _admin = text as String;
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
         toolbarHeight: 100,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(

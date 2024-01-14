@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:ftmithaimart/dbHelper/mongodb.dart';
@@ -9,10 +8,9 @@ import 'screens/homepage/home_page.dart';
 import 'screens/authentication/login_page.dart';
 import '../splash_screen.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+
 
 final navigatorKey = GlobalKey<NavigatorState>();
 

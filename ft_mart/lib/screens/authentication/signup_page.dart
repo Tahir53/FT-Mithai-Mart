@@ -12,7 +12,17 @@ class signup extends StatefulWidget {
   State<signup> createState() => _signupState();
 }
 
+
+
 class _signupState extends State<signup> {
+
+
+  void initState() {
+    super.initState();
+    emailController.addListener(validateEmail);
+    contactController.addListener(validateContact);
+  }
+
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -356,13 +366,6 @@ class _signupState extends State<signup> {
         errorMessage = "";
       });
     }
-  }
-
-  void initState() {
-    super.initState();
-    // Start listening to changes.
-    emailController.addListener(validateEmail);
-    contactController.addListener(validateContact);
   }
 
   void showSuccessMessage() {

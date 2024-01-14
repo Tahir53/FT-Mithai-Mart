@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+class CarouselCard extends StatefulWidget {
+  final ScrollController? scrollController;
+  const CarouselCard({this.scrollController});
 
-class CarouselCard extends StatelessWidget {
-  const CarouselCard({super.key});
 
+  @override
+  State<CarouselCard> createState() => _CarouselCardState();
+}
+
+class _CarouselCardState extends State<CarouselCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 400.0,
-      height: 182.0,
+      height: 175.0,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.0),
         color: const Color(0xFFFFC937), // Background color
@@ -43,7 +49,14 @@ class CarouselCard extends StatelessWidget {
             Row(
               children: [
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    // Scroll down when the "Get started" button is pressed
+                    widget.scrollController?.animateTo(
+                      widget.scrollController?.position.maxScrollExtent ?? 0,
+                      duration: Duration(seconds: 1),
+                      curve: Curves.easeOutSine,
+                    );
+                  },
                   child: Text(
                     'Get started',
                     style: TextStyle(
