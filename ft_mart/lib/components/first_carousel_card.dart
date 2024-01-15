@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
-class CarouselCard extends StatefulWidget {
-  final ScrollController? scrollController;
-  const CarouselCard({this.scrollController});
 
+class FirstCarouselCard extends StatefulWidget {
+  final ScrollController? scrollController;
+
+  const FirstCarouselCard({this.scrollController});
 
   @override
-  State<CarouselCard> createState() => _CarouselCardState();
+  State<FirstCarouselCard> createState() => _FirstCarouselCardState();
 }
 
-class _CarouselCardState extends State<CarouselCard> {
+class _FirstCarouselCardState extends State<FirstCarouselCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.sizeOf(context).width * 0.88,
+      width: MediaQuery.sizeOf(context).width * 0.92,
       height: 175.0,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.0),
@@ -38,8 +39,7 @@ class _CarouselCardState extends State<CarouselCard> {
                   color: Color(0xFF212121),
                   fontWeight: FontWeight.w600),
             ),
-            SizedBox(height: 30.0
-            ), // Add more space
+            SizedBox(height: 20.0), // Add more space
             Text(
               'We are here to help!',
               style: TextStyle(
@@ -47,29 +47,31 @@ class _CarouselCardState extends State<CarouselCard> {
                   fontWeight: FontWeight.w400,
                   color: Colors.black),
             ),
+            Padding(padding: EdgeInsets.only(top: 10)),
             Row(
               children: [
-                TextButton(
-                  onPressed: () {
-                    // Scroll down when the "Get started" button is pressed
-                    widget.scrollController?.animateTo(
-                      widget.scrollController?.position.maxScrollExtent ?? 0,
-                      duration: Duration(seconds: 1),
-                      curve: Curves.easeOutSine,
-                    );
-                  },
-                  child: Text(
-                    'Get started',
-                    style: TextStyle(
-                        fontSize: 13.0,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black),
+                Container(
+                  child: TextButton(
+                    onPressed: () {
+                      // Scroll down when the "Get started" button is pressed
+                      widget.scrollController?.animateTo(
+                        widget.scrollController?.position.maxScrollExtent ?? 0,
+                        duration: Duration(seconds: 1),
+                        curve: Curves.easeOutSine,
+                      );
+                    },
+                    child: Text(
+                      'Get started',
+                      style: TextStyle(
+                          fontSize: 13.0,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black),
+                    ),
                   ),
                 ),
                 Icon(Icons.arrow_forward_sharp)
               ],
             ),
-            SizedBox(height: 10,)
           ],
         ),
       ),

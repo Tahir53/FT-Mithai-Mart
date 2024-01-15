@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
-import 'package:ftmithaimart/components/carousel_card.dart';
+import 'package:ftmithaimart/components/first_carousel_card.dart';
 import 'package:ftmithaimart/components/category_container.dart';
 import 'package:ftmithaimart/components/product_card.dart';
 import 'package:ftmithaimart/components/search_textfield.dart';
 import 'package:ftmithaimart/dbHelper/mongodb.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../components/drawer.dart';
+import '../../components/second_carousel_card.dart';
 import '../../model/cart_model.dart';
 import '../../model/product_model.dart';
 
@@ -116,12 +117,17 @@ class _homepageState extends State<homepage> {
             FlutterCarousel.builder(
               itemCount: 2,
               itemBuilder: ((context, index, realIndex) {
-                return CarouselCard(
-                  scrollController: _scrollController,
-                );
+                if (index == 0) {
+                  return FirstCarouselCard(
+                    scrollController: _scrollController,
+                  );
+                } else if (index == 1) {
+                  return SecondCarouselCard();
+                }
+                return SizedBox.shrink();
               }),
               options: CarouselOptions(
-                height: MediaQuery.sizeOf(context).height * 0.24,
+                height: MediaQuery.sizeOf(context).height * 0.28,
                 enableInfiniteScroll: true,
                 autoPlay: true,
                 enlargeCenterPage: true,
@@ -211,23 +217,28 @@ class _homepageState extends State<homepage> {
                       .where((product) => product.category == selectedCat)
                       .toList();
                   print(filteredProducts);
+
                   return SingleChildScrollView(
                     child: Column(
                       children: [
                         for (int i = 0; i < filteredProducts.length; i += 2)
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment:
+                                filteredProducts.length % 2 == 1 &&
+                                        i == filteredProducts.length - 1
+                                    ? MainAxisAlignment.start
+                                    : MainAxisAlignment.center,
                             children: [
-                              if (i < products.length)
-                                ProductCard(
-                                  assetPath: filteredProducts[i].image,
-                                  price: int.parse(filteredProducts[i].price),
-                                  productName: filteredProducts[i].name,
-                                ),
+                              ProductCard(
+                                assetPath: filteredProducts[i].image,
+                                price: int.parse(filteredProducts[i].price),
+                                productName: filteredProducts[i].name,
+                              ),
                               if (i + 1 < filteredProducts.length)
                                 ProductCard(
                                   assetPath: filteredProducts[i + 1].image,
-                                  price: int.parse(filteredProducts[i + 1].price),
+                                  price:
+                                      int.parse(filteredProducts[i + 1].price),
                                   productName: filteredProducts[i + 1].name,
                                 ),
                             ],
