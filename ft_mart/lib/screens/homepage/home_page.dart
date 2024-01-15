@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:ftmithaimart/components/first_carousel_card.dart';
@@ -34,12 +36,18 @@ class _homepageState extends State<homepage> {
     return data.getString("user");
   }
 
+  saveCartInSharedPrefence() async {
+    var data = await SharedPreferences.getInstance();
+    data.setString("cart", jsonEncode(cart));
+  }
+
   bool shouldShowProduct(Product product) {
     return product.category == selectedCat;
   }
 
   void updateCart(String product, String price, double quantity){
     cart.add(Cart(productName: product, price: price, quantity: quantity));
+    saveCartInSharedPrefence();
     setState(() {});
     _scaffoldKey.currentState!.openEndDrawer();
   }
@@ -54,7 +62,7 @@ class _homepageState extends State<homepage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         toolbarHeight: 100,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -88,20 +96,54 @@ class _homepageState extends State<homepage> {
       endDrawer: Drawer(
         child: Column(
           children: [
-            DrawerHeader(
+            const DrawerHeader(
               child: Text(
-                'Cart',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 24,
+                  'Cart',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 24,
+                  ),
+                ),
+            ),  
+           ... List.generate(cart.length, (index) =>  Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: const Color(0xff801924),
+                ),
+                height: 80,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      const Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Name", style: TextStyle(color: Colors.white),),
+                          Text("Qty", style: TextStyle(color: Colors.white),),
+                          Text("Price", style: TextStyle(color: Colors.white),),
+                      ],),
+                      const Spacer(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(cart[index].productName, style: const TextStyle(color: Colors.white),),
+                          Text(cart[index].quantity.toString(), style: const TextStyle(color: Colors.white),),
+                          Text(cart[index].price, style: const TextStyle(color: Colors.white),),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ] + List.generate(cart.length, (index) => DrawerHeader(child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(cart[index].productName, style: const TextStyle(color: Colors.black),),
-          )))
-        ),
+          ))
+          ]
+          ),
+        
       ),
       body: SingleChildScrollView(
         controller: _scrollController,
@@ -136,7 +178,7 @@ class _homepageState extends State<homepage> {
                 } else if (index == 1) {
                   return SecondCarouselCard();
                 }
-                return SizedBox.shrink();
+                return const SizedBox.shrink();
               }),
               options: CarouselOptions(
                 height: MediaQuery.sizeOf(context).height * 0.28,
@@ -251,6 +293,7 @@ class _homepageState extends State<homepage> {
                                   price:
                                       int.parse(filteredProducts[i + 1].price),
                                   productName: filteredProducts[i + 1].name,
+                                  onTap: updateCart,
                                 ),
                               if (i + 1 >= filteredProducts.length)
                                 const SizedBox(
