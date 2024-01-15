@@ -93,6 +93,7 @@ class _ProductCardState extends State<ProductCard> {
   }
   Widget buildPopupMenuButton() {
     return PopupMenuButton<double>(
+      color: Color(0xFFFFF8E6),
       onSelected: (value) {
         setState(() {
           selectedWeight = value;
@@ -102,7 +103,13 @@ class _ProductCardState extends State<ProductCard> {
         return [1.0, 0.5].map((double choice) {
           return PopupMenuItem<double>(
             value: choice,
-            child: Text('$choice kg'), // Display the value as a string
+            child: Text('$choice kg',style: TextStyle(
+              color: Color(0xFF63131C),
+              fontWeight: FontWeight.w600,
+              decoration: TextDecoration.underline,
+              decorationColor: Color(0xFF63131C),
+              fontSize: 15,
+            ),), // Display the value as a string
           );
         }).toList();
       },
