@@ -26,6 +26,8 @@ class _homepageState extends State<homepage> {
   final ScrollController _scrollController = ScrollController();
   String? text;
   String selectedCat = "Classic Sweets";
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  List<Cart> cart = [];
 
   Future<String?> getData() async {
     var data = await SharedPreferences.getInstance();
@@ -36,6 +38,12 @@ class _homepageState extends State<homepage> {
     return product.category == selectedCat;
   }
 
+  void updateCart(String product, String price, double quantity){
+    cart.add(Cart(productName: product, price: price, quantity: quantity));
+    setState(() {});
+    _scaffoldKey.currentState!.openEndDrawer();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -44,6 +52,7 @@ class _homepageState extends State<homepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
         toolbarHeight: 100,
@@ -83,12 +92,15 @@ class _homepageState extends State<homepage> {
               child: Text(
                 'Cart',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Colors.black,
                   fontSize: 24,
                 ),
               ),
             ),
-          ],
+          ] + List.generate(cart.length, (index) => DrawerHeader(child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(cart[index].productName, style: const TextStyle(color: Colors.black),),
+          )))
         ),
       ),
       body: SingleChildScrollView(
@@ -138,7 +150,7 @@ class _homepageState extends State<homepage> {
               height: 20,
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -204,7 +216,7 @@ class _homepageState extends State<homepage> {
               future: MongoDatabase.getProducts(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(color: Color(0xFF63131C)),
                   );
                 } else if (snapshot.hasError) {
@@ -216,8 +228,6 @@ class _homepageState extends State<homepage> {
                   List<Product> filteredProducts = products
                       .where((product) => product.category == selectedCat)
                       .toList();
-                  print(filteredProducts);
-
                   return SingleChildScrollView(
                     child: Column(
                       children: [
@@ -226,13 +236,14 @@ class _homepageState extends State<homepage> {
                             mainAxisAlignment:
                                 filteredProducts.length % 2 == 1 &&
                                         i == filteredProducts.length - 1
-                                    ? MainAxisAlignment.start
+                                    ? MainAxisAlignment.center
                                     : MainAxisAlignment.center,
                             children: [
                               ProductCard(
                                 assetPath: filteredProducts[i].image,
                                 price: int.parse(filteredProducts[i].price),
                                 productName: filteredProducts[i].name,
+                                onTap: updateCart,
                               ),
                               if (i + 1 < filteredProducts.length)
                                 ProductCard(
@@ -241,6 +252,11 @@ class _homepageState extends State<homepage> {
                                       int.parse(filteredProducts[i + 1].price),
                                   productName: filteredProducts[i + 1].name,
                                 ),
+                              if (i + 1 >= filteredProducts.length)
+                                const SizedBox(
+                                  width: 180,
+                                  height: 280,
+                                )
                             ],
                           ),
                       ],

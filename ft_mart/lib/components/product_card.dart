@@ -3,16 +3,18 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 
 class ProductCard extends StatefulWidget {
-  const ProductCard({
+  ProductCard({
     Key? key,
     required this.assetPath,
     required this.productName,
     required this.price,
+    this.onTap
   }) : super(key: key);
 
   final String assetPath;
   final String productName;
   final int price;
+  Function(String, String, double)? onTap;
 
   @override
   State<ProductCard> createState() => _ProductCardState();
@@ -21,9 +23,7 @@ class ProductCard extends StatefulWidget {
 class _ProductCardState extends State<ProductCard> {
   double selectedWeight = 1.0;
   @override
-
   Widget build(BuildContext context) {
-
     return SingleChildScrollView(
       child: SizedBox(
         width: 180,
@@ -91,6 +91,7 @@ class _ProductCardState extends State<ProductCard> {
       ),
     );
   }
+
   Widget buildPopupMenuButton() {
     return PopupMenuButton<double>(
       color: Color(0xFFFFF8E6),
@@ -103,13 +104,21 @@ class _ProductCardState extends State<ProductCard> {
         return [1.0, 0.5].map((double choice) {
           return PopupMenuItem<double>(
             value: choice,
-            child: Text('$choice kg',style: TextStyle(
-              color: Color(0xFF63131C),
-              fontWeight: FontWeight.w600,
-              decoration: TextDecoration.underline,
-              decorationColor: Color(0xFF63131C),
-              fontSize: 15,
-            ),), // Display the value as a string
+            onTap: (){
+              if (widget.onTap != null){
+                widget.onTap!(widget.productName, widget.price.toString(), choice);
+              }
+            },
+            child: Text(
+              '$choice kg',
+              style: const TextStyle(
+                color: Color(0xFF63131C),
+                fontWeight: FontWeight.w600,
+                decoration: TextDecoration.underline,
+                decorationColor: Color(0xFF63131C),
+                fontSize: 15,
+              ),
+            ), // Display the value as a string
           );
         }).toList();
       },
@@ -135,5 +144,4 @@ class _ProductCardState extends State<ProductCard> {
       ),
     );
   }
-
 }
