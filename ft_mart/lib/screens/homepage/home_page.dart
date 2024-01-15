@@ -25,11 +25,24 @@ class homepage extends StatefulWidget {
 }
 
 class _homepageState extends State<homepage> {
+  void initState() {
+    super.initState();
+    loadDataFromSharedPreference();
+  }
+
   final ScrollController _scrollController = ScrollController();
   String? text;
   String selectedCat = "Classic Sweets";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Cart> cart = [];
+
+  loadDataFromSharedPreference() async {
+    var data = await SharedPreferences.getInstance();
+    var cartData = data.getString("cart");
+    if (cartData != null) {
+      cart = jsonDecode(cartData);
+    }
+  }
 
   Future<String?> getData() async {
     var data = await SharedPreferences.getInstance();
@@ -45,16 +58,11 @@ class _homepageState extends State<homepage> {
     return product.category == selectedCat;
   }
 
-  void updateCart(String product, String price, double quantity){
+  void updateCart(String product, String price, double quantity) {
     cart.add(Cart(productName: product, price: price, quantity: quantity));
     saveCartInSharedPrefence();
     setState(() {});
     _scaffoldKey.currentState!.openEndDrawer();
-  }
-
-  @override
-  void initState() {
-    super.initState();
   }
 
   @override
@@ -94,56 +102,100 @@ class _homepageState extends State<homepage> {
       drawer: CustomDrawer(
           name: widget.name, email: widget.email, contact: widget.contact),
       endDrawer: Drawer(
-        child: Column(
-          children: [
+        child: SingleChildScrollView(
+          child: Column(children: [
             const DrawerHeader(
               child: Text(
-                  'Cart',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 24,
-                  ),
-                ),
-            ),  
-           ... List.generate(cart.length, (index) =>  Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  color: const Color(0xff801924),
-                ),
-                height: 80,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text("Name", style: TextStyle(color: Colors.white),),
-                          Text("Qty", style: TextStyle(color: Colors.white),),
-                          Text("Price", style: TextStyle(color: Colors.white),),
-                      ],),
-                      const Spacer(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(cart[index].productName, style: const TextStyle(color: Colors.white),),
-                          Text(cart[index].quantity.toString(), style: const TextStyle(color: Colors.white),),
-                          Text(cart[index].price, style: const TextStyle(color: Colors.white),),
-                        ],
-                      ),
-                    ],
-                  ),
+                'Cart',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 24,
                 ),
               ),
             ),
-          ))
-          ]
-          ),
-        
+            ...List.generate(
+                cart.length,
+                (index) => Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            color: const Color(0xff801924),
+                          ),
+                          height: 80,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                const Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Name",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    Text(
+                                      "Qty",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    Text(
+                                      "Price",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                                const Spacer(),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      cart[index].productName,
+                                      style: const TextStyle(color: Colors.white),
+                                    ),
+                                    Text(
+                                      cart[index].quantity.toString(),
+                                      style: const TextStyle(color: Colors.white),
+                                    ),
+                                    Text(
+                                      cart[index].price,
+                                      style: const TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    )),
+            SizedBox(
+              width: 100,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: const Color(0xff801924),
+                  onPrimary: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  maximumSize: const Size(100, 50),
+                ),
+                onPressed: () async {
+                  var data = await SharedPreferences.getInstance();
+                  data.remove("cart");
+                  setState(() {
+                    cart = [];
+                  });
+                  // Add your onPressed logic here
+                },
+                child: const Text('Clear'),
+              ),
+            ),
+          ]),
+        ),
       ),
       body: SingleChildScrollView(
         controller: _scrollController,
