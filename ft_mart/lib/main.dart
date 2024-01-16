@@ -62,6 +62,8 @@ void main() async {
     });
   }
 
+
+
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MainApp());
 }

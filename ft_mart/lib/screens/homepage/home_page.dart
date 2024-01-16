@@ -89,12 +89,13 @@ class _homepageState extends State<homepage> {
         ),
         actions: [
           Builder(
-            builder: (context) => IconButton(
-              icon: Icon(Icons.local_grocery_store_outlined),
-              onPressed: () {
-                Scaffold.of(context).openEndDrawer();
-              },
-            ),
+            builder: (context) =>
+                IconButton(
+                  icon: Icon(Icons.local_grocery_store_outlined),
+                  onPressed: () {
+                    Scaffold.of(context).openEndDrawer();
+                  },
+                ),
           ),
         ],
         backgroundColor: const Color(0xff801924),
@@ -102,101 +103,111 @@ class _homepageState extends State<homepage> {
       drawer: CustomDrawer(
           name: widget.name, email: widget.email, contact: widget.contact),
       endDrawer: Drawer(
-        child: SingleChildScrollView(
-          child: Column(children: [
+        backgroundColor: Color(0xFFFFF8E6),
+        child: Column(
+          children: [
             const DrawerHeader(
               child: Text(
-                'Cart',
+                'CART',
                 style: TextStyle(
-                  color: Colors.black,
+                  color: Colors.black87,
                   fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline,
+                  decorationColor: Colors.black87,
                 ),
               ),
             ),
-            ...List.generate(
-                cart.length,
-                (index) => Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30),
-                            color: const Color(0xff801924),
-                          ),
-                          height: 80,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: [
-                                const Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      "Name",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    Text(
-                                      "Qty",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                    Text(
-                                      "Price",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ],
-                                ),
-                                const Spacer(),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      cart[index].productName,
-                                      style: const TextStyle(color: Colors.white),
-                                    ),
-                                    Text(
-                                      cart[index].quantity.toString(),
-                                      style: const TextStyle(color: Colors.white),
-                                    ),
-                                    Text(
-                                      cart[index].price,
-                                      style: const TextStyle(color: Colors.white),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
+            if (cart.isEmpty) ...[
+              Image.network(
+                "https://i.ibb.co/k3qbGg9/empty-cart.png",
+                height: 100,
+                width: 50,
+              ),
+              Text("Your Cart is Empty!"),
+            ] else
+              if (cart.isNotEmpty) ...[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Name",
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    )),
-            SizedBox(
-              width: 100,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: const Color(0xff801924),
-                  onPrimary: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                      Text(
+                        "Quantity",
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        "Price",
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                  maximumSize: const Size(100, 50),
                 ),
-                onPressed: () async {
-                  var data = await SharedPreferences.getInstance();
-                  data.remove("cart");
-                  setState(() {
-                    cart = [];
-                  });
-                  // Add your onPressed logic here
-                },
-                child: const Text('Clear'),
-              ),
-            ),
-          ]),
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: cart.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Card(
+                      color: Color(0xff801924),
+                      elevation: 5,
+                      margin: const EdgeInsets.all(8.0),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                            // Expanded(
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                        Text(
+                            cart[index].productName,
+                            style: TextStyle(color: Colors.white,),
+                      ),
+                      Text(
+                        '${cart[index].quantity.toString()}kgs',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      Text(
+                        'Rs.${cart[index].price}',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      ],
+                    ),
+                    // ),
+
+                    GestureDetector(
+                    onTap: () {
+                    setState(() {
+                    cart.removeAt(index);
+                    });
+                    },
+                    child: Icon(Icons.delete,color: Colors.white,),
+                    ),
+                    ],
+                    ),
+                    ),
+                    );
+                  },
+                ),
+              ],
+          ],
         ),
       ),
+
       body: SingleChildScrollView(
         controller: _scrollController,
         child: Column(
@@ -233,7 +244,9 @@ class _homepageState extends State<homepage> {
                 return const SizedBox.shrink();
               }),
               options: CarouselOptions(
-                height: MediaQuery.sizeOf(context).height * 0.28,
+                height: MediaQuery
+                    .sizeOf(context)
+                    .height * 0.28,
                 enableInfiniteScroll: true,
                 autoPlay: true,
                 enlargeCenterPage: true,
@@ -328,10 +341,10 @@ class _homepageState extends State<homepage> {
                         for (int i = 0; i < filteredProducts.length; i += 2)
                           Row(
                             mainAxisAlignment:
-                                filteredProducts.length % 2 == 1 &&
-                                        i == filteredProducts.length - 1
-                                    ? MainAxisAlignment.center
-                                    : MainAxisAlignment.center,
+                            filteredProducts.length % 2 == 1 &&
+                                i == filteredProducts.length - 1
+                                ? MainAxisAlignment.center
+                                : MainAxisAlignment.center,
                             children: [
                               ProductCard(
                                 assetPath: filteredProducts[i].image,
@@ -343,7 +356,7 @@ class _homepageState extends State<homepage> {
                                 ProductCard(
                                   assetPath: filteredProducts[i + 1].image,
                                   price:
-                                      int.parse(filteredProducts[i + 1].price),
+                                  int.parse(filteredProducts[i + 1].price),
                                   productName: filteredProducts[i + 1].name,
                                   onTap: updateCart,
                                 ),

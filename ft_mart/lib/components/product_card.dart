@@ -2,14 +2,16 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 
+import '../model/product_model.dart';
+
 class ProductCard extends StatefulWidget {
-  ProductCard({
-    Key? key,
-    required this.assetPath,
-    required this.productName,
-    required this.price,
-    this.onTap
-  }) : super(key: key);
+  ProductCard(
+      {Key? key,
+      required this.assetPath,
+      required this.productName,
+      required this.price,
+      this.onTap})
+      : super(key: key);
 
   final String assetPath;
   final String productName;
@@ -22,6 +24,7 @@ class ProductCard extends StatefulWidget {
 
 class _ProductCardState extends State<ProductCard> {
   double selectedWeight = 1.0;
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -99,26 +102,57 @@ class _ProductCardState extends State<ProductCard> {
         setState(() {
           selectedWeight = value;
         });
+
+        // Calculate the price based on the selected weight
+        num calculatedPrice = value == 0.5 ? widget.price * 0.5 : widget.price;
+
+        // Add the item to the cart
+        if (widget.onTap != null) {
+          widget.onTap!(
+            widget.productName,
+            calculatedPrice.toString(),
+            selectedWeight,
+          );
+        }
       },
       itemBuilder: (BuildContext context) {
         return [1.0, 0.5].map((double choice) {
+          // Calculate the price for each choice
+          num calculatedPrice = choice == 0.5 ? widget.price * 0.5 : widget.price;
+
           return PopupMenuItem<double>(
             value: choice,
-            onTap: (){
-              if (widget.onTap != null){
-                widget.onTap!(widget.productName, widget.price.toString(), choice);
-              }
-            },
-            child: Text(
-              '$choice kg',
-              style: const TextStyle(
-                color: Color(0xFF63131C),
-                fontWeight: FontWeight.w600,
-                decoration: TextDecoration.underline,
-                decorationColor: Color(0xFF63131C),
-                fontSize: 15,
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: Color(0xFF63131C),
+                    width: 2.0,
+                  ),
+                ),
               ),
-            ), // Display the value as a string
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '$choice kg',
+                    style: TextStyle(
+                      color: Color(0xFF63131C),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
+                  // Displaying the calculated price
+                  Text(
+                    'Rs.${calculatedPrice.toString()}',
+                    style: TextStyle(
+                      color: Color(0xFF63131C),
+                      fontSize: 15,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           );
         }).toList();
       },
@@ -144,4 +178,6 @@ class _ProductCardState extends State<ProductCard> {
       ),
     );
   }
+
+
 }

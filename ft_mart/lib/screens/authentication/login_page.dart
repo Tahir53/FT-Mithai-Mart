@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:ftmithaimart/components/push_noti.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/src/material/icons.dart';
 import '../../dbHelper/mongodb.dart';
@@ -293,6 +294,7 @@ class _loginState extends State<login> {
                               Navigator.pushReplacement(context,
                                   MaterialPageRoute(
                                 builder: (context) {
+                                  // return HomeScreen();
                                   return homepage(
                                     name: "User",
                                   );
