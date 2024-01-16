@@ -62,7 +62,7 @@ class _homepageState extends State<homepage> {
     cart.add(Cart(productName: product, price: price, quantity: quantity));
     saveCartInSharedPrefence();
     setState(() {});
-    _scaffoldKey.currentState!.openEndDrawer();
+    // _scaffoldKey.currentState!.openEndDrawer();
   }
 
   @override
@@ -88,10 +88,22 @@ class _homepageState extends State<homepage> {
           ),
         ),
         actions: [
+          if (cart.isNotEmpty) GestureDetector(
+            onTap: () => _scaffoldKey.currentState!.openEndDrawer(),
+            child: Container(
+              width: 30,
+              height: 30,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle
+              ),
+              child: Center(child: Text(cart.length.toString(),style: const TextStyle(color: Color(0xff801924), fontWeight: FontWeight.bold),))
+            ),
+          ),
           Builder(
             builder: (context) =>
                 IconButton(
-                  icon: Icon(Icons.local_grocery_store_outlined),
+                  icon: const Icon(Icons.local_grocery_store_outlined),
                   onPressed: () {
                     Scaffold.of(context).openEndDrawer();
                   },
