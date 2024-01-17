@@ -8,6 +8,7 @@ import 'package:ftmithaimart/components/category_container.dart';
 import 'package:ftmithaimart/components/product_card.dart';
 import 'package:ftmithaimart/components/search_textfield.dart';
 import 'package:ftmithaimart/dbHelper/mongodb.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../components/drawer.dart';
 import '../../components/second_carousel_card.dart';
@@ -36,7 +37,7 @@ class _homepageState extends State<homepage> {
   String selectedCat = "Classic Sweets";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Cart> cart = [];
-  
+
   loadDataFromSharedPreference() async {
     var data = await SharedPreferences.getInstance();
     var cartData = data.getString("cart");
@@ -144,7 +145,7 @@ class _homepageState extends State<homepage> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
                       "Name",
@@ -175,6 +176,9 @@ class _homepageState extends State<homepage> {
                 itemCount: cart.length + 1,
                 itemBuilder: (BuildContext context, int index) {
                   if (index < cart.length) {
+                    final formattedQuantity =
+                        NumberFormat("#,##0.##").format(cart[index].quantity);
+
                     return Card(
                       color: Color(0xff801924),
                       elevation: 5,
@@ -182,30 +186,28 @@ class _homepageState extends State<homepage> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            // Expanded(
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  cart[index].productName,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
+                            Expanded(
+                              child: Text(
+                                cart[index].productName,
+                                style: TextStyle(
+                                  color: Colors.white,
                                 ),
-                                Text(
-                                  '${cart[index].quantity.toString()}kgs',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                Text(
-                                  'Rs.${cart[index].price}',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ],
+                              ),
                             ),
-                            // ),
-
+                            SizedBox(width: 40),
+                            Expanded(
+                              child: Text(
+                                '$formattedQuantity kgs',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            Text(
+                              'Rs.${cart[index].price}',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            SizedBox(width: 10),
                             GestureDetector(
                               onTap: () {
                                 setState(() {
@@ -224,15 +226,19 @@ class _homepageState extends State<homepage> {
                   } else {
                     double total = 0;
                     for (int i = 0; i < cart.length; i++) {
-                      total += double.parse(cart[i].price.replaceFirst("Rs.", "").trim());
+                      total += double.parse(
+                          cart[i].price.replaceFirst("Rs.", "").trim());
                     }
+                    final formattedTotal =
+                        NumberFormat("#,##0.00").format(total);
+
                     return Card(
                       semanticContainer: false,
                       shadowColor: Colors.black,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
-                      color: const Color(0xff801924), 
+                      color: const Color(0xffffC937),
                       elevation: 10,
                       margin: const EdgeInsets.all(8.0),
                       child: Padding(
@@ -247,7 +253,7 @@ class _homepageState extends State<homepage> {
                                   fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              'Rs.${total.toString()}', 
+                              'Rs.$formattedTotal',
                               style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold),

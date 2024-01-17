@@ -3,6 +3,7 @@ import 'package:ftmithaimart/components/complaint_box.dart';
 import 'package:provider/provider.dart';
 
 import '../main.dart';
+import '../model/cart_model.dart';
 import '../screens/authentication/login_page.dart';
 import '../screens/homepage/about_us.dart';
 import '../screens/homepage/home_page.dart';
@@ -48,11 +49,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                   )),
-              onTap: () {
-                Navigator.pushReplacement(
+              onTap: () async {
+                final result = await Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => homepage(name: "User")));
+                        builder: (context) => homepage(name: widget.name)));
 
                 // Navigate to the home page
               },

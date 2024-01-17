@@ -1,7 +1,7 @@
 class Cart {
   final String productName;
   final String price;
-  final double quantity;
+  late final double quantity;
 
   Cart({
     required this.productName,

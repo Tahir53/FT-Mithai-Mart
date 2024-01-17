@@ -7,7 +7,10 @@ import '../model/customer_model.dart';
 import '../model/product_model.dart';
 
 class MongoDatabase {
-  static var db, userCollection, complainCollection, productsCollection,
+  static var db,
+      userCollection,
+      complainCollection,
+      productsCollection,
       cartCollection;
 
   static connect() async {
@@ -34,8 +37,8 @@ class MongoDatabase {
     return "";
   }
 
-  static Future<Map<String, dynamic>> getData(String email,
-      String password) async {
+  static Future<Map<String, dynamic>> getData(
+      String email, String password) async {
     print("getdata() called in mongodb");
     final arrData = await userCollection.findOne({"email": email});
     // print(arrData);
@@ -60,7 +63,7 @@ class MongoDatabase {
 
   static Future<List<Complaint>> getComplaints() async {
     List<Map<String, dynamic>> dataList =
-    await complainCollection.find().toList();
+        await complainCollection.find().toList();
     List<Complaint> complaints = [];
     for (var data in dataList) {
       complaints.add(Complaint(
@@ -75,9 +78,9 @@ class MongoDatabase {
 
   static Future<List<Product>> getProducts() async {
     final List<Map<String, dynamic>> productsData =
-    await productsCollection.find().toList();
+        await productsCollection.find().toList();
     final List<Product> products =
-    productsData.map((data) => Product.fromJson(data)).toList();
+        productsData.map((data) => Product.fromJson(data)).toList();
     print(products.first.id);
     return products;
   }
@@ -116,4 +119,20 @@ class MongoDatabase {
       print('Error adding to cart: $e');
     }
   }
+
+  static Future<List<Map<String, Object?>>> searchProducts(String query) async {
+    await db.open();
+
+    final DbCollection products = db.collection('products');
+    final cursor = await products
+        .find(where.match('productName', query, caseInsensitive: true));
+
+    final List<Map<String, Object?>> results = await cursor.toList();
+
+    print('Search Query: $query');
+    print('Results: $results');
+
+    return results;
+  }
+
 }

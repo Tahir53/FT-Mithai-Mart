@@ -1,6 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:ftmithaimart/dbHelper/mongodb.dart';
 
-class SearchTextField extends StatelessWidget {
+class SearchTextField extends StatefulWidget {
+  @override
+  _SearchTextFieldState createState() => _SearchTextFieldState();
+}
+
+class _SearchTextFieldState extends State<SearchTextField> {
+  final TextEditingController _controller = TextEditingController();
+  List<Map<String, Object?>> _searchResults = [];
+
+  Future<void> _searchProducts(String query) async {
+    final List<Map<String, Object?>> results = await MongoDatabase.searchProducts(query);
+    print('Original Query: $query');
+    // Use the results as needed
+    print(results);
+
+    // Optionally, you can assign the results to the _searchResults
+    setState(() {
+      _searchResults = results;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +34,10 @@ class SearchTextField extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 15),
           child: TextField(
-            onChanged: (a) {},
+            controller: _controller,
+            onChanged: (query) {
+              _searchProducts(query);
+            },
             style: TextStyle(
               fontFamily: 'Montserrat',
             ),
