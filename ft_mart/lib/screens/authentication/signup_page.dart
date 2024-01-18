@@ -12,10 +12,7 @@ class signup extends StatefulWidget {
   State<signup> createState() => _signupState();
 }
 
-
 class _signupState extends State<signup> {
-
-
   void initState() {
     super.initState();
     emailController.addListener(validateEmail);
@@ -27,6 +24,7 @@ class _signupState extends State<signup> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController contactController = TextEditingController();
+  final TextEditingController questionController = TextEditingController();
   bool isloading = false;
   String errorMessage = "";
   final signupkey = GlobalKey<FormState>();
@@ -169,16 +167,14 @@ class _signupState extends State<signup> {
                       if (value == null || value.isEmpty) {
                         return "Please enter your email address";
                       }
-                      if (!RegExp(
-                              r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")
+                      if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")
                           .hasMatch(value)) {
                         return "Email not in correct format";
                       }
                       return null;
                     },
                     onChanged: (value) {
-                      if (!RegExp(
-                              r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")
+                      if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")
                           .hasMatch(value)) {
                         setState(() {
                           errorMessage = "Email not in correct format";
@@ -208,7 +204,6 @@ class _signupState extends State<signup> {
                     obscuringCharacter: '*',
                     decoration: InputDecoration(
                       hintText: "Password",
-
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -261,12 +256,45 @@ class _signupState extends State<signup> {
                     onChanged: (value) {
                       if (!RegExp(r'^\+92[0-9]{10}$').hasMatch(value)) {
                         setState(() {
-                          errorMessage = "Contact Number incomplete or not in correct format";
+                          errorMessage =
+                              "Contact Number incomplete or not in correct format";
                         });
                       } else {
                         setState(() {
                           errorMessage = "";
                         });
+                      }
+                    },
+                  ),
+                  Padding(padding: EdgeInsets.only(top: 15)),
+                  Row(
+                    children: [
+                      Text(
+                        "What is your Birthplace?",
+                        style: TextStyle(
+                          color: Color(0xff63131C),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                  TextFormField(
+                    controller: questionController,
+                    decoration: InputDecoration(
+                      hintText: "Security Question",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(width: 2, color: Color(0xff63131C)),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Please Answer this question"
+                            "";
                       }
                     },
                   ),
@@ -281,11 +309,13 @@ class _signupState extends State<signup> {
                         if (signupkey.currentState!.validate()) {
                           var id = M.ObjectId();
                           final data = CustomerModel(
-                              name:
-                                  "${firstNameController.text} ${lastNameController.text}",
-                              email: emailController.text,
-                              password: passwordController.text,
-                              contact: contactController.text);
+                            name:
+                                "${firstNameController.text} ${lastNameController.text}",
+                            email: emailController.text,
+                            password: passwordController.text,
+                            contact: contactController.text,
+                            question: questionController.text,
+                          );
 
                           var result = await MongoDatabase.insert(data);
                           showSuccessMessage();
@@ -338,8 +368,7 @@ class _signupState extends State<signup> {
       setState(() {
         errorMessage = "Email can not be empty";
       });
-    } else if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$")
-        .hasMatch(val)) {
+    } else if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(val)) {
       setState(() {
         errorMessage = "Invalid Email Address";
       });

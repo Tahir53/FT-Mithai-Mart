@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ftmithaimart/components/admindrawer.dart';
-import 'package:ftmithaimart/screens/authentication/show_complaints.dart';
+import 'package:ftmithaimart/complaints/show_complaints.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ftmithaimart/dbHelper/mongodb.dart';
 

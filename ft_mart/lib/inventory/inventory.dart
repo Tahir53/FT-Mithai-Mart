@@ -87,12 +87,21 @@ class _inventoryState extends State<inventory> {
                   child: Card(
                     elevation: 5,
                     margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    child: ListTile(
-                      title: Text(product.name),
-                      subtitle: Text(
-                          'Price: Rs.${product.price}/kg | Stock: ${product.stock}kgs | Category: ${product.category}'),
-                      // leading:
-                      //     Image.network(product.image, width: 50, height: 50),
+                    child: Column(
+                      children: [
+                        Image.network(
+                          product.image,
+                          width: double.infinity, // Set the width to fill the card
+                          height: 150, // Set the desired height for the image
+                          fit: BoxFit.cover, // Adjust the image to cover the available space
+                        ),
+                        ListTile(
+                          title: Text(product.name),
+                          subtitle: Text(
+                              'Price: Rs.${product.price}/kg | Stock: ${product.stock}kgs | Category: ${product.category}'
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 );

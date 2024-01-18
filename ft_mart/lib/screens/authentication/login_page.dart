@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ftmithaimart/components/push_noti.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/src/material/icons.dart';
+import '../../components/forgot_password.dart';
 import '../../dbHelper/mongodb.dart';
 import '../homepage/admin_page.dart';
 import '../homepage/home_page.dart';
@@ -240,7 +241,9 @@ class _loginState extends State<login> {
                           ),
                           Padding(padding: EdgeInsets.all(10)),
                           TextButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              await ForgotPassword.showForgotPasswordDialog(context, EmailController);
+                            },
                             child: const Text(
                               "Forgot Password?",
                               style: TextStyle(
@@ -291,7 +294,7 @@ class _loginState extends State<login> {
                           ),
                           ElevatedButton.icon(
                             onPressed: () {
-                              Navigator.pushReplacement(context,
+                              Navigator.push(context,
                                   MaterialPageRoute(
                                 builder: (context) {
                                   // return HomeScreen();

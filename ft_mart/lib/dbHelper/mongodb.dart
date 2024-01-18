@@ -23,6 +23,28 @@ class MongoDatabase {
     cartCollection = db.collection('cart');
   }
 
+  static Future<bool> validateSecurityAnswer(String email, String securityAnswer) async {
+    try {
+
+      final result = await userCollection.findOne(
+        where.eq('email', email).eq('question', securityAnswer.trim()),
+      );
+
+      return result != null;
+    } catch (e) {
+      print("Error in validateSecurityAnswer: $e");
+      return false;
+    }
+  }
+
+  static Future<void> changePassword(String email, String newPassword) async {
+    // Update the user's password
+    await userCollection.update(
+      where.eq('email', email),
+      modify.set('password', newPassword), // Assuming you have a function to hash passwords
+    );
+  }
+
   static Future<String> insert(CustomerModel customer) async {
     try {
       var result = await userCollection.insertOne(customer.toJson());
@@ -67,6 +89,7 @@ class MongoDatabase {
     List<Complaint> complaints = [];
     for (var data in dataList) {
       complaints.add(Complaint(
+        id: data["_id"],
         name: data["name"],
         email: data["email"],
         contact: data["contact"],
@@ -74,6 +97,12 @@ class MongoDatabase {
       ));
     }
     return complaints;
+  }
+
+  static Future<void> deleteComplaint(String complaintid) async {
+    print('Deleting complaint with ID: $complaintid');
+    await db.collection('complaints').remove(where.id(ObjectId.parse(complaintid)));
+    print('Complaint deleted successfully.');
   }
 
   static Future<List<Product>> getProducts() async {
@@ -121,16 +150,12 @@ class MongoDatabase {
   }
 
   static Future<List<Map<String, Object?>>> searchProducts(String query) async {
-    await db.open();
 
     final DbCollection products = db.collection('products');
     final cursor = await products
-        .find(where.match('productName', query, caseInsensitive: true));
+        .find(where.match('name', query, caseInsensitive: true));
 
     final List<Map<String, Object?>> results = await cursor.toList();
-
-    print('Search Query: $query');
-    print('Results: $results');
 
     return results;
   }
