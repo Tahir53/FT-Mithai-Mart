@@ -101,7 +101,7 @@ class _homepageState extends State<homepage> {
           child: Image.asset(
             "assets/Logo.png",
             width: 50,
-            height: 50,
+            height: 50
             // alignment: Alignment.center,
           ),
         ),
