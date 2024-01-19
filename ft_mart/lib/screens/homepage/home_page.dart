@@ -74,6 +74,7 @@ class _homepageState extends State<homepage> {
       _searchResults = result;
     });
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -324,16 +325,14 @@ class _homepageState extends State<homepage> {
                             itemCount: _searchResults.length,
                             itemBuilder: (context, index) {
                               final result = _searchResults[index];
-                              return InkWell(
-                                  onTap: () {
-
-                                  },
-
-                              child: Card(
-                                color: Color(0xFF63131C),
+                              return Container(
+                                padding: EdgeInsets.all(8.0),
+                                width: 300,
+                                // height: 200,
                                 margin: EdgeInsets.symmetric(
                                     vertical: 10, horizontal: 10),
-                                shape: RoundedRectangleBorder(
+                                decoration: BoxDecoration(
+                                  color: Color(0xFF63131C),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Padding(
@@ -373,32 +372,22 @@ class _homepageState extends State<homepage> {
                                                   fontSize: 14,
                                                 ),
                                               ),
-                                              SizedBox(height: 20,),
-                                              Text(
-                                                'Tap For Description',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 14,
-                                                ),
-                                              ),
                                             ],
                                           ),
                                           Row(
                                             children: [
                                               Image.network(
-                                                result['image'],
+                                                result['image'] ?? "",
                                                 width: 80,
                                                 height: 100,
                                               ),
-                                              SizedBox(width: 10),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
                                               Padding(
                                                 padding: const EdgeInsets.only(
                                                     top: 15.0),
-                                                child: buildPopupMenuButton(
-                                                  result['name'].toString(),
-                                                  int.parse(result['price']),
-                                                  result['stock'],
-                                                ),
+                                                child: buildPopupMenuButton(result['name'].toString(), int.parse(result['price']), result['quantity']),
                                               ),
                                             ],
                                           ),
@@ -407,10 +396,9 @@ class _homepageState extends State<homepage> {
                                     ],
                                   ),
                                 ),
-                              )
                               );
                             },
-                          )
+                          ),
                         ],
                       )
                     : SizedBox.shrink(),
@@ -567,6 +555,9 @@ class _homepageState extends State<homepage> {
   }
 
   Widget buildPopupMenuButton(String product, int price, double quantity) {
+
+
+
     return PopupMenuButton<double>(
       color: Color(0xFFFFF8E6),
       onSelected: (value) {
@@ -602,6 +593,7 @@ class _homepageState extends State<homepage> {
                   ),
                   // Displaying the calculated price
                   Text(
+
                     'Rs.${calculatedPrice.toString()}',
                     style: const TextStyle(
                       color: Color(0xFF63131C),
