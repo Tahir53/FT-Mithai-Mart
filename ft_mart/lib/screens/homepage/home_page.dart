@@ -387,7 +387,7 @@ class _homepageState extends State<homepage> {
                                               Padding(
                                                 padding: const EdgeInsets.only(
                                                     top: 15.0),
-                                                child: buildPopupMenuButton(result['name'].toString(), int.parse(result['price']), result['quantity']),
+                                                child: buildPopupMenuButton(result['name'].toString(), int.parse(result['price'])),
                                               ),
                                             ],
                                           ),
@@ -554,15 +554,13 @@ class _homepageState extends State<homepage> {
     );
   }
 
-  Widget buildPopupMenuButton(String product, int price, double quantity) {
-
-
+  Widget buildPopupMenuButton(String product, int price) {
 
     return PopupMenuButton<double>(
       color: Color(0xFFFFF8E6),
       onSelected: (value) {
         num calculatedPrice = value == 0.5 ? price * 0.5 : price;
-        updateCart(product, price.toString(), quantity);
+        updateCart(product, price.toString(), value);
       },
       itemBuilder: (BuildContext context) {
         return [1.0, 0.5].map((double choice) {
