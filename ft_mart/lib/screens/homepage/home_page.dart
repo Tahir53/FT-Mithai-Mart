@@ -332,80 +332,95 @@ class _homepageState extends State<homepage> {
                             itemCount: _searchResults.length,
                             itemBuilder: (context, index) {
                               final result = _searchResults[index];
-                              return Container(
-                                padding: EdgeInsets.all(8.0),
-                                width: 300,
-                                // height: 200,
-                                margin: EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 10),
-                                decoration: BoxDecoration(
-                                  color: Color(0xFF63131C),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Column(
-                                    crossAxisAlignment:
+                              return InkWell(
+                                  onTap: () {
+
+                                  },
+
+                                  child: Card(
+                                    color: Color(0xFF63131C),
+                                    margin: EdgeInsets.symmetric(
+                                        vertical: 10, horizontal: 10),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: Column(
+                                        crossAxisAlignment:
                                         CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                result['name'] ?? '',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              SizedBox(height: 10),
-                                              Text(
-                                                'Category: ${result['category']}',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 14,
-                                                ),
-                                              ),
-                                              Text(
-                                                'Price: Rs.${result['price']}/kg',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 14,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
                                           Row(
+                                            mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Image.network(
-                                                result['image'] ?? "",
-                                                width: 80,
-                                                height: 100,
+                                              Column(
+                                                crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    result['name'] ?? '',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 18,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 10),
+                                                  Text(
+                                                    'Category: ${result['category']}',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    'Price: Rs.${result['price']}/kg',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 20,),
+                                                  Text(
+                                                    'Tap For Description',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 15.0),
-                                                child: buildPopupMenuButton(result['name'].toString(), int.parse(result['price']),result['stock']),
+                                              Row(
+                                                children: [
+                                                  Image.network(
+                                                    result['image'],
+                                                    width: 80,
+                                                    height: 100,
+                                                  ),
+                                                  SizedBox(width: 10),
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(
+                                                        top: 15.0),
+                                                    child: buildPopupMenuButton(
+                                                      result['name'].toString(),
+                                                      int.parse(result['price']),
+                                                      result['stock'],
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),
                                         ],
                                       ),
-                                    ],
-                                  ),
-                                ),
+                                    ),
+                                  )
                               );
                             },
-                          ),
+                          )
+
+
                         ],
                       )
                     : SizedBox.shrink(),
