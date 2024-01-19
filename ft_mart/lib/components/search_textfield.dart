@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:ftmithaimart/dbHelper/mongodb.dart';
 
 class SearchTextField extends StatefulWidget {
+  
+  final Function(List)? onChanged;
+  final TextEditingController controller;
+
+  SearchTextField({this.onChanged, required this.controller});
+  
   @override
   _SearchTextFieldState createState() => _SearchTextFieldState();
 }
@@ -10,7 +16,7 @@ class _SearchTextFieldState extends State<SearchTextField> {
   final TextEditingController _controller = TextEditingController();
   List<Map<String, Object?>> _searchResults = [];
 
-  Future<void> _searchProducts(String query) async {
+  Future<List> _searchProducts(String query) async {
     final List<Map<String, Object?>> results = await MongoDatabase.searchProducts(query);
     print('Original Query: $query');
     // Use the results as needed
@@ -20,6 +26,7 @@ class _SearchTextFieldState extends State<SearchTextField> {
     setState(() {
       _searchResults = results;
     });
+    return results;
   }
 
   @override
@@ -34,9 +41,9 @@ class _SearchTextFieldState extends State<SearchTextField> {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 15),
           child: TextField(
-            controller: _controller,
-            onChanged: (query) {
-              _searchProducts(query);
+            controller: widget.controller,
+            onChanged: (query) async {
+             widget.onChanged != null ? widget.onChanged!(await _searchProducts(query)): _searchProducts(query);  
             },
             style: TextStyle(
               fontFamily: 'Montserrat',
@@ -46,10 +53,19 @@ class _SearchTextFieldState extends State<SearchTextField> {
               hintStyle: TextStyle(
                 color: Color(0xFF6B4F02),
               ),
-              suffixIcon: Icon(
+              suffixIcon: widget.controller!.text.isEmpty ? Icon(
                 Icons.search,
                 color: Color(0xFF6B4F02),
-              ),
+              ) : GestureDetector(
+                onTap: (){
+                  widget.controller!.text = "";
+                  widget.onChanged != null ? widget.onChanged!([]): _searchProducts("");
+                },
+                child: Icon(
+                  Icons.clear,
+                  color: Color(0xFF6B4F02),
+                ),
+              ) ,
               border: InputBorder.none,
             ),
           ),

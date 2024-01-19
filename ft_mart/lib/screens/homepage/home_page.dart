@@ -37,6 +37,8 @@ class _homepageState extends State<homepage> {
   String selectedCat = "Classic Sweets";
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Cart> cart = [];
+  List _searchResults = [];
+  final TextEditingController searchController = TextEditingController();
 
   loadDataFromSharedPreference() async {
     var data = await SharedPreferences.getInstance();
@@ -66,6 +68,15 @@ class _homepageState extends State<homepage> {
     setState(() {});
     // _scaffoldKey.currentState!.openEndDrawer();
   }
+
+  void getSearchResults(List result) {
+    print("getSearchResults called");
+    print(result);
+    setState(() {
+      _searchResults = result;
+    });
+  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -269,177 +280,361 @@ class _homepageState extends State<homepage> {
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        controller: _scrollController,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(
-              height: 20,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 15.0, bottom: 10),
-              child: Text(
-                "Welcome, ${widget.name}!",
-                style: const TextStyle(
-                  color: Color(0xFF63131C),
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
+      body: ListView(
+        children: [
+          SingleChildScrollView(
+            controller: _scrollController,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(
+                  height: 20,
                 ),
-              ),
-            ),
-            SearchTextField(),
-            const SizedBox(
-              height: 20,
-            ),
-            FlutterCarousel.builder(
-              itemCount: 2,
-              itemBuilder: ((context, index, realIndex) {
-                if (index == 0) {
-                  return FirstCarouselCard(
-                    scrollController: _scrollController,
-                  );
-                } else if (index == 1) {
-                  return SecondCarouselCard();
-                }
-                return const SizedBox.shrink();
-              }),
-              options: CarouselOptions(
-                height: MediaQuery.sizeOf(context).height * 0.28,
-                enableInfiniteScroll: true,
-                autoPlay: true,
-                enlargeCenterPage: true,
-                autoPlayCurve: Curves.bounceInOut,
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedCat = "Classic Sweets";
-                          });
-                        },
-                        child: CategoryContainer(
-                            categoryName: "Classic Sweets",
-                            selected: selectedCat == "Classic Sweets")),
-                    const SizedBox(
-                      width: 5,
+                Padding(
+                  padding: const EdgeInsets.only(left: 15.0, bottom: 10),
+                  child: Text(
+                    "Welcome, ${widget.name}!",
+                    style: const TextStyle(
+                      color: Color(0xFF63131C),
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
                     ),
-                    GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedCat = "Halwa Jaat";
-                          });
-                        },
-                        child: CategoryContainer(
-                            categoryName: "Halwa Jaat",
-                            selected: selectedCat == "Halwa Jaat")),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    GestureDetector(
-                        onTap: () {
-                          selectedCat = "Malai Khaja";
-                          setState(() {});
-                        },
-                        child: CategoryContainer(
-                            categoryName: "Malai Khaja",
-                            selected: selectedCat == "Malai Khaja")),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            const Padding(
-              padding: EdgeInsets.only(right: 15),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  "See All",
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    decoration: TextDecoration.underline,
                   ),
-                  textAlign: TextAlign.right,
                 ),
+                SearchTextField(
+                  onChanged: getSearchResults,
+                  controller: searchController,
+                ),
+                (_searchResults.isNotEmpty && searchController.text.isNotEmpty)
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 20),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 15),
+                            child: Text(
+                              'Search Results:',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF63131C),
+                              ),
+                            ),
+                          ),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: _searchResults.length,
+                            itemBuilder: (context, index) {
+                              final result = _searchResults[index];
+                              return Container(
+                                padding: EdgeInsets.all(8.0),
+                                width: 300,
+                                // height: 200,
+                                margin: EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 10),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFF63131C),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                result['name'] ?? '',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              SizedBox(height: 10),
+                                              Text(
+                                                'Quantity: ${result['quantity']}',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                              Text(
+                                                'Category: ${result['category']}',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                              Text(
+                                                'Stock: ${result['stock']}',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Image.network(
+                                                result['image'] ?? "",
+                                                width: 100,
+                                                height: 100,
+                                              ),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 15.0),
+                                                child: buildPopupMenuButton(result['name'].toString(), int.parse(result['price']), result['stock']),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      )
+                    : SizedBox.shrink(),
+              ],
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          FlutterCarousel.builder(
+            itemCount: 2,
+            itemBuilder: ((context, index, realIndex) {
+              if (index == 0) {
+                return FirstCarouselCard(
+                  scrollController: _scrollController,
+                );
+              } else if (index == 1) {
+                return SecondCarouselCard();
+              }
+              return const SizedBox.shrink();
+            }),
+            options: CarouselOptions(
+              height: MediaQuery.sizeOf(context).height * 0.28,
+              enableInfiniteScroll: true,
+              autoPlay: true,
+              enlargeCenterPage: true,
+              autoPlayCurve: Curves.bounceInOut,
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedCat = "Classic Sweets";
+                        });
+                      },
+                      child: CategoryContainer(
+                          categoryName: "Classic Sweets",
+                          selected: selectedCat == "Classic Sweets")),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedCat = "Halwa Jaat";
+                        });
+                      },
+                      child: CategoryContainer(
+                          categoryName: "Halwa Jaat",
+                          selected: selectedCat == "Halwa Jaat")),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  GestureDetector(
+                      onTap: () {
+                        selectedCat = "Malai Khaja";
+                        setState(() {});
+                      },
+                      child: CategoryContainer(
+                          categoryName: "Malai Khaja",
+                          selected: selectedCat == "Malai Khaja")),
+                ],
               ),
             ),
-            const SizedBox(
-              height: 20,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          const Padding(
+            padding: EdgeInsets.only(right: 15),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                "See All",
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  decoration: TextDecoration.underline,
+                ),
+                textAlign: TextAlign.right,
+              ),
             ),
-            FutureBuilder<List<Product>>(
-              future: MongoDatabase.getProducts(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF63131C)),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error fetching data: ${snapshot.error}'),
-                  );
-                } else {
-                  List<Product> products = snapshot.data!;
-                  List<Product> filteredProducts = products
-                      .where((product) => product.category == selectedCat)
-                      .toList();
-                  return SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        for (int i = 0; i < filteredProducts.length; i += 2)
-                          Row(
-                            mainAxisAlignment:
-                                filteredProducts.length % 2 == 1 &&
-                                        i == filteredProducts.length - 1
-                                    ? MainAxisAlignment.center
-                                    : MainAxisAlignment.center,
-                            children: [
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          FutureBuilder<List<Product>>(
+            future: MongoDatabase.getProducts(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(color: Color(0xFF63131C)),
+                );
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text('Error fetching data: ${snapshot.error}'),
+                );
+              } else {
+                List<Product> products = snapshot.data!;
+                List<Product> filteredProducts = products
+                    .where((product) => product.category == selectedCat)
+                    .toList();
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      for (int i = 0; i < filteredProducts.length; i += 2)
+                        Row(
+                          mainAxisAlignment: filteredProducts.length % 2 == 1 &&
+                                  i == filteredProducts.length - 1
+                              ? MainAxisAlignment.center
+                              : MainAxisAlignment.center,
+                          children: [
+                            ProductCard(
+                              assetPath: filteredProducts[i].image,
+                              price: int.parse(filteredProducts[i].price),
+                              productName: filteredProducts[i].name,
+                              onTap: updateCart,
+                            ),
+                            if (i + 1 < filteredProducts.length)
                               ProductCard(
-                                assetPath: filteredProducts[i].image,
-                                price: int.parse(filteredProducts[i].price),
-                                productName: filteredProducts[i].name,
+                                assetPath: filteredProducts[i + 1].image,
+                                price: int.parse(filteredProducts[i + 1].price),
+                                productName: filteredProducts[i + 1].name,
                                 onTap: updateCart,
                               ),
-                              if (i + 1 < filteredProducts.length)
-                                ProductCard(
-                                  assetPath: filteredProducts[i + 1].image,
-                                  price:
-                                      int.parse(filteredProducts[i + 1].price),
-                                  productName: filteredProducts[i + 1].name,
-                                  onTap: updateCart,
-                                ),
-                              if (i + 1 >= filteredProducts.length)
-                                const SizedBox(
-                                  width: 180,
-                                  height: 280,
-                                )
-                            ],
-                          ),
-                      ],
-                    ),
-                  );
-                }
-              },
-            ),
-            const SizedBox(
-              height: 20,
-            )
-          ],
-        ),
+                            if (i + 1 >= filteredProducts.length)
+                              const SizedBox(
+                                width: 180,
+                                height: 280,
+                              )
+                          ],
+                        ),
+                    ],
+                  ),
+                );
+              }
+            },
+          ),
+          const SizedBox(
+            height: 20,
+          )
+        ],
       ),
     );
   }
 
+  Widget buildPopupMenuButton(String product, int price, double quantity) {
 
+    
+
+    return PopupMenuButton<double>(
+      color: Color(0xFFFFF8E6),
+      onSelected: (value) {
+        num calculatedPrice = value == 0.5 ? price * 0.5 : price;
+        updateCart(product, price.toString(), quantity);
+      },
+      itemBuilder: (BuildContext context) {
+        return [1.0, 0.5].map((double choice) {
+          // Calculate the price for each choice
+          num calculatedPrice = choice == 0.5 ? price * 0.5 : price;
+
+          return PopupMenuItem<double>(
+            value: choice,
+            child: Container(
+              decoration: const BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: Color(0xFF63131C),
+                    width: 2.0,
+                  ),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '$choice kg',
+                    style: const TextStyle(
+                      color: Color(0xFF63131C),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
+                  // Displaying the calculated price
+                  Text(
+                    
+                    'Rs.${calculatedPrice.toString()}',
+                    style: const TextStyle(
+                      color: Color(0xFF63131C),
+                      fontSize: 15,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }).toList();
+      },
+      child: Column(
+        children: [
+          const Icon(
+            Icons.add_shopping_cart,
+            color: Colors.white,
+            size: 28,
+          ),
+          Container(
+            padding: const EdgeInsets.only(left: 7),
+            width: 40,
+            child: const Text(
+              'Add to Cart',
+              style: TextStyle(
+                fontSize: 8.0,
+                color: Color(0xFF212121),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
