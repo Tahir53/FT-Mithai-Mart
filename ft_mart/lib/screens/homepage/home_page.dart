@@ -41,10 +41,17 @@ class _homepageState extends State<homepage> {
   final TextEditingController searchController = TextEditingController();
 
   loadDataFromSharedPreference() async {
+    print("Loading Data from Shared Preference");
     var data = await SharedPreferences.getInstance();
     var cartData = data.getString("cart");
     if (cartData != null) {
-      cart = jsonDecode(cartData);
+      List temp = [];
+      temp = jsonDecode(cartData);
+      temp.map((e) => cart.add(e),);
+      setState(() {
+        
+      });
+      
     }
   }
 
