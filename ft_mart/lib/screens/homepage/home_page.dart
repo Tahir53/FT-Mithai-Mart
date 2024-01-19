@@ -70,8 +70,6 @@ class _homepageState extends State<homepage> {
   }
 
   void getSearchResults(List result) {
-    print("getSearchResults called");
-    print(result);
     setState(() {
       _searchResults = result;
     });
@@ -310,8 +308,8 @@ class _homepageState extends State<homepage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 20),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 15),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 15),
                             child: Text(
                               'Search Results:',
                               style: TextStyle(
@@ -361,13 +359,6 @@ class _homepageState extends State<homepage> {
                                               ),
                                               SizedBox(height: 10),
                                               Text(
-                                                'Quantity: ${result['quantity']}',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 14,
-                                                ),
-                                              ),
-                                              Text(
                                                 'Category: ${result['category']}',
                                                 style: TextStyle(
                                                   color: Colors.white,
@@ -375,7 +366,7 @@ class _homepageState extends State<homepage> {
                                                 ),
                                               ),
                                               Text(
-                                                'Stock: ${result['stock']}',
+                                                'Price: Rs.${result['price']}/kg',
                                                 style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 14,
@@ -387,7 +378,7 @@ class _homepageState extends State<homepage> {
                                             children: [
                                               Image.network(
                                                 result['image'] ?? "",
-                                                width: 100,
+                                                width: 80,
                                                 height: 100,
                                               ),
                                               SizedBox(
@@ -396,7 +387,7 @@ class _homepageState extends State<homepage> {
                                               Padding(
                                                 padding: const EdgeInsets.only(
                                                     top: 15.0),
-                                                child: buildPopupMenuButton(result['name'].toString(), int.parse(result['price']), result['stock']),
+                                                child: buildPopupMenuButton(result['name'].toString(), int.parse(result['price']), result['quantity']),
                                               ),
                                             ],
                                           ),
@@ -565,7 +556,7 @@ class _homepageState extends State<homepage> {
 
   Widget buildPopupMenuButton(String product, int price, double quantity) {
 
-    
+
 
     return PopupMenuButton<double>(
       color: Color(0xFFFFF8E6),
@@ -602,7 +593,7 @@ class _homepageState extends State<homepage> {
                   ),
                   // Displaying the calculated price
                   Text(
-                    
+
                     'Rs.${calculatedPrice.toString()}',
                     style: const TextStyle(
                       color: Color(0xFF63131C),
