@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:ftmithaimart/dbHelper/mongodb.dart';
+import 'package:ftmithaimart/model/cart_provider.dart';
 import 'package:ftmithaimart/push_notifications.dart';
+import 'package:provider/provider.dart';
 import 'components/message.dart';
 import 'screens/homepage/home_page.dart';
 import 'screens/authentication/login_page.dart';
@@ -65,7 +67,7 @@ void main() async {
 
 
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MainApp());
+  runApp(ChangeNotifierProvider(create: (context) => CartProvider(), child: const MainApp()));
 }
 
 class MainApp extends StatelessWidget {

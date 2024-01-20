@@ -3,12 +3,18 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
+import 'package:ftmithaimart/components/cart_item_tile.dart';
+import 'package:ftmithaimart/components/cart_sub_title.dart';
 import 'package:ftmithaimart/components/first_carousel_card.dart';
 import 'package:ftmithaimart/components/category_container.dart';
 import 'package:ftmithaimart/components/product_card.dart';
+import 'package:ftmithaimart/components/search_data_tile.dart';
 import 'package:ftmithaimart/components/search_textfield.dart';
+import 'package:ftmithaimart/components/total_card.dart';
 import 'package:ftmithaimart/dbHelper/mongodb.dart';
+import 'package:ftmithaimart/model/cart_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../components/drawer.dart';
 import '../../components/second_carousel_card.dart';
@@ -29,7 +35,6 @@ class homepage extends StatefulWidget {
 class _homepageState extends State<homepage> {
   void initState() {
     super.initState();
-    loadDataFromSharedPreference();
   }
 
   final ScrollController _scrollController = ScrollController();
@@ -40,29 +45,9 @@ class _homepageState extends State<homepage> {
   List _searchResults = [];
   final TextEditingController searchController = TextEditingController();
 
-  loadDataFromSharedPreference() async {
-    print("Loading Data from Shared Preference");
-    var data = await SharedPreferences.getInstance();
-    var cartData = data.getString("cart");
-    if (cartData != null) {
-      List temp = [];
-      temp = jsonDecode(cartData);
-      temp.map((e) => cart.add(e),);
-      setState(() {
-        
-      });
-      
-    }
-  }
-
   Future<String?> getData() async {
     var data = await SharedPreferences.getInstance();
     return data.getString("user");
-  }
-
-  saveCartInSharedPrefence() async {
-    var data = await SharedPreferences.getInstance();
-    data.setString("cart", jsonEncode(cart));
   }
 
   bool shouldShowProduct(Product product) {
@@ -70,10 +55,10 @@ class _homepageState extends State<homepage> {
   }
 
   void updateCart(String product, String price, double quantity) {
-    cart.add(Cart(productName: product, price: price, quantity: quantity));
-    saveCartInSharedPrefence();
+    print("updatecart");
+    Provider.of<CartProvider>(context, listen: false).addToCart(
+        Cart(productName: product, price: price, quantity: quantity));
     setState(() {});
-    // _scaffoldKey.currentState!.openEndDrawer();
   }
 
   void getSearchResults(List result) {
@@ -81,7 +66,6 @@ class _homepageState extends State<homepage> {
       _searchResults = result;
     });
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -98,29 +82,32 @@ class _homepageState extends State<homepage> {
         centerTitle: true,
         title: Padding(
           padding: const EdgeInsets.all(0.0),
-          child: Image.asset(
-            "assets/Logo.png",
-            width: 50,
-            height: 50
-            // alignment: Alignment.center,
-          ),
+          child: Image.asset("assets/Logo.png", width: 50, height: 50
+              // alignment: Alignment.center,
+              ),
         ),
         actions: [
-          if (cart.isNotEmpty)
-            GestureDetector(
-              onTap: () => _scaffoldKey.currentState!.openEndDrawer(),
-              child: Container(
-                  width: 30,
-                  height: 30,
-                  decoration: const BoxDecoration(
-                      color: Colors.white, shape: BoxShape.circle),
-                  child: Center(
-                      child: Text(
-                    cart.length.toString(),
-                    style: const TextStyle(
-                        color: Color(0xff801924), fontWeight: FontWeight.bold),
-                  ))),
-            ),
+          Consumer<CartProvider>(builder: (context, cartProvider, child) {
+            if (cartProvider.items.isNotEmpty) {
+              return GestureDetector(
+                onTap: () => _scaffoldKey.currentState!.openEndDrawer(),
+                child: Container(
+                    width: 30,
+                    height: 30,
+                    decoration: const BoxDecoration(
+                        color: Colors.white, shape: BoxShape.circle),
+                    child: Center(child: Builder(builder: (context) {
+                      return Text(
+                        cartProvider.items.length.toString(),
+                        style: const TextStyle(
+                            color: Color(0xff801924),
+                            fontWeight: FontWeight.bold),
+                      );
+                    }))),
+              );
+            }
+            return SizedBox();
+          }),
           Builder(
             builder: (context) => IconButton(
               icon: const Icon(Icons.local_grocery_store_outlined),
@@ -135,156 +122,68 @@ class _homepageState extends State<homepage> {
       drawer: CustomDrawer(
           name: widget.name, email: widget.email, contact: widget.contact),
       endDrawer: Drawer(
-        backgroundColor: Color(0xFFFFF8E6),
-        child: Column(
-          children: [
-            const DrawerHeader(
-              child: Text(
-                'CART',
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  decoration: TextDecoration.underline,
-                  decorationColor: Colors.black87,
+          backgroundColor: Color(0xFFFFF8E6),
+          child: Consumer<CartProvider>(builder: (context, cartProvider, child) {
+            return Column(
+              children: [
+                const DrawerHeader(
+                  child: Text(
+                    'CART',
+                    style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.underline,
+                      decorationColor: Colors.black87,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            if (cart.isEmpty) ...[
-              Image.network(
-                "https://i.ibb.co/k3qbGg9/empty-cart.png",
-                height: 100,
-                width: 50,
-              ),
-              Text("Your Cart is Empty!"),
-            ] else if (cart.isNotEmpty) ...[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text(
-                      "Name",
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      "Quantity",
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      "Price",
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: cart.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index < cart.length) {
-                    final formattedQuantity =
-                        NumberFormat("#,##0.##").format(cart[index].quantity);
+                if (cartProvider.items.isEmpty) ...[
+                  Image.network(
+                    "https://i.ibb.co/k3qbGg9/empty-cart.png",
+                    height: 100,
+                    width: 50,
+                  ),
+                  Text("Your Cart is Empty!"),
+                ] else if (cartProvider.items.isNotEmpty) ...[
+                  displayCartSubTitles(),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: cartProvider.items.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index < cartProvider.items.length) {
+                        final formattedQuantity = NumberFormat("#,##0.##")
+                            .format(cartProvider.items[index].quantity);
 
-                    return Card(
-                      color: Color(0xff801924),
-                      elevation: 5,
-                      margin: const EdgeInsets.all(8.0),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                cart[index].productName,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 40),
-                            Expanded(
-                              child: Text(
-                                '$formattedQuantity kgs',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                            Text(
-                              'Rs.${cart[index].price}',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            SizedBox(width: 10),
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  cart.removeAt(index);
-                                });
-                              },
-                              child: Icon(
-                                Icons.delete,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  } else {
-                    double total = 0;
-                    for (int i = 0; i < cart.length; i++) {
-                      total += double.parse(
-                          cart[i].price.replaceFirst("Rs.", "").trim());
-                    }
-                    final formattedTotal =
-                        NumberFormat("#,##0.00").format(total);
-
-                    return Card(
-                      semanticContainer: false,
-                      shadowColor: Colors.black,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      color: const Color(0xffffC937),
-                      elevation: 10,
-                      margin: const EdgeInsets.all(8.0),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Total:',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              'Rs.$formattedTotal',
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-                },
-              ),
-            ],
-          ],
-        ),
-      ),
+                        return CartItemTile(
+                          productName: cartProvider.items[index].productName,
+                          formattedQuantity: formattedQuantity,
+                          price: cartProvider.items[index].price,
+                          onTapDelete: () {
+                            setState(() {
+                              cartProvider
+                                  .removeFromCart(cartProvider.items[index]);
+                            });
+                          },
+                        );
+                      } else {
+                        double total = 0;
+                        for (int i = 0; i < cartProvider.items.length; i++) {
+                          total += double.parse(cartProvider.items[i].price
+                              .replaceFirst("Rs.", "")
+                              .trim());
+                        }
+                        final formattedTotal =
+                            NumberFormat("#,##0.00").format(total);
+                        
+                        return TotalCard(formattedTotal: formattedTotal);
+                      }
+                    },
+                  )
+                ],
+              ],
+            );
+          })),
       body: ListView(
         children: [
           SingleChildScrollView(
@@ -332,95 +231,16 @@ class _homepageState extends State<homepage> {
                             itemCount: _searchResults.length,
                             itemBuilder: (context, index) {
                               final result = _searchResults[index];
-                              return InkWell(
-                                  onTap: () {
-
-                                  },
-
-                                  child: Card(
-                                    color: Color(0xFF63131C),
-                                    margin: EdgeInsets.symmetric(
-                                        vertical: 10, horizontal: 10),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Column(
-                                                crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    result['name'] ?? '',
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 18,
-                                                      fontWeight: FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 10),
-                                                  Text(
-                                                    'Category: ${result['category']}',
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 14,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    'Price: Rs.${result['price']}/kg',
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 14,
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 20,),
-                                                  Text(
-                                                    'Tap For Description',
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 14,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Row(
-                                                children: [
-                                                  Image.network(
-                                                    result['image'],
-                                                    width: 80,
-                                                    height: 100,
-                                                  ),
-                                                  SizedBox(width: 10),
-                                                  Padding(
-                                                    padding: const EdgeInsets.only(
-                                                        top: 15.0),
-                                                    child: buildPopupMenuButton(
-                                                      result['name'].toString(),
-                                                      int.parse(result['price']),
-                                                      result['stock'],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                              );
+                              print(result);
+                              return SearchDataField(
+                                  name: result['name'],
+                                  category: result['category'],
+                                  price: result['price'].toString(),
+                                  image: result['image'],
+                                  stock: result['stock'],
+                                  onPopupMenuButtonPressed: updateCart);
                             },
                           )
-
-
                         ],
                       )
                     : SizedBox.shrink(),
@@ -571,81 +391,6 @@ class _homepageState extends State<homepage> {
           const SizedBox(
             height: 20,
           )
-        ],
-      ),
-    );
-  }
-
-  Widget buildPopupMenuButton(String product, int price, double quantity) {
-
-
-
-    return PopupMenuButton<double>(
-      color: Color(0xFFFFF8E6),
-      onSelected: (value) {
-        num calculatedPrice = value == 0.5 ? price * 0.5 : price;
-        updateCart(product, price.toString(), value);
-      },
-      itemBuilder: (BuildContext context) {
-        return [1.0, 0.5].map((double choice) {
-          // Calculate the price for each choice
-          num calculatedPrice = choice == 0.5 ? price * 0.5 : price;
-
-          return PopupMenuItem<double>(
-            value: choice,
-            child: Container(
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: Color(0xFF63131C),
-                    width: 2.0,
-                  ),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '$choice kg',
-                    style: const TextStyle(
-                      color: Color(0xFF63131C),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                    ),
-                  ),
-                  // Displaying the calculated price
-                  Text(
-
-                    'Rs.${calculatedPrice.toString()}',
-                    style: const TextStyle(
-                      color: Color(0xFF63131C),
-                      fontSize: 15,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }).toList();
-      },
-      child: Column(
-        children: [
-          const Icon(
-            Icons.add_shopping_cart,
-            color: Colors.white,
-            size: 28,
-          ),
-          Container(
-            padding: const EdgeInsets.only(left: 7),
-            width: 40,
-            child: const Text(
-              'Add to Cart',
-              style: TextStyle(
-                fontSize: 8.0,
-                color: Color(0xFF212121),
-              ),
-            ),
-          ),
         ],
       ),
     );
