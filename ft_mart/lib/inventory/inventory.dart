@@ -47,7 +47,8 @@ class _inventoryState extends State<inventory> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AdminAddProductScreen(onProductAdded: _refreshInventory),
+                    builder: (context) => AdminAddProductScreen(
+                        onProductAdded: _refreshInventory),
                   ));
             },
             icon: const Icon(Icons.add, color: Colors.white),
@@ -60,7 +61,7 @@ class _inventoryState extends State<inventory> {
         future: MongoDatabase.getProducts(),
         builder: (context, AsyncSnapshot<List<Product>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(color: Color(0xFF63131C)),
             );
           } else if (snapshot.hasError) {
@@ -75,7 +76,6 @@ class _inventoryState extends State<inventory> {
                 final Product product = products[index];
                 return InkWell(
                   onTap: () {
-                    // Show the update/delete dialog
                     ProductDialogs.showUpdateDeleteDialog(
                       context,
                       product,
@@ -91,15 +91,14 @@ class _inventoryState extends State<inventory> {
                       children: [
                         Image.network(
                           product.image,
-                          width: double.infinity, // Set the width to fill the card
-                          height: 150, // Set the desired height for the image
-                          fit: BoxFit.cover, // Adjust the image to cover the available space
+                          width: double.infinity,
+                          height: 150,
+                          fit: BoxFit.cover,
                         ),
                         ListTile(
                           title: Text(product.name),
                           subtitle: Text(
-                              'Price: Rs.${product.price}/kg | Stock: ${product.stock}kgs | Category: ${product.category}'
-                          ),
+                              'Price: Rs.${product.price}/kg | Stock: ${product.stock}kgs | Category: ${product.category}'),
                         ),
                       ],
                     ),
@@ -114,8 +113,8 @@ class _inventoryState extends State<inventory> {
   }
 
   void _refreshInventory() {
-    setState(()  {
-     MongoDatabase.getProducts();
+    setState(() {
+      MongoDatabase.getProducts();
     });
   }
 }

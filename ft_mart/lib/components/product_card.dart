@@ -1,8 +1,5 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
-
-import '../model/product_model.dart';
+import 'package:ftmithaimart/dbHelper/mongodb.dart';
 
 class ProductCard extends StatefulWidget {
   ProductCard(
@@ -21,6 +18,8 @@ class ProductCard extends StatefulWidget {
   @override
   State<ProductCard> createState() => _ProductCardState();
 }
+void initState(){
+}
 
 class _ProductCardState extends State<ProductCard> {
   double selectedWeight = 1.0;
@@ -35,9 +34,9 @@ class _ProductCardState extends State<ProductCard> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(
               10.0,
-            ), // Half of the width or height to make it circular
+            ),
           ),
-          color: const Color(0xFFFFF8E6), // Background color of the card
+          color: const Color(0xFFFFF8E6),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -67,7 +66,7 @@ class _ProductCardState extends State<ProductCard> {
                         style: const TextStyle(
                           fontSize: 16.0,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF212121), // Text color
+                          color: Color(0xFF212121),
                         ),
                       ),
                     ),
@@ -84,7 +83,7 @@ class _ProductCardState extends State<ProductCard> {
                   'Rs. ${widget.price.toString()}/kg',
                   style: const TextStyle(
                     fontSize: 14.0,
-                    color: Color(0xFF212121), // Text color
+                    color: Color(0xFF212121),
                   ),
                 ),
               ),
@@ -103,10 +102,9 @@ class _ProductCardState extends State<ProductCard> {
           selectedWeight = value;
         });
 
-        // Calculate the price based on the selected weight
         num calculatedPrice = value == 0.5 ? widget.price * 0.5 : widget.price;
 
-        // Add the item to the cart
+        // Adding the item to the cart
         if (widget.onTap != null) {
           widget.onTap!(
             widget.productName,
@@ -117,13 +115,14 @@ class _ProductCardState extends State<ProductCard> {
       },
       itemBuilder: (BuildContext context) {
         return [1.0, 0.5].map((double choice) {
-          // Calculate the price for each choice
-          num calculatedPrice = choice == 0.5 ? widget.price * 0.5 : widget.price;
+          // Calculating the price for each choice
+          num calculatedPrice =
+              choice == 0.5 ? widget.price * 0.5 : widget.price;
 
           return PopupMenuItem<double>(
             value: choice,
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
                     color: Color(0xFF63131C),
@@ -136,7 +135,7 @@ class _ProductCardState extends State<ProductCard> {
                 children: [
                   Text(
                     '$choice kg',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Color(0xFF63131C),
                       fontWeight: FontWeight.w600,
                       fontSize: 15,
@@ -145,7 +144,7 @@ class _ProductCardState extends State<ProductCard> {
                   // Displaying the calculated price
                   Text(
                     'Rs.${calculatedPrice.toString()}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Color(0xFF63131C),
                       fontSize: 15,
                     ),
@@ -178,6 +177,4 @@ class _ProductCardState extends State<ProductCard> {
       ),
     );
   }
-
-
 }

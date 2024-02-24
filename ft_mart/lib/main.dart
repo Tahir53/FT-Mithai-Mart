@@ -9,10 +9,8 @@ import 'components/message.dart';
 import 'screens/homepage/home_page.dart';
 import 'screens/authentication/login_page.dart';
 import '../splash_screen.dart';
-import 'package:http/http.dart' as http;
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -64,10 +62,8 @@ void main() async {
     });
   }
 
-
-
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(ChangeNotifierProvider(create: (context) => CartProvider(), child: const MainApp()));
+  runApp(ChangeNotifierProvider(
+      create: (context) => CartProvider(), child: const MainApp()));
 }
 
 class MainApp extends StatelessWidget {
@@ -85,6 +81,7 @@ class MainApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white,
         fontFamily: 'Montserrat',
       ),
       title: "F.T MithaiMart",

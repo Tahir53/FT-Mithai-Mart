@@ -7,7 +7,12 @@ class Complaint {
   late String contact;
   late String description;
 
-  Complaint({this.id, required this.name, required this.email, required this.contact, required this.description});
+  Complaint(
+      {this.id,
+      required this.name,
+      required this.email,
+      required this.contact,
+      required this.description});
 
   factory Complaint.fromJson(Map<String, dynamic> json) {
     return Complaint(

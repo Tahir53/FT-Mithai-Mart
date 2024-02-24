@@ -16,7 +16,7 @@ class SecondCarouselCard extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16.0),
         child: Image.network(
-          'https://i.ibb.co/T4mG6kN/mithai-sweets-eid-celebration-photography-260nw-2279282763.jpg', // Replace with your image URL
+          'https://i.ibb.co/T4mG6kN/mithai-sweets-eid-celebration-photography-260nw-2279282763.jpg',
           fit: BoxFit.cover,
         ),
       ),

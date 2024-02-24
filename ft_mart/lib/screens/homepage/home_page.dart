@@ -1,6 +1,4 @@
-import 'dart:convert';
-import 'dart:ffi';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:ftmithaimart/components/cart_item_tile.dart';
@@ -20,6 +18,7 @@ import '../../components/drawer.dart';
 import '../../components/second_carousel_card.dart';
 import '../../model/cart_model.dart';
 import '../../model/product_model.dart';
+import '../checkout_screen.dart';
 
 class homepage extends StatefulWidget {
   final String name;
@@ -35,6 +34,7 @@ class homepage extends StatefulWidget {
 class _homepageState extends State<homepage> {
   void initState() {
     super.initState();
+    MongoDatabase.getProducts();
   }
 
   final ScrollController _scrollController = ScrollController();
@@ -123,71 +123,140 @@ class _homepageState extends State<homepage> {
           name: widget.name, email: widget.email, contact: widget.contact),
       endDrawer: Drawer(
           backgroundColor: Color(0xFFFFF8E6),
-          child: Consumer<CartProvider>(builder: (context, cartProvider, child) {
-            return Column(
-              children: [
-                const DrawerHeader(
-                  child: Text(
-                    'CART',
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.underline,
-                      decorationColor: Colors.black87,
+          child:
+              Consumer<CartProvider>(builder: (context, cartProvider, child) {
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  const DrawerHeader(
+                    child: Text(
+                      'CART',
+                      style: TextStyle(
+                        color: Colors.black87,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                        decorationColor: Colors.black87,
+                      ),
                     ),
                   ),
-                ),
-                if (cartProvider.items.isEmpty) ...[
-                  Image.network(
-                    "https://i.ibb.co/k3qbGg9/empty-cart.png",
-                    height: 100,
-                    width: 50,
-                  ),
-                  Text("Your Cart is Empty!"),
-                ] else if (cartProvider.items.isNotEmpty) ...[
-                  displayCartSubTitles(),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: cartProvider.items.length + 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index < cartProvider.items.length) {
-                        final formattedQuantity = NumberFormat("#,##0.##")
-                            .format(cartProvider.items[index].quantity);
+                  if (cartProvider.items.isEmpty) ...[
+                    Image.network(
+                      "https://i.ibb.co/k3qbGg9/empty-cart.png",
+                      height: 100,
+                      width: 50,
+                    ),
+                    Text("Your Cart is Empty!"),
+                  ] else if (cartProvider.items.isNotEmpty) ...[
+                    displayCartSubTitles(),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: cartProvider.items.length + 1,
+                      itemBuilder: (BuildContext context, int index) {
+                        if (index < cartProvider.items.length) {
+                          final formattedQuantity = NumberFormat("#,##0.##")
+                              .format(cartProvider.items[index].quantity);
 
-                        return CartItemTile(
-                          productName: cartProvider.items[index].productName,
-                          formattedQuantity: formattedQuantity,
-                          price: cartProvider.items[index].price,
-                          onTapDelete: () {
-                            setState(() {
-                              cartProvider
-                                  .removeFromCart(cartProvider.items[index]);
-                            });
-                          },
-                        );
-                      } else {
-                        double total = 0;
-                        for (int i = 0; i < cartProvider.items.length; i++) {
-                          total += double.parse(cartProvider.items[i].price
-                              .replaceFirst("Rs.", "")
-                              .trim());
+                          return CartItemTile(
+                            productName: cartProvider.items[index].productName,
+                            formattedQuantity: formattedQuantity,
+                            price: cartProvider.items[index].price,
+                            onTapDelete: () {
+                              setState(() {
+                                cartProvider
+                                    .removeFromCart(cartProvider.items[index]);
+                              });
+                            },
+                          );
+                        } else {
+                          double total = 0;
+                          for (int i = 0; i < cartProvider.items.length; i++) {
+                            total += double.parse(cartProvider.items[i].price
+                                .replaceFirst("Rs.", "")
+                                .trim());
+                          }
+                          final formattedTotal =
+                              NumberFormat("#,##0.00").format(total);
+
+                          return TotalCard(formattedTotal: formattedTotal);
                         }
-                        final formattedTotal =
-                            NumberFormat("#,##0.00").format(total);
-                        
-                        return TotalCard(formattedTotal: formattedTotal);
-                      }
-                    },
-                  )
+                      },
+                    ),
+                    Padding(padding: EdgeInsets.only(top: 40)),
+                    Container(
+                      child: Column(
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: () {},
+                            icon: const Icon(
+                              Icons.dashboard_customize_outlined,
+                              size: 24.0,
+                              color: Colors.black,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xffffC937),
+                                fixedSize: Size(270, 55),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                )),
+                            label: const Text(
+                              "Customize Your Boxes",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          Padding(padding: EdgeInsets.only(top: 20)),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CheckoutScreen(
+                                    cartItems: cartProvider.items,
+                                    // Pass the list of Cart items
+                                    totalAmount:
+                                        calculateTotal(cartProvider.items),
+                                  ),
+                                ),
+                              );
+                            },
+                            icon: Icon(
+                              Icons.shopping_cart_checkout,
+                              size: 24.0,
+                              color: Colors.black,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xffffC937),
+                                fixedSize: Size(270, 55),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                )),
+                            label: const Text(
+                              "Proceed To Checkout",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
                 ],
-              ],
+              ),
             );
           })),
       body: ListView(
+        controller: _scrollController,
         children: [
           SingleChildScrollView(
-            controller: _scrollController,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -238,6 +307,7 @@ class _homepageState extends State<homepage> {
                                   price: result['price'].toString(),
                                   image: result['image'],
                                   stock: result['stock'],
+                                  description: result['description'],
                                   onPopupMenuButtonPressed: updateCart);
                             },
                           )
@@ -346,6 +416,10 @@ class _homepageState extends State<homepage> {
               } else if (snapshot.hasError) {
                 return Center(
                   child: Text('Error fetching data: ${snapshot.error}'),
+                );
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Center(
+                  child: Text('No data available.'),
                 );
               } else {
                 List<Product> products = snapshot.data!;

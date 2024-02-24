@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../components/drawer.dart';
+import 'drawer.dart';
 
 class aboutus extends StatefulWidget {
   final String name;
@@ -24,16 +24,14 @@ class _aboutusState extends State<aboutus> {
               bottomRight: Radius.circular(16)),
         ),
         centerTitle: true,
-        title: Padding(
-          padding: const EdgeInsets.all(0.0),
+        title: const Padding(
+          padding: EdgeInsets.all(0.0),
           child: Text("FT MITHAI MART",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-              )
-              // alignment: Alignment.center,
-              ),
+              )),
         ),
         backgroundColor: const Color(0xff801924),
       ),
@@ -47,12 +45,12 @@ class _aboutusState extends State<aboutus> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Image.asset(
-                'assets/Logo.png', // Your business logo
+                'assets/Logo.png',
                 height: 150,
                 width: 150,
               ),
               SizedBox(height: 20),
-              Text(
+              const Text(
                 'Welcome to FT Mithai Mart',
                 style: TextStyle(
                   fontSize: 20,
@@ -60,14 +58,14 @@ class _aboutusState extends State<aboutus> {
                 ),
               ),
               SizedBox(height: 20),
-              Text(
+              const Text(
                 'At FT Mithai Mart, we take pride in delivering the finest and freshest mithai (sweets) to your doorstep. Our commitment to quality and customer satisfaction is our top priority.',
                 style: TextStyle(
                   fontSize: 16,
                 ),
               ),
               SizedBox(height: 20),
-              Text(
+              const Text(
                 'Our Story',
                 style: TextStyle(
                   fontSize: 18,
@@ -75,35 +73,35 @@ class _aboutusState extends State<aboutus> {
                 ),
               ),
               SizedBox(height: 20),
-              Text(
+              const Text(
                 'Since 1920, FT Sweets has been a family-owned business dedicated to preserving the rich traditions of Bombay Line Mithai. Our Mithai is made with love and using traditional recipes that have been passed down for generations.',
                 style: TextStyle(
                   fontSize: 16,
                 ),
               ),
               SizedBox(height: 20),
-              Text(
+              const Text(
                 'Contact Us',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Text(
+              const Text(
                 'Have questions or feedback? We would love to hear from you. You can reach us at:',
                 style: TextStyle(
                   fontSize: 16,
                 ),
               ),
               SizedBox(height: 10),
-              Text(
+              const Text(
                 'Email: ftsweets@gmail.com',
                 style: TextStyle(
                   fontSize: 16,
                 ),
               ),
-              Text(
-                'Phone: +1 (123) 456-7890',
+              const Text(
+                'Phone: +92 (021) 32790508',
                 style: TextStyle(
                   fontSize: 16,
                 ),

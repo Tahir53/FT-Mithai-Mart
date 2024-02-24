@@ -6,7 +6,9 @@ import '../model/product_model.dart';
 
 class AdminAddProductScreen extends StatefulWidget {
   final VoidCallback onProductAdded;
+
   AdminAddProductScreen({required this.onProductAdded});
+
   @override
   _AdminAddProductScreenState createState() => _AdminAddProductScreenState();
 }
@@ -20,6 +22,7 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
   final TextEditingController stockController = TextEditingController();
   final TextEditingController categoryController = TextEditingController();
   final TextEditingController imageController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +49,10 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
                 controller: stockController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(labelText: 'Stock'),
+              ),
+              TextField(
+                controller: descriptionController,
+                decoration: InputDecoration(labelText: 'Description'),
               ),
               DropdownButtonFormField<String>(
                 value: dropdownValue,
@@ -88,10 +95,10 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
   }
 
   void check() async {
-    // Validate input before proceeding
     if (nameController.text.isEmpty ||
             priceController.text.isEmpty ||
-            stockController.text.isEmpty //||
+            stockController.text.isEmpty ||
+            descriptionController.text.isEmpty
         //  imageController.text.isEmpty)
         ) {
       errormsg();
@@ -108,17 +115,18 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
       stock: double.parse(stockController.text),
       category: dropdownValue,
       image: imageController.text,
-      quantity: [0.5,1],
+      quantity: [0.5, 1],
+      description: '',
     );
 
     await MongoDatabase.insertProduct(newProduct);
 
-    // Clear text controllers after adding the product
     nameController.clear();
     priceController.clear();
     stockController.clear();
     categoryController.clear();
     imageController.clear();
+    descriptionController.clear();
   }
 
   void errormsg() {

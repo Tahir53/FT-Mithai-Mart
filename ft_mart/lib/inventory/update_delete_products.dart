@@ -51,6 +51,8 @@ class ProductDialogs {
         TextEditingController(text: product.price.toString());
     TextEditingController stockController =
         TextEditingController(text: product.stock.toString());
+    TextEditingController descriptionController =
+        TextEditingController(text: product.description);
 
     showDialog(
       context: context,
@@ -74,6 +76,10 @@ class ProductDialogs {
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(labelText: 'Stock'),
               ),
+              TextField(
+                controller: descriptionController,
+                decoration: InputDecoration(labelText: 'Description'),
+              ),
               DropdownButtonFormField<String>(
                 value: dropdownValue,
                 items: categoryValues
@@ -89,7 +95,7 @@ class ProductDialogs {
                 onChanged: (String? newValue) {
                   dropdownValue = newValue!;
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Category',
                 ),
               ),
@@ -103,6 +109,7 @@ class ProductDialogs {
                     category: dropdownValue,
                     image: product.image,
                     quantity: [],
+                    description: descriptionController.text,
                   );
 
                   MongoDatabase.updateProduct(updatedProduct);
@@ -141,7 +148,7 @@ class ProductDialogs {
                 _showDeletedMessage();
                 setStateCallback();
               },
-              child: Text(
+              child: const Text(
                 'Delete',
                 style: TextStyle(color: Colors.red),
               ),

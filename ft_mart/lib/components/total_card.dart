@@ -16,7 +16,7 @@ class TotalCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(30),
       ),
-      color: const Color(0xffffC937),
+      color: const Color(0xFFFFF8E6),
       elevation: 10,
       margin: const EdgeInsets.all(8.0),
       child: Padding(
@@ -27,14 +27,14 @@ class TotalCard extends StatelessWidget {
             const Text(
               'Total:',
               style: TextStyle(
-                color: Colors.white,
+                color: Colors.black87,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
               'Rs.$formattedTotal',
               style: const TextStyle(
-                color: Colors.white,
+                color: Colors.black87,
                 fontWeight: FontWeight.bold,
               ),
             ),

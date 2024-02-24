@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ftmithaimart/components/complaint_box.dart';
-import 'package:provider/provider.dart';
-
-import '../main.dart';
-import '../model/cart_model.dart';
+import 'package:ftmithaimart/components/test.dart';
 import '../screens/authentication/login_page.dart';
-import '../screens/homepage/about_us.dart';
+import 'about_us.dart';
 import '../screens/homepage/home_page.dart';
 
 class CustomDrawer extends StatefulWidget {
@@ -54,8 +51,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => homepage(name: widget.name)));
-
-                // Navigate to the home page
               },
             ),
           ),
@@ -125,7 +120,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => homepage(name: widget.name)));
+                        builder: (context) =>
+                            Test())); //homepage(name: widget.name)));
               },
             ),
           ),

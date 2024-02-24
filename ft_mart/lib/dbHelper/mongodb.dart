@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'package:mongo_dart/mongo_dart.dart';
 import '../constant.dart';
-import '../model/cart_model.dart';
 import '../model/complaints_model.dart';
 import '../model/customer_model.dart';
 import '../model/product_model.dart';
@@ -23,11 +22,11 @@ class MongoDatabase {
     cartCollection = db.collection('cart');
   }
 
-  static Future<bool> validateSecurityAnswer(String email, String securityAnswer) async {
+  static Future<bool> validateSecurityAnswer(
+      String email, String contact) async {
     try {
-
       final result = await userCollection.findOne(
-        where.eq('email', email).eq('question', securityAnswer.trim()),
+        where.eq('email', email).eq('contact', contact.trim()),
       );
 
       return result != null;
@@ -38,11 +37,8 @@ class MongoDatabase {
   }
 
   static Future<void> changePassword(String email, String newPassword) async {
-    // Update the user's password
     await userCollection.update(
-      where.eq('email', email),
-      modify.set('password', newPassword), // Assuming you have a function to hash passwords
-    );
+        where.eq('email', email), modify.set('password', newPassword));
   }
 
   static Future<String> insert(CustomerModel customer) async {
@@ -101,7 +97,9 @@ class MongoDatabase {
 
   static Future<void> deleteComplaint(String complaintid) async {
     print('Deleting complaint with ID: $complaintid');
-    await db.collection('complaints').remove(where.id(ObjectId.parse(complaintid)));
+    await db
+        .collection('complaints')
+        .remove(where.id(ObjectId.parse(complaintid)));
     print('Complaint deleted successfully.');
   }
 
@@ -110,7 +108,6 @@ class MongoDatabase {
         await productsCollection.find().toList();
     final List<Product> products =
         productsData.map((data) => Product.fromJson(data)).toList();
-    print(products.first.id);
     return products;
   }
 
@@ -137,7 +134,6 @@ class MongoDatabase {
   static Future<void> deleteProduct(String productId) async {
     final collection = db.collection('products');
     await collection.remove(where.eq('_id', ObjectId.parse(productId)));
-    //await _fetchProducts(); // Refresh the product list after deletion
   }
 
   static Future<void> addToCart(Product product, double quantity) async {
@@ -150,14 +146,12 @@ class MongoDatabase {
   }
 
   static Future<List<Map<String, Object?>>> searchProducts(String query) async {
-
     final DbCollection products = db.collection('products');
-    final cursor = await products
-        .find(where.match('name', query, caseInsensitive: true));
+    final cursor =
+        await products.find(where.match('name', query, caseInsensitive: true));
 
     final List<Map<String, Object?>> results = await cursor.toList();
 
     return results;
   }
-
 }

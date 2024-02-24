@@ -22,6 +22,7 @@ class _complaintboxState extends State<complaintbox> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
         toolbarHeight: 100,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -35,7 +36,6 @@ class _complaintboxState extends State<complaintbox> {
             "assets/Logo.png",
             width: 50,
             height: 50,
-            // alignment: Alignment.center,
           ),
         ),
         backgroundColor: const Color(0xff801924),
@@ -48,7 +48,7 @@ class _complaintboxState extends State<complaintbox> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              Text(
+              const Text(
                 'Please enter your complaint or feedback:',
                 style: TextStyle(
                   fontSize: 18,
@@ -65,7 +65,7 @@ class _complaintboxState extends State<complaintbox> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  focusedBorder: OutlineInputBorder(
+                  focusedBorder: const OutlineInputBorder(
                     borderSide: BorderSide(width: 2, color: Color(0xff63131C)),
                   ),
                 ),
@@ -110,13 +110,13 @@ class _complaintboxState extends State<complaintbox> {
                   color: Colors.white,
                 ),
                 style: ElevatedButton.styleFrom(
-                    primary: Color(0xff801924),
+                    backgroundColor: Color(0xff801924),
                     fixedSize: Size(250, 55),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     )),
                 label: complainLoading
-                    ? SizedBox(
+                    ? const SizedBox(
                         width: 10,
                         height: 10,
                         child: CircularProgressIndicator(
@@ -145,7 +145,7 @@ class _complaintboxState extends State<complaintbox> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(
+          title: const Text(
             "Your complain has been submitted succesfully! Looking forward to serve you better!",
             style: TextStyle(
               color: Color(0xff63131C),
@@ -157,7 +157,7 @@ class _complaintboxState extends State<complaintbox> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text(
+              child: const Text(
                 'OK',
                 style: TextStyle(color: Color(0xff63131C)),
               ),

@@ -1,11 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ftmithaimart/components/admindrawer.dart';
-import 'package:ftmithaimart/complaints/show_complaints.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:ftmithaimart/dbHelper/mongodb.dart';
-
-import '../authentication/login_page.dart';
 
 class admin extends StatefulWidget {
   final String name;
@@ -32,7 +28,6 @@ class _adminState extends State<admin> {
 
   @override
   Widget build(BuildContext context) {
-    // String _admin = text as String;
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
@@ -56,16 +51,16 @@ class _adminState extends State<admin> {
       ),
       drawer: AdminDrawer(
           name: widget.name, email: widget.email, contact: widget.contact),
-      body: SingleChildScrollView(
+      body: const SingleChildScrollView(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const SizedBox(
+          SizedBox(
             height: 20,
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 15.0, bottom: 10),
+            padding: EdgeInsets.only(left: 15.0, bottom: 10),
             child: Text(
               "Welcome, Admin!",
-              style: const TextStyle(
+              style: TextStyle(
                 color: Color(0xFF63131C),
                 fontSize: 24,
                 fontWeight: FontWeight.w600,

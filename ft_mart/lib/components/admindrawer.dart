@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:ftmithaimart/components/complaint_box.dart';
 import 'package:ftmithaimart/inventory/inventory.dart';
-import 'package:ftmithaimart/inventory/update_delete_products.dart';
 import '../screens/authentication/login_page.dart';
 import '../complaints/show_complaints.dart';
-import '../screens/homepage/about_us.dart';
 import '../screens/homepage/admin_page.dart';
-import '../screens/homepage/home_page.dart';
 
 class AdminDrawer extends StatelessWidget {
   AdminDrawer({super.key, required this.name, this.email, this.contact});

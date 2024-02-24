@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:ftmithaimart/components/push_noti.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/src/material/icons.dart';
 import '../../components/forgot_password.dart';
@@ -242,7 +241,8 @@ class _loginState extends State<login> {
                           Padding(padding: EdgeInsets.all(10)),
                           TextButton(
                             onPressed: () async {
-                              await ForgotPassword.showForgotPasswordDialog(context, EmailController);
+                              await ForgotPassword.showForgotPasswordDialog(
+                                  context, EmailController);
                             },
                             child: const Text(
                               "Forgot Password?",
@@ -294,8 +294,7 @@ class _loginState extends State<login> {
                           ),
                           ElevatedButton.icon(
                             onPressed: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(
+                              Navigator.push(context, MaterialPageRoute(
                                 builder: (context) {
                                   // return HomeScreen();
                                   return homepage(

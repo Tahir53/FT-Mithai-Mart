@@ -23,7 +23,7 @@ class CategoryContainer extends StatelessWidget {
           categoryName,
           style: TextStyle(
             color: selected ? Colors.white : Colors.black, // Text color
-            fontSize: 16.0, // Adjust font size as needed
+            fontSize: 16.0,
           ),
         ),
       ),

@@ -13,54 +13,55 @@ class _FirstCarouselCardState extends State<FirstCarouselCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.sizeOf(context).width * 0.92,
+      width: MediaQuery.of(context).size.width * 0.92,
       height: 175.0,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.0),
         color: const Color(0xFFFFC937), // Background color
       ),
       child: Padding(
-        padding: EdgeInsets.only(left: 20, top: 20),
+        padding: const EdgeInsets.only(left: 20, top: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
+            const Text(
               'Want to send a "sweet"',
               style: TextStyle(
                   fontSize: 18.0,
                   color: Color(0xFF212121),
                   fontWeight: FontWeight.w600),
             ),
-            SizedBox(height: 8.0), // Add some space
-            Text(
+            const SizedBox(height: 8.0),
+            const Text(
               'gift to someone?',
               style: TextStyle(
                   fontSize: 18.0,
                   color: Color(0xFF212121),
                   fontWeight: FontWeight.w600),
             ),
-            SizedBox(height: 20.0), // Add more space
-            Text(
+            const SizedBox(height: 20.0),
+            const Text(
               'We are here to help!',
               style: TextStyle(
                   fontSize: 13.0,
                   fontWeight: FontWeight.w400,
                   color: Colors.black),
             ),
-            Padding(padding: EdgeInsets.only(top: 10)),
+            const Padding(padding: EdgeInsets.only(top: 10)),
             Row(
               children: [
                 Container(
                   child: TextButton(
                     onPressed: () {
-                      // Scroll down when the "Get started" button is pressed
+                      print("Button Pressed");
+                      print("ScrollController: ${widget.scrollController}");
                       widget.scrollController?.animateTo(
                         widget.scrollController?.position.maxScrollExtent ?? 0,
                         duration: Duration(seconds: 1),
                         curve: Curves.easeOutSine,
                       );
                     },
-                    child: Text(
+                    child: const Text(
                       'Get started',
                       style: TextStyle(
                           fontSize: 13.0,
@@ -69,7 +70,7 @@ class _FirstCarouselCardState extends State<FirstCarouselCard> {
                     ),
                   ),
                 ),
-                Icon(Icons.arrow_forward_sharp)
+                const Icon(Icons.arrow_forward_sharp)
               ],
             ),
           ],

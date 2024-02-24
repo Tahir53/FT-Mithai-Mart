@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Cart {
   final String productName;
   final String price;
@@ -8,6 +10,10 @@ class Cart {
     required this.price,
     required this.quantity,
   });
+
+  String get formattedQuantity {
+    return NumberFormat("#,##0.##").format(quantity);
+  }
 
   Map<String, dynamic> toJson() {
     return {

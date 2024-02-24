@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:ftmithaimart/screens/authentication/login_page.dart';
 
-import '../screens/homepage/home_page.dart';
-
 class Message extends StatefulWidget {
   const Message({super.key});
 
@@ -53,19 +51,19 @@ class _MessageState extends State<Message> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/Logo.png', // Replace with your image asset
+              'assets/Logo.png',
               height: 200,
             ),
             SizedBox(height: 20),
-            Text(
+            const Text(
               'Limited Time Offer!',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 10),
-            Text(
+            const SizedBox(height: 10),
+            const Text(
               'Get 10% off on selected items. Hurry up!',
               style: TextStyle(
                 fontSize: 18,
@@ -73,18 +71,18 @@ class _MessageState extends State<Message> {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xff801924),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   )),
-              child: Text("Shop now"),
+              child: const Text("Shop now"),
               onPressed: () {
                 Navigator.pushReplacement(context, MaterialPageRoute(
                   builder: (context) {
-                    return login();
+                    return const login();
                   },
                 ));
               },

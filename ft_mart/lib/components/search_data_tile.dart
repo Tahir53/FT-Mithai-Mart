@@ -6,7 +6,9 @@ class SearchDataField extends StatelessWidget {
   final String price;
   final String image;
   final double stock;
-  final Function(String name, String price, double stock) onPopupMenuButtonPressed;
+  final String description;
+  final Function(String name, String price, double stock)
+      onPopupMenuButtonPressed;
 
   const SearchDataField({
     Key? key,
@@ -15,73 +17,77 @@ class SearchDataField extends StatelessWidget {
     required this.price,
     required this.image,
     required this.stock,
+    required this.description,
     required this.onPopupMenuButtonPressed,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        showProductDialog(context);
+      },
       child: Card(
         color: Color(0xFF63131C),
         margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.network(
+              image,
+              width: double.infinity,
+              height: 120,
+              fit: BoxFit.cover,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        name,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Category: $category',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
-                      ),
-                      Text(
-                        'Price: Rs.$price/kg',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                        'Tap For Description',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Image.network(
-                        image,
-                        width: 80,
-                        height: 100,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            name,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            'Category: $category',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Text(
+                            'Price: Rs.$price/kg',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          const Text(
+                            'Tap For Description',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(width: 10),
                       Padding(
                         padding: const EdgeInsets.only(top: 15.0),
                         child: buildPopupMenuButton(name, int.parse(price)),
@@ -90,23 +96,23 @@ class SearchDataField extends StatelessWidget {
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
- Widget buildPopupMenuButton(String product, int price) {
+  Widget buildPopupMenuButton(String product, int price) {
     return PopupMenuButton<double>(
-      color: Color(0xFFFFF8E6),
+      color: const Color(0xFFFFF8E6),
       onSelected: (value) {
         num calculatedPrice = value == 0.5 ? price * 0.5 : price;
         onPopupMenuButtonPressed(product, calculatedPrice.toString(), value);
       },
       itemBuilder: (BuildContext context) {
         return [1.0, 0.5].map((double choice) {
-          // Calculate the price for each choice
+          // Calculating the price for each choice
           num calculatedPrice = choice == 0.5 ? price * 0.5 : price;
 
           return PopupMenuItem<double>(
@@ -131,7 +137,6 @@ class SearchDataField extends StatelessWidget {
                       fontSize: 15,
                     ),
                   ),
-                  // Displaying the calculated price
                   Text(
                     'Rs.${calculatedPrice.toString()}',
                     style: const TextStyle(
@@ -159,7 +164,7 @@ class SearchDataField extends StatelessWidget {
               'Add to Cart',
               style: TextStyle(
                 fontSize: 8.0,
-                color: Color(0xFF212121),
+                color: Colors.white,
               ),
             ),
           ),
@@ -168,7 +173,36 @@ class SearchDataField extends StatelessWidget {
     );
   }
 
+  void showProductDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Color(0xFF63131C),
+          title: Text(
+            name,
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          content: Text(
+            description,
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Close',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
-
-
-

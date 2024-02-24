@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/cupertino.dart';
-
 import 'screens/authentication/login_page.dart';
 
 class splashscreen extends StatefulWidget {
@@ -43,7 +42,6 @@ class _splashscreenState extends State<splashscreen> {
                       decorationColor: Color(0xffB59703),
                       fontFamily: 'Montserrat'),
                 ),
-                // Padding(padding: EdgeInsets.all(5)),
                 const Text(
                   "Flavourful Traditions In Every Click",
                   style: TextStyle(
@@ -57,7 +55,6 @@ class _splashscreenState extends State<splashscreen> {
           splashTransition: SplashTransition.fadeTransition,
           duration: 2000,
           backgroundColor: Color(0xffFFF8E6),
-          // Background color of the splash screen
         ),
       ),
     );
