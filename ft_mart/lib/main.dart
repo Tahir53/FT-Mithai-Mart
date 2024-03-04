@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:ftmithaimart/dbHelper/mongodb.dart';
@@ -22,6 +23,7 @@ Future _firebaseBackgroundMessage(RemoteMessage message) async {
 }
 
 void main() async {
+  HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -61,9 +63,16 @@ void main() async {
       navigatorKey.currentState!.pushNamed("/message", arguments: message);
     });
   }
-
   runApp(ChangeNotifierProvider(
       create: (context) => CartProvider(), child: const MainApp()));
+}
+
+class MyHttpOverrides extends HttpOverrides{
+  @override
+  HttpClient createHttpClient(SecurityContext? context){
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
+  }
 }
 
 class MainApp extends StatelessWidget {
@@ -106,3 +115,5 @@ class MainApp extends StatelessWidget {
     );
   }
 }
+
+class MongoClient {}
