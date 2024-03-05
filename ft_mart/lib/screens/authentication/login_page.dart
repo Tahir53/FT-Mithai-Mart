@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/src/material/icons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../components/forgot_password.dart';
 import '../../dbHelper/mongodb.dart';
 import '../homepage/admin_page.dart';
@@ -194,6 +195,12 @@ class _loginState extends State<login> {
                                       },
                                     ));
                                   } else {
+                                    final SharedPreferences prefs =
+                                        await SharedPreferences.getInstance();
+                                    prefs.setBool('isLoggedIn', true);
+                                    prefs.setString('email', res["email"]);
+                                    prefs.setString('name', res["name"]);
+                                    prefs.setString('contact', res["contact"]);
                                     Navigator.pushReplacement(context,
                                         MaterialPageRoute(
                                       builder: (context) {

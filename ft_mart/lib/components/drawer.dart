@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ftmithaimart/components/complaint_box.dart';
 import 'package:ftmithaimart/components/test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/authentication/login_page.dart';
 import 'about_us.dart';
 import '../screens/homepage/home_page.dart';
@@ -138,9 +139,13 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                 )),
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const login()));
+            onTap: () async {
+              final SharedPreferences prefs = await SharedPreferences.getInstance();
+              prefs.setBool('isLoggedIn', false);
+              if (context.mounted){
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const login()));
+              }
             },
           ),
         ],

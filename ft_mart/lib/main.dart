@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:ftmithaimart/dbHelper/mongodb.dart';
 import 'package:ftmithaimart/model/cart_provider.dart';
 import 'package:ftmithaimart/push_notifications.dart';
+import 'package:ftmithaimart/screens/splash.dart';
 import 'package:provider/provider.dart';
 import 'components/message.dart';
 import 'screens/homepage/home_page.dart';
@@ -98,7 +99,7 @@ class MainApp extends StatelessWidget {
         future: _initializeApp(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return const login();
+            return const SplashScreen();
           } else {
             return const splashscreen();
           }

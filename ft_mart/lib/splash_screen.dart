@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:ftmithaimart/screens/splash.dart';
 import 'screens/authentication/login_page.dart';
 
 class splashscreen extends StatefulWidget {
@@ -51,7 +52,7 @@ class _splashscreenState extends State<splashscreen> {
                       fontFamily: 'Montserrat'),
                 ),
               ]),
-          nextScreen: login(),
+          nextScreen: SplashScreen(),
           splashTransition: SplashTransition.fadeTransition,
           duration: 2000,
           backgroundColor: Color(0xffFFF8E6),
