@@ -22,6 +22,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   bool _forDelivery = false;
   bool _forPickup = false;
   DateTime? _pickupDateTime;
+  final TextEditingController addressController = TextEditingController();
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,6 +90,50 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 });
               },
             ),
+            Visibility(
+              visible: _forDelivery,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: TextField(
+                      controller: addressController,
+                      decoration: InputDecoration(
+                        labelText: 'Address for Delivery',
+                        hintText: 'Enter your address',
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.calendar_today), // Custom leading icon
+                    title: Text(
+                      'Select Delivery Date and Time',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    trailing: Icon(Icons.arrow_forward), // Custom trailing icon
+                    onTap: () {
+                      // Show date and time picker for delivery
+                      // You can reuse the _showDateTimePicker function
+                      _showDateTimePicker();
+                    },
+                  ),
+                  if (_forDelivery && _pickupDateTime != null)
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        'Delivery Details:\n'
+                            '${DateFormat('MMM d, yyyy hh:mm a').format(_pickupDateTime!)}\n'
+                            'Address: ${addressController.text}',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                ],
+              ),
+            ),
             ListTile(
               title: Text('For Pickup'),
               leading: Radio(
@@ -126,11 +171,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Future<void> _showDateTimePicker() async {
+    DateTime now = DateTime.now();
     DateTime? pickedDateTime = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(DateTime.now().year + 1),
+      initialDate: now,
+      firstDate: now,
+      lastDate: DateTime(now.year + 1),
+      selectableDayPredicate: (DateTime date) {
+        // Allow only weekdays (Monday to Saturday)
+        return date.weekday != DateTime.sunday;
+      },
     );
 
     if (pickedDateTime != null) {
@@ -140,15 +190,26 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       );
 
       if (pickedTime != null) {
-        setState(() {
-          _pickupDateTime = DateTime(
-            pickedDateTime.year,
-            pickedDateTime.month,
-            pickedDateTime.day,
-            pickedTime.hour,
-            pickedTime.minute,
+        DateTime combinedDateTime = DateTime(
+          pickedDateTime.year,
+          pickedDateTime.month,
+          pickedDateTime.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
+
+        if (combinedDateTime.hour >= 12 && combinedDateTime.hour <= 20) {
+          setState(() {
+            _pickupDateTime = combinedDateTime;
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  'Pickup/Delivery time should be between 12 PM and 8 PM.'),
+            ),
           );
-        });
+        }
       }
     }
   }

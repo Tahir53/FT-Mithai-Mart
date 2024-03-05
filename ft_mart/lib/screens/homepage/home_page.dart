@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
+import 'package:ftmithaimart/components/box_customization.dart';
 import 'package:ftmithaimart/components/cart_item_tile.dart';
 import 'package:ftmithaimart/components/cart_sub_title.dart';
 import 'package:ftmithaimart/components/first_carousel_card.dart';
@@ -187,7 +188,9 @@ class _homepageState extends State<homepage> {
                       child: Column(
                         children: [
                           ElevatedButton.icon(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>BoxCustomizationPage()));
+                            },
                             icon: const Icon(
                               Icons.dashboard_customize_outlined,
                               size: 24.0,

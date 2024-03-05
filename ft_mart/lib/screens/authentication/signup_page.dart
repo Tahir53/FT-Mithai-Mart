@@ -263,19 +263,6 @@ class _signupState extends State<signup> {
                     }
                   },
                 ),
-                Padding(padding: EdgeInsets.only(top: 15)),
-                const Row(
-                  children: [
-                    Text(
-                      "What is your Birthplace?",
-                      style: TextStyle(
-                        color: Color(0xff63131C),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
-                ),
                 const SizedBox(
                   height: 30,
                 ),

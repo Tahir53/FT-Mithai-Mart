@@ -3,6 +3,7 @@ import 'package:mongo_dart/mongo_dart.dart';
 import '../constant.dart';
 import '../model/complaints_model.dart';
 import '../model/customer_model.dart';
+import '../model/orders_model.dart';
 import '../model/product_model.dart';
 
 class MongoDatabase {
@@ -10,7 +11,8 @@ class MongoDatabase {
       userCollection,
       complainCollection,
       productsCollection,
-      cartCollection;
+      cartCollection,
+      ordersCollection;
 
   static connect() async {
     db = await Db.create(MONGO_CONN_URL);
@@ -20,6 +22,7 @@ class MongoDatabase {
     complainCollection = db.collection('complaints');
     productsCollection = db.collection('products');
     cartCollection = db.collection('cart');
+    ordersCollection = db.collection('orders');
   }
 
   static Future<bool> validateSecurityAnswer(
@@ -153,5 +156,15 @@ class MongoDatabase {
     final List<Map<String, Object?>> results = await cursor.toList();
 
     return results;
+  }
+
+ static Future<void> saveOrder(Order order) async {
+    await ordersCollection.insert(order.toJson());
+  }
+
+  static Future<List<Order>> getOrders() async {
+    final ordersJson = await ordersCollection.find().toList();
+    final orders = ordersJson.map((json) => Order.fromJson(json)).toList();
+    return orders;
   }
 }
