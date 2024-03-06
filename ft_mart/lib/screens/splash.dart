@@ -16,10 +16,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
     super.initState();
     flowLogic();
-    //
+    
   }
 
   flowLogic() async {
+    await Future.delayed(const Duration(seconds: 2));
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     bool? isLoggedIn = prefs.getBool('isLoggedIn');
     String name = prefs.getString('name') ?? "User";

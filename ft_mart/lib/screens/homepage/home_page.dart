@@ -107,7 +107,7 @@ class _homepageState extends State<homepage> {
                     }))),
               );
             }
-            return SizedBox();
+            return const SizedBox();
           }),
           Builder(
             builder: (context) => IconButton(
@@ -123,7 +123,7 @@ class _homepageState extends State<homepage> {
       drawer: CustomDrawer(
           name: widget.name, email: widget.email, contact: widget.contact),
       endDrawer: Drawer(
-          backgroundColor: Color(0xFFFFF8E6),
+          backgroundColor: const Color(0xFFFFF8E6),
           child:
               Consumer<CartProvider>(builder: (context, cartProvider, child) {
             return SingleChildScrollView(
@@ -147,49 +147,21 @@ class _homepageState extends State<homepage> {
                       height: 100,
                       width: 50,
                     ),
-                    Text("Your Cart is Empty!"),
+                    const Text("Your Cart is Empty!"),
                   ] else if (cartProvider.items.isNotEmpty) ...[
                     displayCartSubTitles(),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: cartProvider.items.length + 1,
-                      itemBuilder: (BuildContext context, int index) {
-                        if (index < cartProvider.items.length) {
-                          final formattedQuantity = NumberFormat("#,##0.##")
-                              .format(cartProvider.items[index].quantity);
-
-                          return CartItemTile(
-                            productName: cartProvider.items[index].productName,
-                            formattedQuantity: formattedQuantity,
-                            price: cartProvider.items[index].price,
-                            onTapDelete: () {
-                              setState(() {
-                                cartProvider
-                                    .removeFromCart(cartProvider.items[index]);
-                              });
-                            },
-                          );
-                        } else {
-                          double total = 0;
-                          for (int i = 0; i < cartProvider.items.length; i++) {
-                            total += double.parse(cartProvider.items[i].price
-                                .replaceFirst("Rs.", "")
-                                .trim());
-                          }
-                          final formattedTotal =
-                              NumberFormat("#,##0.00").format(total);
-
-                          return TotalCard(formattedTotal: formattedTotal);
-                        }
-                      },
-                    ),
-                    Padding(padding: EdgeInsets.only(top: 40)),
-                    Container(
+                    displayCartItems(cartProvider),
+                    const Padding(padding: EdgeInsets.only(top: 40)),
+                    SizedBox(
                       child: Column(
                         children: [
                           ElevatedButton.icon(
                             onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=>BoxCustomizationPage()));
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          BoxCustomizationPage()));
                             },
                             icon: const Icon(
                               Icons.dashboard_customize_outlined,
@@ -197,8 +169,8 @@ class _homepageState extends State<homepage> {
                               color: Colors.black,
                             ),
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xffffC937),
-                                fixedSize: Size(270, 55),
+                                backgroundColor: const Color(0xffffC937),
+                                fixedSize: const Size(270, 55),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 )),
@@ -212,7 +184,7 @@ class _homepageState extends State<homepage> {
                               ),
                             ),
                           ),
-                          Padding(padding: EdgeInsets.only(top: 20)),
+                          const Padding(padding: EdgeInsets.only(top: 20)),
                           ElevatedButton.icon(
                             onPressed: () {
                               Navigator.push(
@@ -227,14 +199,14 @@ class _homepageState extends State<homepage> {
                                 ),
                               );
                             },
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.shopping_cart_checkout,
                               size: 24.0,
                               color: Colors.black,
                             ),
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xffffC937),
-                                fixedSize: Size(270, 55),
+                                backgroundColor: const Color(0xffffC937),
+                                fixedSize: const Size(270, 55),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 )),
@@ -299,7 +271,7 @@ class _homepageState extends State<homepage> {
                           ),
                           ListView.builder(
                             shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
+                            physics: const NeverScrollableScrollPhysics(),
                             itemCount: _searchResults.length,
                             itemBuilder: (context, index) {
                               final result = _searchResults[index];
@@ -316,7 +288,7 @@ class _homepageState extends State<homepage> {
                           )
                         ],
                       )
-                    : SizedBox.shrink(),
+                    : const SizedBox.shrink(),
               ],
             ),
           ),
@@ -421,7 +393,7 @@ class _homepageState extends State<homepage> {
                   child: Text('Error fetching data: ${snapshot.error}'),
                 );
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return Center(
+                return const Center(
                   child: Text('No data available.'),
                 );
               } else {
@@ -470,6 +442,39 @@ class _homepageState extends State<homepage> {
           )
         ],
       ),
+    );
+  }
+
+  Widget displayCartItems(cartProvider) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: cartProvider.items.length + 1,
+      itemBuilder: (BuildContext context, int index) {
+        if (index < cartProvider.items.length) {
+          final formattedQuantity = NumberFormat("#,##0.##")
+              .format(cartProvider.items[index].quantity);
+
+          return CartItemTile(
+            productName: cartProvider.items[index].productName,
+            formattedQuantity: formattedQuantity,
+            price: cartProvider.items[index].price,
+            onTapDelete: () {
+              setState(() {
+                cartProvider.removeFromCart(cartProvider.items[index]);
+              });
+            },
+          );
+        } else {
+          double total = 0;
+          for (int i = 0; i < cartProvider.items.length; i++) {
+            total += double.parse(
+                cartProvider.items[i].price.replaceFirst("Rs.", "").trim());
+          }
+          final formattedTotal = NumberFormat("#,##0.00").format(total);
+
+          return TotalCard(formattedTotal: formattedTotal);
+        }
+      },
     );
   }
 }

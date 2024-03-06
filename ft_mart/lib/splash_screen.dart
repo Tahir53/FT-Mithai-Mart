@@ -52,10 +52,10 @@ class _splashscreenState extends State<splashscreen> {
                       fontFamily: 'Montserrat'),
                 ),
               ]),
-          nextScreen: SplashScreen(),
+          nextScreen: const SplashScreen(),
           splashTransition: SplashTransition.fadeTransition,
           duration: 2000,
-          backgroundColor: Color(0xffFFF8E6),
+          backgroundColor: const Color(0xffFFF8E6),
         ),
       ),
     );

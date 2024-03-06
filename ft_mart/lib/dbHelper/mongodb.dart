@@ -107,11 +107,33 @@ class MongoDatabase {
   }
 
   static Future<List<Product>> getProducts() async {
-    final List<Map<String, dynamic>> productsData =
-        await productsCollection.find().toList();
-    final List<Product> products =
-        productsData.map((data) => Product.fromJson(data)).toList();
+    // final List<Map<String, dynamic>> productsData =
+    //     await productsCollection.find().toList();
+    // final List<Product> products =
+    //     productsData.map((data) => Product.fromJson(data)).toList();
+    // return products;
+    final int maxRetries = 3;
+    int retryCount = 0;
+    List<Product> products = [];
+
+    while (retryCount < maxRetries) {
+      try {
+        final List<Map<String, dynamic>> productsData =
+            await productsCollection.find().toList();
+        products = productsData.map((data) => Product.fromJson(data)).toList();
+        // If database connection and data fetching succeed, break out of the loop
+        break;
+      } catch (error) {
+        // If an error occurs, print the error message and retry after a delay
+        print("Error fetching products: $error");
+        products = [];
+        retryCount++;
+        // Wait for a short delay before retrying
+        await Future.delayed(const Duration(seconds: 2));
+      }
+    }
     return products;
+    
   }
 
   static Future<void> updateProduct(Product product) async {
@@ -158,7 +180,7 @@ class MongoDatabase {
     return results;
   }
 
- static Future<void> saveOrder(Order order) async {
+  static Future<void> saveOrder(Order order) async {
     await ordersCollection.insert(order.toJson());
   }
 
