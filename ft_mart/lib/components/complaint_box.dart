@@ -86,7 +86,7 @@ class _complaintboxState extends State<complaintbox> {
                   if (result == 'Complaint submitted') {
                     _complaintController.text = "";
                     submitComplaint(context);
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         backgroundColor: Color(0xff63131C),
                         content: Text(
                           "Your complain has been submitted succesfully!",

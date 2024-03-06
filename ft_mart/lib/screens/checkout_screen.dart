@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../components/cart_item_tile.dart';
+import '../components/reciepts_screen.dart';
 import '../components/total_card.dart';
+import '../dbHelper/mongodb.dart';
 import '../model/cart_model.dart';
+import '../model/orders_model.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final List<Cart> cartItems; // Change the type to List<Cart>
   final double totalAmount;
+  final String? name;
+  final String? email;
+  final String? contact;
 
-  const CheckoutScreen({
-    Key? key,
-    required this.cartItems,
-    required this.totalAmount,
-  }) : super(key: key);
+  const CheckoutScreen(
+      {Key? key,
+      required this.cartItems,
+      required this.totalAmount,
+      required this.name,
+      required this.email,
+      required this.contact})
+      : super(key: key);
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -22,7 +31,53 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   bool _forDelivery = false;
   bool _forPickup = false;
   DateTime? _pickupDateTime;
-  final TextEditingController addressController = TextEditingController();
+  final TextEditingController _addressController =
+      TextEditingController(); // Controller for delivery address
+
+  // Function to handle checkout process
+
+  void _checkout() async {
+    List<String> productNames = [];
+    List<String> quantities = [];
+    for (var item in widget.cartItems) {
+      productNames.add(item.productName);
+      quantities.add(item.formattedQuantity);
+    }
+
+    Order order = Order(
+      orderId: Order.generateOrderId(),
+      cartItems: widget.cartItems,
+      totalAmount: widget.totalAmount,
+      orderDateTime: _pickupDateTime ?? DateTime.now(),
+      deliveryAddress: _forDelivery ? _addressController.text : "Pickup",
+      name: widget.name ?? "user",
+      email: widget.email ?? "no email",
+      contact: widget.contact ?? "no contact",
+      productNames: productNames,
+      quantities: quantities,
+    );
+
+    // Save order to database
+    await saveOrderToDatabase(order);
+
+    // Navigate to next screen after checkout
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ReceiptScreen(
+          name: order.name,
+          orderId: order.orderId,
+          cartItems: order.cartItems,
+          orderDateTime: order.orderDateTime,
+        ),
+      ),
+      (route) => false, // Remove all previous routes from the stack
+    );
+  }
+
+  Future<void> saveOrderToDatabase(Order order) async {
+    MongoDatabase.saveOrder(order);
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,7 +153,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: TextField(
-                      controller: addressController,
+                      controller: _addressController,
                       decoration: InputDecoration(
                         labelText: 'Address for Delivery',
                         hintText: 'Enter your address',
@@ -126,8 +181,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
                         'Delivery Details:\n'
-                            '${DateFormat('MMM d, yyyy hh:mm a').format(_pickupDateTime!)}\n'
-                            'Address: ${addressController.text}',
+                        '${DateFormat(' E,d MMM y H:m').format(_pickupDateTime!)}\n'
+                        'Address: ${_addressController.text}',
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
@@ -160,10 +215,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
-                  'Pickup Details: ${DateFormat('MMM d, yyyy hh:mm a').format(_pickupDateTime!)}',
+                  'Pickup Details: ${DateFormat(' E,d MMM y H:m').format(_pickupDateTime!)}',
                   style: TextStyle(fontSize: 16),
                 ),
               ),
+            ElevatedButton(
+              onPressed: _checkout,
+              // Call checkout function when button is pressed
+              child: Text('Order'),
+            ),
           ],
         ),
       ),
