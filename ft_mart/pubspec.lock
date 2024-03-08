@@ -314,10 +314,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_local_notifications
-      sha256: c18f1de98fe0bb9dd5ba91e1330d4febc8b6a7de6aae3ffe475ef423723e72f3
+      sha256: "55b9b229307a10974b26296ff29f2e132256ba4bd74266939118eaefa941cb00"
       url: "https://pub.dev"
     source: hosted
-    version: "16.3.2"
+    version: "16.3.3"
   flutter_local_notifications_linux:
     dependency: transitive
     description:
@@ -364,10 +364,17 @@ packages:
     dependency: transitive
     description:
       name: google_identity_services_web
+<<<<<<< HEAD
       sha256: "0c56c2c5d60d6dfaf9725f5ad4699f04749fb196ee5a70487a46ef184837ccf6"
       url: "https://pub.dev"
     source: hosted
     version: "0.3.0+2"
+=======
+      sha256: "9482364c9f8b7bd36902572ebc3a7c2b5c8ee57a9c93e6eb5099c1a9ec5265d8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.1+1"
+>>>>>>> 89d5c525011337a8bd054e0becaa33ba88e1faee
   google_sign_in:
     dependency: "direct main"
     description:
@@ -889,10 +896,17 @@ packages:
     dependency: transitive
     description:
       name: web
+<<<<<<< HEAD
       sha256: afe077240a270dcfd2aafe77602b4113645af95d0ad31128cc02bce5ac5d5152
       url: "https://pub.dev"
     source: hosted
     version: "0.3.0"
+=======
+      sha256: "97da13628db363c635202ad97068d47c5b8aa555808e7a9411963c533b449b27"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.1"
+>>>>>>> 89d5c525011337a8bd054e0becaa33ba88e1faee
   win32:
     dependency: transitive
     description:

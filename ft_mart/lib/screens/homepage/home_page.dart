@@ -19,6 +19,7 @@ import '../../components/drawer.dart';
 import '../../components/second_carousel_card.dart';
 import '../../model/cart_model.dart';
 import '../../model/product_model.dart';
+import '../chatbot/chat_page.dart';
 import '../checkout_screen.dart';
 
 class homepage extends StatefulWidget {
@@ -72,6 +73,17 @@ class _homepageState extends State<homepage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFFFFF8E6),
+        onPressed: () {
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: ((context) => ChatPage())));
+        },
+        child: const Icon(
+          Icons.message,
+          color: Color(0xff801924),
+        ),
+      ),
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
         toolbarHeight: 100,
@@ -194,7 +206,10 @@ class _homepageState extends State<homepage> {
                                     cartItems: cartProvider.items,
                                     // Pass the list of Cart items
                                     totalAmount:
-                                        calculateTotal(cartProvider.items),
+                                        _calculateTotal(cartProvider.items),
+                                    name: widget.name,
+                                    email: widget.email,
+                                    contact: widget.contact,
                                   ),
                                 ),
                               );
@@ -476,5 +491,13 @@ class _homepageState extends State<homepage> {
         }
       },
     );
+  }
+
+  double _calculateTotal(List<Cart> items) {
+    double total = 0;
+    for (int i = 0; i < items.length; i++) {
+      total += double.parse(items[i].price.replaceFirst("Rs.", "").trim());
+    }
+    return total;
   }
 }

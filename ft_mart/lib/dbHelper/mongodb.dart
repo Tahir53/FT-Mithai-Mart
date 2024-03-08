@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:intl/intl.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 import '../constant.dart';
 import '../model/complaints_model.dart';
@@ -185,8 +186,10 @@ class MongoDatabase {
   }
 
   static Future<List<Order>> getOrders() async {
-    final ordersJson = await ordersCollection.find().toList();
-    final orders = ordersJson.map((json) => Order.fromJson(json)).toList();
+    final List<Map<String, dynamic>> ordersJson = await ordersCollection.find().toList();
+    final List<Order> orders = ordersJson.map((json) => Order.fromJson(json)).toList();
+    print('Fetched orders: $orders');
     return orders;
   }
+
 }

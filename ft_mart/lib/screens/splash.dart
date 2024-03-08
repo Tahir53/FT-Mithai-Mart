@@ -13,10 +13,8 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-
     super.initState();
     flowLogic();
-    
   }
 
   flowLogic() async {
@@ -27,18 +25,21 @@ class _SplashScreenState extends State<SplashScreen> {
     String contact = prefs.getString('contact') ?? "";
     String email = prefs.getString('email') ?? "";
 
-    if (isLoggedIn != null){
-      if (isLoggedIn == true){
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => homepage(name: name, contact: contact, email: email)));
+    if (isLoggedIn != null) {
+      if (isLoggedIn == true) {
+        Navigator.pushReplacement(context, MaterialPageRoute(
+            builder: (context) =>
+                homepage(name: name, contact: contact, email: email)));
       }
-      else{
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const login()));
+      else {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => const login()));
       }
     }
-    else{
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const login()));
+    else {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => const login()));
     }
-
   }
 
   @override
@@ -52,10 +53,37 @@ class _SplashScreenState extends State<SplashScreen> {
           color: Color(0xffFFF8E6),
         ),
         child: Center(
-          child: Image.asset(
-            'assets/Logo.png', 
-            width: 200,
-            height: 200, 
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/Logo.png',
+                width: 200,
+                height: 200,
+              ),
+              SizedBox(height: 20),
+              // Adding some space between the image and text
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/splash.png',
+                    width: 24, // Adjust the width as needed
+                    height: 24, // Adjust the height as needed
+                  ),
+                  SizedBox(width: 5), // Adding some space between the icon and text
+                  Text(
+                    'GEAR UP FOR SWEETNESS GALORE',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      color: Color(0xffA4202E),
+                      fontFamily: 'Montserrat',
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
