@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ftmithaimart/model/cart_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../components/cart_item_tile.dart';
 import '../components/reciepts_screen.dart';
 import '../components/total_card.dart';
@@ -60,8 +62,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     // Save order to database
     await saveOrderToDatabase(order);
 
-    // Navigate to next screen after checkout
-    Navigator.pushAndRemoveUntil(
+    if (context.mounted){
+      Provider.of<CartProvider>(context, listen: false).clearCart();
+      
+      Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
         builder: (context) => ReceiptScreen(
@@ -73,12 +77,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       ),
       (route) => false, // Remove all previous routes from the stack
     );
+    }
+    // Navigate to next screen after checkout
+    
   }
 
   Future<void> saveOrderToDatabase(Order order) async {
     MongoDatabase.saveOrder(order);
   }
 
+@override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -101,7 +109,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Padding(padding: EdgeInsets.only(top: 10)),
+            Padding(padding: EdgeInsets.only(top: 10, bottom: 30)),
             Text(
               "Checkout",
               style: TextStyle(
@@ -112,6 +120,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             Padding(padding: EdgeInsets.only(top: 10)),
             // Display Cart Items
             ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: widget.cartItems.length,
               itemBuilder: (BuildContext context, int index) {

@@ -60,7 +60,7 @@ class _homepageState extends State<homepage> {
     print("updatecart");
     Provider.of<CartProvider>(context, listen: false).addToCart(
         Cart(productName: product, price: price, quantity: quantity));
-    setState(() {});
+    // setState(() {});
   }
 
   void getSearchResults(List result) {
@@ -462,6 +462,7 @@ class _homepageState extends State<homepage> {
 
   Widget displayCartItems(cartProvider) {
     return ListView.builder(
+      physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: cartProvider.items.length + 1,
       itemBuilder: (BuildContext context, int index) {
