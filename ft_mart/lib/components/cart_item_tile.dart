@@ -4,6 +4,7 @@ class CartItemTile extends StatelessWidget {
   final String productName;
   final String formattedQuantity;
   final String price;
+  final bool showDeleteIcon; // New parameter to control delete icon visibility
   final Function onTapDelete;
 
   const CartItemTile({
@@ -11,6 +12,7 @@ class CartItemTile extends StatelessWidget {
     required this.productName,
     required this.formattedQuantity,
     required this.price,
+    required this.showDeleteIcon, // Initialize the new parameter
     required this.onTapDelete,
   }) : super(key: key);
 
@@ -45,13 +47,14 @@ class CartItemTile extends StatelessWidget {
               style: TextStyle(color: Colors.white),
             ),
             SizedBox(width: 10),
-            GestureDetector(
-              onTap: () => onTapDelete(),
-              child: Icon(
-                Icons.delete,
-                color: Colors.white,
+            if (showDeleteIcon) // Conditionally show delete icon
+              GestureDetector(
+                onTap: () => onTapDelete(),
+                child: Icon(
+                  Icons.delete,
+                  color: Colors.white,
+                ),
               ),
-            ),
           ],
         ),
       ),

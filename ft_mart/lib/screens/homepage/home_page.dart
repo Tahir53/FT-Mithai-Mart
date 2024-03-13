@@ -474,6 +474,7 @@ class _homepageState extends State<homepage> {
             productName: cartProvider.items[index].productName,
             formattedQuantity: formattedQuantity,
             price: cartProvider.items[index].price,
+            showDeleteIcon: true,
             onTapDelete: () {
               setState(() {
                 cartProvider.removeFromCart(cartProvider.items[index]);

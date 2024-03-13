@@ -82,30 +82,39 @@ class _adminState extends State<admin> {
                       return Card(
                         elevation: 5,
                         color: Color(0xffFFF8E6),
-                        margin:
-                            EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                         child: Stack(
                           children: [
                             ListTile(
-                              title: Text('Order No.: ${order.orderId}'),
+                              title: Text('Order No. ${order.orderId}'),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text('${order.name}'),
-                                  Text(
-                                      '${DateFormat(' E,d MMM y | H:m').format(order.orderDateTime)}'),
-                                  // Text('Delivery/Pickup: ${order.isDelivery ? 'Delivery' : 'Pickup'}'),
+                                  Text('${DateFormat(' E,d MMM y | H:m').format(order.orderDateTime)}'),
                                 ],
                               ),
-                              // onTap: () {
-                              //   // Handle tapping on the order item if needed
-                              // },
+                            ),
+                            Positioned(
+                              top: 8,
+                              right: 8,
+                              child: Container(
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: order.deliveryAddress == 'Pickup' ? Color(0xffFFEC8C) : Color(0xffFFEC8C),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Text(
+                                  order.deliveryAddress == 'Pickup' ? 'Pickup' : 'Delivery',
+                                  style: TextStyle(color: Color(0xff8C7502)),
+                                ),
+                              ),
                             ),
                             Positioned(
                               bottom: 0,
                               right: 0,
                               child: DropdownButton<String>(
-                                value: 'In Process', // Set the default selected item
+                                value: 'In Process',
                                 items: <String>['In Process', 'Ready for Pickup', 'Shipped', 'Delivered'].map((String value) {
                                   Color backgroundColor = value == 'In Process' ? Color(0xffA4202E) : (value == 'Ready for Pickup' ? Color(0xff038200) : Colors.white);
                                   Color textColor = value == 'In Process' || value == 'Ready for Pickup' ? Colors.white : Colors.black;
@@ -119,7 +128,7 @@ class _adminState extends State<admin> {
                                           value,
                                           style: TextStyle(
                                             color: textColor,
-                                            fontSize: 10, // Set the text size to 10 pixels
+                                            fontSize: 10,
                                           ),
                                         ),
                                       ),

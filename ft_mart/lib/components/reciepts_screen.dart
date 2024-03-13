@@ -9,6 +9,7 @@ class ReceiptScreen extends StatelessWidget {
   final List<Cart> cartItems;
   final DateTime orderDateTime;
   final String name;
+  final double totalAmount;
 
   const ReceiptScreen({
     Key? key,
@@ -16,11 +17,15 @@ class ReceiptScreen extends StatelessWidget {
     required this.cartItems,
     required this.orderDateTime,
     required this.name,
+    required this.totalAmount,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    double totalAmount = calculateTotal(cartItems);
+    print('Cart Items Length: ${cartItems.length}');
+    cartItems.forEach((item) {
+      print('Product Name: ${item.productName}, Quantity: ${item.formattedQuantity}');
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -62,7 +67,7 @@ class ReceiptScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Padding(padding: EdgeInsets.only(top: 10)),
-                Text(
+                const Text(
                   "INVOICE",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -74,7 +79,7 @@ class ReceiptScreen extends StatelessWidget {
                   title: Text('Order ID: $orderId'),
                 ),
                 ListTile(
-                  title: Text('Order Date & Time: ${DateFormat(' E,d MMM y H:m').format(orderDateTime!)}'),
+                  title: Text('Order Date & Time: ${DateFormat(' E,d MMM y H:m').format(orderDateTime)}'),
                 ),
                 ListView.builder(
                   shrinkWrap: true,
@@ -110,11 +115,4 @@ class ReceiptScreen extends StatelessWidget {
     );
   }
 
-  double calculateTotal(List<Cart> cartItems) {
-    double total = 0;
-    for (var item in cartItems) {
-      total += double.parse(item.price);
-    }
-    return total;
-  }
 }

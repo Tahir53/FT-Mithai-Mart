@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ftmithaimart/model/cart_provider.dart';
+import 'package:ftmithaimart/otp/phone_number.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../components/cart_item_tile.dart';
@@ -10,7 +11,7 @@ import '../model/cart_model.dart';
 import '../model/orders_model.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  final List<Cart> cartItems; // Change the type to List<Cart>
+  final List<Cart> cartItems;
   final double totalAmount;
   final String? name;
   final String? email;
@@ -59,34 +60,33 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       quantities: quantities,
     );
 
-    // Save order to database
     await saveOrderToDatabase(order);
 
-    if (context.mounted){
+    if (context.mounted) {
       Provider.of<CartProvider>(context, listen: false).clearCart();
-      
+
+      // Pass a copy of the cartItems list to ReceiptScreen
       Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ReceiptScreen(
-          name: order.name,
-          orderId: order.orderId,
-          cartItems: order.cartItems,
-          orderDateTime: order.orderDateTime,
+        context,
+        MaterialPageRoute(
+          builder: (context) => ReceiptScreen(
+            name: order.name,
+            orderId: order.orderId,
+            cartItems: List<Cart>.from(widget.cartItems),
+            orderDateTime: order.orderDateTime,
+            totalAmount: widget.totalAmount,
+          ),
         ),
-      ),
-      (route) => false, // Remove all previous routes from the stack
-    );
+        (route) => false,
+      );
     }
-    // Navigate to next screen after checkout
-    
   }
 
   Future<void> saveOrderToDatabase(Order order) async {
     MongoDatabase.saveOrder(order);
   }
 
-@override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -107,6 +107,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         ),
       ),
       body: SingleChildScrollView(
+
         child: Column(
           children: [
             Padding(padding: EdgeInsets.only(top: 10, bottom: 30)),
@@ -128,110 +129,157 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   productName: widget.cartItems[index].productName,
                   formattedQuantity: widget.cartItems[index].formattedQuantity,
                   price: widget.cartItems[index].price,
+                  showDeleteIcon: false,
                   onTapDelete: () {},
                 );
               },
             ),
             // Display Total Amount
             TotalCard(formattedTotal: widget.totalAmount.toString()),
-
-            ListTile(
-              title: Text('For Delivery'),
-              leading: Radio(
-                value: 'delivery',
-                groupValue: _deliveryPickupGroupValue(),
-                onChanged: (value) {
-                  setState(() {
-                    _forDelivery = true;
-                    _forPickup = false;
-                  });
-                },
-              ),
-              onTap: () {
-                setState(() {
-                  _forDelivery = true;
-                  _forPickup = false;
-                });
-              },
-            ),
-            Visibility(
-              visible: _forDelivery,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: TextField(
-                      controller: _addressController,
-                      decoration: InputDecoration(
-                        labelText: 'Address for Delivery',
-                        hintText: 'Enter your address',
-                      ),
-                    ),
+            Theme(
+                data: Theme.of(context).copyWith(
+                  unselectedWidgetColor: Colors.grey, // Color of unselected radio buttons
+                  radioTheme: RadioThemeData(
+                    fillColor: MaterialStateColor.resolveWith((states) {
+                      if (states.contains(MaterialState.selected)) {
+                        return Color(0xff63131C); // Color of selected radio button
+                      }
+                      return Colors.grey; // Default color for unselected radio buttons
+                    }),
                   ),
-                  ListTile(
-                    leading: Icon(Icons.calendar_today), // Custom leading icon
-                    title: Text(
-                      'Select Delivery Date and Time',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    trailing: Icon(Icons.arrow_forward), // Custom trailing icon
-                    onTap: () {
-                      // Show date and time picker for delivery
-                      // You can reuse the _showDateTimePicker function
-                      _showDateTimePicker();
+                ),
+            child: Column(
+              children: [
+                ListTile(
+                  title: Text('Delivery'),
+                  leading: Radio(
+                    value: 'delivery',
+                    groupValue: _deliveryPickupGroupValue(),
+                    onChanged: (value) {
+                      setState(() {
+                        _forDelivery = true;
+                        _forPickup = false;
+                      });
                     },
                   ),
-                  if (_forDelivery && _pickupDateTime != null)
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        'Delivery Details:\n'
-                        '${DateFormat(' E,d MMM y H:m').format(_pickupDateTime!)}\n'
-                        'Address: ${_addressController.text}',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            ListTile(
-              title: Text('For Pickup'),
-              leading: Radio(
-                value: 'pickup',
-                groupValue: _deliveryPickupGroupValue(),
-                onChanged: (value) {
-                  setState(() {
-                    _forDelivery = false;
-                    _forPickup = true;
-                    _showDateTimePicker();
-                  });
-                },
-              ),
-              onTap: () {
-                setState(() {
-                  _forDelivery = false;
-                  _forPickup = true;
-                  // Show date and time picker
-                  _showDateTimePicker();
-                });
-              },
-            ),
-            if (_forPickup && _pickupDateTime != null)
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  'Pickup Details: ${DateFormat(' E,d MMM y H:m').format(_pickupDateTime!)}',
-                  style: TextStyle(fontSize: 16),
+                  onTap: () {
+                    setState(() {
+                      _forDelivery = true;
+                      _forPickup = false;
+                    });
+                  },
                 ),
-              ),
-            ElevatedButton(
-              onPressed: _checkout,
-              // Call checkout function when button is pressed
-              child: Text('Order'),
+                Visibility(
+                  visible: _forDelivery,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: TextField(
+                          controller: _addressController,
+                          decoration: InputDecoration(
+                            labelText: 'Address for Delivery',
+                            hintText: 'Enter your address',
+                          ),
+                        ),
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.calendar_today), // Custom leading icon
+                        title: Text(
+                          'Select Delivery Date and Time',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        trailing: Icon(Icons.arrow_forward), // Custom trailing icon
+                        onTap: () {
+                          _showDateTimePicker();
+                        },
+                      ),
+                      if (_forDelivery && _pickupDateTime != null)
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                            'Delivery Details:\n'
+                                '${DateFormat(' E,d MMM y H:m').format(_pickupDateTime!)}\n'
+                                'Address: ${_addressController.text}',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                ListTile(
+                  title: Text('Pickup'),
+                  leading: Radio(
+                    value: 'pickup',
+                    groupValue: _deliveryPickupGroupValue(),
+                    onChanged: (value) {
+                      setState(() {
+                        _forDelivery = false;
+                        _forPickup = true;
+                        _showDateTimePicker();
+                      });
+                    },
+                  ),
+                  onTap: () {
+                    setState(() {
+                      _forDelivery = false;
+                      _forPickup = true;
+                      _showDateTimePicker();
+                    });
+                  },
+                ),
+                if (_forPickup && _pickupDateTime != null)
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      'Pickup Details: ${DateFormat(' E,d MMM y H:m').format(_pickupDateTime!)}',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (!_forDelivery && !_forPickup) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                              'Please select either "Delivery" or "Pickup" option.'),
+                          backgroundColor: Color(0xff63131C),
+                        ),
+                      );
+                      return;
+                    }
+
+                    if (_forDelivery &&
+                        (_addressController.text.isEmpty ||
+                            _pickupDateTime == null)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                              'Please enter the delivery address and select delivery date and time.'),
+                          backgroundColor: Color(0xff63131C),
+                        ),
+                      );
+                      return;
+                    }
+                    if (_forPickup && _pickupDateTime == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Please select pickup date and time.'),
+                          backgroundColor: Color(0xff63131C),
+                        ),
+                      );
+                      return;
+                    }
+                    _checkout();
+                  },
+                  child: Text('Place Order'),
+                )
+              ],
+            ),
             ),
           ],
         ),

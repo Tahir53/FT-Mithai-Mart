@@ -117,5 +117,3 @@ class MainApp extends StatelessWidget {
     );
   }
 }
-
-class MongoClient {}

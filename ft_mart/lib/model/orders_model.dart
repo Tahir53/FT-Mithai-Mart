@@ -1,7 +1,6 @@
 import 'package:intl/intl.dart';
-
+import 'dart:math';
 import 'cart_model.dart';
-import 'customer_model.dart';
 
 class Order {
   final String orderId;
@@ -57,8 +56,15 @@ class Order {
       quantities: (json['quantities'] as List<dynamic>).cast<String>(),
     );
   }
-
+  static Set<String> generatedOrderIds = Set<String>();
   static String generateOrderId() {
-    return DateFormat('yyyyMMddHHmmss').format(DateTime.now());
+    Random random = Random();
+    String orderId;
+    do {
+      int randomNumber = random.nextInt(10000); // Generate a random number between 0 and 9999
+      orderId = randomNumber.toString().padLeft(4, '0'); // Ensure the order ID is exactly 4 digits long
+    } while (generatedOrderIds.contains(orderId)); // Repeat if the generated order ID already exists
+    generatedOrderIds.add(orderId); // Add the generated order ID to the set
+    return orderId;
   }
 }
