@@ -2,7 +2,7 @@
 <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:label="FT Sweets Shop"
+        android:label="FT Mithai Mart"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

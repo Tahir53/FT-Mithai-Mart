@@ -11,8 +11,10 @@ class Order {
   final String name;
   final String email;
   final String contact;
+  final String payment;
   final List<String> productNames;
   final List<String> quantities;
+  final String? receiptImagePath;
 
   Order({
     required this.orderId,
@@ -23,8 +25,10 @@ class Order {
     required this.name,
     required this.email,
     required this.contact,
+    required this.payment,
     required this.productNames,
     required this.quantities,
+    required this.receiptImagePath,
   });
 
   Map<String, dynamic> toJson() {
@@ -39,6 +43,8 @@ class Order {
       'deliveryAddress': deliveryAddress,
       'productNames': productNames,
       'quantities': quantities,
+      'payment': payment,
+      'receiptImagePath': receiptImagePath,
     };
   }
 
@@ -52,8 +58,10 @@ class Order {
       totalAmount: json['totalAmount'],
       orderDateTime: DateFormat('yyyy-MM-dd HH:mm:ss').parse(json['orderDateTime']),
       deliveryAddress: json['deliveryAddress'],
+      payment: json['payment'],
       productNames: (json['productNames'] as List<dynamic>).cast<String>(),
       quantities: (json['quantities'] as List<dynamic>).cast<String>(),
+      receiptImagePath: json['receiptImagePath'],
     );
   }
   static Set<String> generatedOrderIds = Set<String>();

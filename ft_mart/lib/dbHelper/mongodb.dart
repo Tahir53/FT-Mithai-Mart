@@ -108,11 +108,6 @@ class MongoDatabase {
   }
 
   static Future<List<Product>> getProducts() async {
-    // final List<Map<String, dynamic>> productsData =
-    //     await productsCollection.find().toList();
-    // final List<Product> products =
-    //     productsData.map((data) => Product.fromJson(data)).toList();
-    // return products;
     final int maxRetries = 3;
     int retryCount = 0;
     List<Product> products = [];

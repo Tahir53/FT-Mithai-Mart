@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:ftmithaimart/model/cart_provider.dart';
-import 'package:ftmithaimart/otp/phone_number.dart';
+import 'package:ftmithaimart/otp/phone_number/enter_number.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../components/cart_item_tile.dart';
 import '../components/reciepts_screen.dart';
 import '../components/total_card.dart';
@@ -17,14 +20,14 @@ class CheckoutScreen extends StatefulWidget {
   final String? email;
   final String? contact;
 
-  const CheckoutScreen(
-      {Key? key,
-      required this.cartItems,
-      required this.totalAmount,
-      required this.name,
-      required this.email,
-      required this.contact})
-      : super(key: key);
+  const CheckoutScreen({
+    Key? key,
+    required this.cartItems,
+    required this.totalAmount,
+    required this.name,
+    required this.email,
+    required this.contact,
+  }) : super(key: key);
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -34,11 +37,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   bool _forDelivery = false;
   bool _forPickup = false;
   DateTime? _pickupDateTime;
-  final TextEditingController _addressController =
-      TextEditingController(); // Controller for delivery address
+  final TextEditingController _addressController = TextEditingController();
+  File? _receiptImage;
+  String? _uploadedImageUrl;
+  String? _paymentOption;
 
   // Function to handle checkout process
-
   void _checkout() async {
     List<String> productNames = [];
     List<String> quantities = [];
@@ -58,6 +62,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       contact: widget.contact ?? "no contact",
       productNames: productNames,
       quantities: quantities,
+      payment: _paymentOption!,
+      receiptImagePath: _receiptImage != null ? _receiptImage!.path : null,
+
+      //paymentOption: _paymentOption,
     );
 
     await saveOrderToDatabase(order);
@@ -65,7 +73,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     if (context.mounted) {
       Provider.of<CartProvider>(context, listen: false).clearCart();
 
-      // Pass a copy of the cartItems list to ReceiptScreen
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
@@ -95,19 +102,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         toolbarHeight: 100,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(16),
-              bottomRight: Radius.circular(16)),
+            bottomLeft: Radius.circular(16),
+            bottomRight: Radius.circular(16),
+          ),
         ),
         centerTitle: true,
         title: Padding(
           padding: const EdgeInsets.all(0.0),
-          child: Image.asset("assets/Logo.png", width: 50, height: 50
-              // alignment: Alignment.center,
-              ),
+          child: Image.asset(
+            "assets/Logo.png",
+            width: 50,
+            height: 50,
+          ),
         ),
       ),
       body: SingleChildScrollView(
-
         child: Column(
           children: [
             Padding(padding: EdgeInsets.only(top: 10, bottom: 30)),
@@ -137,86 +146,152 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             // Display Total Amount
             TotalCard(formattedTotal: widget.totalAmount.toString()),
             Theme(
-                data: Theme.of(context).copyWith(
-                  unselectedWidgetColor: Colors.grey, // Color of unselected radio buttons
-                  radioTheme: RadioThemeData(
-                    fillColor: MaterialStateColor.resolveWith((states) {
-                      if (states.contains(MaterialState.selected)) {
-                        return Color(0xff63131C); // Color of selected radio button
-                      }
-                      return Colors.grey; // Default color for unselected radio buttons
-                    }),
-                  ),
+              data: Theme.of(context).copyWith(
+                unselectedWidgetColor: Colors.grey,
+                // Color of unselected radio buttons
+                radioTheme: RadioThemeData(
+                  fillColor: MaterialStateColor.resolveWith((states) {
+                    if (states.contains(MaterialState.selected)) {
+                      return Color(0xff63131C);
+                    }
+                    return Colors.grey;
+                  }),
                 ),
-            child: Column(
-              children: [
-                ListTile(
-                  title: Text('Delivery'),
-                  leading: Radio(
-                    value: 'delivery',
-                    groupValue: _deliveryPickupGroupValue(),
-                    onChanged: (value) {
+              ),
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text('Delivery'),
+                    leading: Radio(
+                      value: 'delivery',
+                      groupValue: _deliveryPickupGroupValue(),
+                      onChanged: (value) {
+                        setState(() {
+                          _forDelivery = true;
+                          _forPickup = false;
+                        });
+                      },
+                    ),
+                    onTap: () {
                       setState(() {
                         _forDelivery = true;
                         _forPickup = false;
                       });
                     },
                   ),
-                  onTap: () {
-                    setState(() {
-                      _forDelivery = true;
-                      _forPickup = false;
-                    });
-                  },
-                ),
-                Visibility(
-                  visible: _forDelivery,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: TextField(
-                          controller: _addressController,
-                          decoration: InputDecoration(
-                            labelText: 'Address for Delivery',
-                            hintText: 'Enter your address',
+                  Visibility(
+                    visible: _forDelivery,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: TextField(
+                            controller: _addressController,
+                            decoration: InputDecoration(
+                              labelText: 'Address for Delivery',
+                              hintText: 'Enter your address',
+                            ),
                           ),
                         ),
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.calendar_today), // Custom leading icon
-                        title: Text(
-                          'Select Delivery Date and Time',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                        ListTile(
+                          leading: Icon(Icons.calendar_today),
+                          // Custom leading icon
+                          title: Text(
+                            'Select Delivery Date and Time',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
+                          trailing: Icon(Icons.arrow_forward),
+                          // Custom trailing icon
+                          onTap: () {
+                            _showDateTimePicker();
+                          },
                         ),
-                        trailing: Icon(Icons.arrow_forward), // Custom trailing icon
-                        onTap: () {
-                          _showDateTimePicker();
-                        },
-                      ),
-                      if (_forDelivery && _pickupDateTime != null)
+                        if (_forDelivery && _pickupDateTime != null)
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              'Delivery Details:\n'
+                              '${DateFormat(' E,d MMM y H:m').format(_pickupDateTime!)}\n'
+                              'Address: ${_addressController.text}\n'
+                              'Payment Mode: ${_paymentOption}',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ),
                         Padding(
                           padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                            'Delivery Details:\n'
-                                '${DateFormat(' E,d MMM y H:m').format(_pickupDateTime!)}\n'
-                                'Address: ${_addressController.text}',
-                            style: TextStyle(fontSize: 16),
+                          child: Row(
+                            children: [
+                              Text('Payment Method: '),
+                              DropdownButton<String>(
+                                value: _paymentOption,
+                                onChanged: (String? value) {
+                                  setState(() {
+                                    _paymentOption = value;
+                                  });
+                                },
+                                items: <String>[
+                                  'Cash on Delivery',
+                                  'EasyPaisa'
+                                ].map<DropdownMenuItem<String>>((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                              ),
+                            ],
                           ),
                         ),
-                    ],
+                        if (_paymentOption == 'EasyPaisa')
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Transfer Money to: 0300XXXXXXX'),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    _uploadReceiptImage();
+                                  },
+                                  child: Text('Upload Receipt Image'),
+                                ),
+                                if (_uploadedImageUrl != null) ...[
+                                  GestureDetector(
+                                    onTap: () {
+                                      launch(_uploadedImageUrl!);
+                                    },
+                                    child: Text(
+                                      'Uploaded Reciept',
+                                      style: TextStyle(
+                                          color: Color(0xff63131C),
+                                          decoration: TextDecoration.underline),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
-                ),
-                ListTile(
-                  title: Text('Pickup'),
-                  leading: Radio(
-                    value: 'pickup',
-                    groupValue: _deliveryPickupGroupValue(),
-                    onChanged: (value) {
+                  ListTile(
+                    title: Text('Pickup'),
+                    leading: Radio(
+                      value: 'pickup',
+                      groupValue: _deliveryPickupGroupValue(),
+                      onChanged: (value) {
+                        setState(() {
+                          _forDelivery = false;
+                          _forPickup = true;
+                          _showDateTimePicker();
+                        });
+                      },
+                    ),
+                    onTap: () {
                       setState(() {
                         _forDelivery = false;
                         _forPickup = true;
@@ -224,62 +299,64 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       });
                     },
                   ),
-                  onTap: () {
-                    setState(() {
-                      _forDelivery = false;
-                      _forPickup = true;
-                      _showDateTimePicker();
-                    });
-                  },
-                ),
-                if (_forPickup && _pickupDateTime != null)
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      'Pickup Details: ${DateFormat(' E,d MMM y H:m').format(_pickupDateTime!)}',
-                      style: TextStyle(fontSize: 16),
+                  if (_forPickup && _pickupDateTime != null)
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        'Pickup Details: ${DateFormat(' E,d MMM y H:m').format(_pickupDateTime!)}',
+                        style: TextStyle(fontSize: 16),
+                      ),
                     ),
-                  ),
-                ElevatedButton(
-                  onPressed: () {
-                    if (!_forDelivery && !_forPickup) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                              'Please select either "Delivery" or "Pickup" option.'),
-                          backgroundColor: Color(0xff63131C),
-                        ),
-                      );
-                      return;
-                    }
+                  ElevatedButton(
+                    onPressed: () {
+                      if (!_forDelivery && !_forPickup) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                'Please select either "Delivery" or "Pickup" option.'),
+                            backgroundColor: Color(0xff63131C),
+                          ),
+                        );
+                        return;
+                      }
 
-                    if (_forDelivery &&
-                        (_addressController.text.isEmpty ||
-                            _pickupDateTime == null)) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                              'Please enter the delivery address and select delivery date and time.'),
-                          backgroundColor: Color(0xff63131C),
-                        ),
-                      );
-                      return;
-                    }
-                    if (_forPickup && _pickupDateTime == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Please select pickup date and time.'),
-                          backgroundColor: Color(0xff63131C),
-                        ),
-                      );
-                      return;
-                    }
-                    _checkout();
-                  },
-                  child: Text('Place Order'),
-                )
-              ],
-            ),
+                      if (_forDelivery &&
+                          (_addressController.text.isEmpty ||
+                              _pickupDateTime == null)) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                'Please enter the delivery address and select delivery date and time.'),
+                            backgroundColor: Color(0xff63131C),
+                          ),
+                        );
+                        return;
+                      }
+                      if (_forPickup && _pickupDateTime == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content:
+                                Text('Please select pickup date and time.'),
+                            backgroundColor: Color(0xff63131C),
+                          ),
+                        );
+                        return;
+                      }
+                      if (_paymentOption == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Please select a payment method.'),
+                            backgroundColor: Color(0xff63131C),
+                          ),
+                        );
+                        return;
+                      }
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>EnterNumber()));
+                    },
+                    child: Text('Place Order'),
+                  )
+                ],
+              ),
             ),
           ],
         ),
@@ -338,6 +415,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       return 'pickup';
     } else {
       return null;
+    }
+  }
+
+  Future<void> _uploadReceiptImage() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedImage != null) {
+      setState(() {
+        _receiptImage = File(pickedImage.path);
+        _uploadedImageUrl =
+            pickedImage.path; // Store the path of the uploaded image
+      });
+    } else {
+      // Handle if user cancels image picking
     }
   }
 }

@@ -8,6 +8,9 @@ import 'package:ftmithaimart/push_notifications.dart';
 import 'package:ftmithaimart/screens/splash.dart';
 import 'package:provider/provider.dart';
 import 'components/message.dart';
+import 'components/push_noti.dart';
+import 'components/reciepts_screen.dart';
+import 'otp/otp_screen.dart';
 import 'screens/homepage/home_page.dart';
 import 'screens/authentication/login_page.dart';
 import '../splash_screen.dart';
@@ -24,11 +27,19 @@ Future _firebaseBackgroundMessage(RemoteMessage message) async {
 }
 
 void main() async {
-  HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  Platform.isAndroid
+      ? await Firebase.initializeApp(
+          options: const FirebaseOptions(
+              apiKey: 'AIzaSyBRPwp0O-kxX5wN5di787nUk5CNOdVcsH8',
+              appId: '1:722881978336:android:21e1bb38e3f2ab28c45585',
+              messagingSenderId: '722881978336',
+              projectId: 'ftmithaimart-4e059'))
+      : await Firebase.initializeApp();
+
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
 
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
     if (message.notification != null) {
@@ -112,7 +123,8 @@ class MainApp extends StatelessWidget {
         'home_page': (context) => homepage(
               name: "User",
             ),
-        '/message': (context) => const Message()
+        '/message': (context) => const Message(),
+        '/otpScreen': (BuildContext ctx) => OtpScreen(),
       },
     );
   }

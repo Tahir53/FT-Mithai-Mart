@@ -23,6 +23,7 @@ class PushNotifications {
     print("device token: $token");
   }
 
+
 //initalize local notifications
   static Future localNotiInit() async {
     const AndroidInitializationSettings initializationSettingsAndroid =

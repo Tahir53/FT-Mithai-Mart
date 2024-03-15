@@ -29,6 +29,9 @@ dependencies:
   dio: ^5.4.1
   flutter_launcher_icons: ^0.13.1
   otp: ^3.1.4
+  image_picker: ^1.0.7
+  url_launcher: ^6.2.5
+  otp_pin_field: ^1.2.2
 
 
 
@@ -44,6 +47,7 @@ flutter:
     - assets/Logo.png
     - assets/google.png
     - assets/splash.png
+    - assets/countrycodes.json
 
 
 fonts:
