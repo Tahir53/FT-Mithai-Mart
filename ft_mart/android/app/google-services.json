@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "722881978336-kqq6mqkdbtvao1l1dn1bpfajgn8cnl71.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ft_mart",
+            "certificate_hash": "de36cd73dd53aaf0c9844559a461fbd2df3ed635"
+          }
+        },
+        {
           "client_id": "722881978336-2qdnclgb4ei1gbga8b43jgvcn3mpfsj7.apps.googleusercontent.com",
           "client_type": 3
         }
