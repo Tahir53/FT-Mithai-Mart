@@ -124,7 +124,7 @@ class MainApp extends StatelessWidget {
               name: "User",
             ),
         '/message': (context) => const Message(),
-        '/otpScreen': (BuildContext ctx) => OtpScreen(),
+       // '/otpScreen': (BuildContext ctx) => OtpScreen(),
       },
     );
   }

@@ -351,8 +351,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         );
                         return;
                       }
-                      _checkout();
-                      // Navigator.push(context, MaterialPageRoute(builder: (context)=>EnterNumber()));
+                      //_checkout();
+                       Navigator.push(context, MaterialPageRoute(builder: (context)=>EnterNumber()));
                     },
                     child: Text('Place Order'),
                   )

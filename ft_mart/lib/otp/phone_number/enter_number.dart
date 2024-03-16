@@ -1,8 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:ftmithaimart/otp/otp_screen.dart';
 import 'package:ftmithaimart/otp/phone_number/widget/country_picker.dart';
-import 'package:ftmithaimart/otp/phone_number/widget/custom_button.dart';
 
 class EnterNumber extends StatefulWidget {
   @override
@@ -10,22 +11,8 @@ class EnterNumber extends StatefulWidget {
 }
 
 class _EnterNumberState extends State<EnterNumber> {
-  final _contactEditingController = TextEditingController();
+  final phoneController = TextEditingController();
   var _dialCode = '';
-
-  //Login click with contact number validation
-  Future<void> clickOnLogin(BuildContext context) async {
-    if (_contactEditingController.text.isEmpty) {
-      showErrorDialog(context, 'Contact number can\'t be empty.');
-    } else {
-      final responseMessage =
-      await Navigator.pushNamed(context, '/otpScreen',
-          arguments: '$_dialCode${_contactEditingController.text}');
-      if (responseMessage != null) {
-        showErrorDialog(context, responseMessage as String);
-      }
-    }
-  }
 
   //callback function of country picker
   void _callBackFunction(String name, String dialCode, String flag) {
@@ -102,7 +89,8 @@ class _EnterNumberState extends State<EnterNumber> {
                   height: screenHeight * 0.04,
                 ),
                 Container(
-                  margin: EdgeInsets.symmetric(horizontal: screenWidth > 600 ? screenWidth * 0.2 : 16),
+                  margin: EdgeInsets.symmetric(
+                      horizontal: screenWidth > 600 ? screenWidth * 0.2 : 16),
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
                       color: Colors.white,
@@ -129,12 +117,13 @@ class _EnterNumberState extends State<EnterNumber> {
                         child: Row(
                           // ignore: prefer_const_literals_to_create_immutables
                           children: [
-                            CountryPicker(
-                              callBackFunction: _callBackFunction,
-                              headerText: 'Select Country',
-                              headerBackgroundColor: Theme.of(context).primaryColor,
-                              headerTextColor: Colors.white,
-                            ),
+                            // CountryPicker(
+                            //   callBackFunction: _callBackFunction,
+                            //   headerText: 'Select Country',
+                            //   headerBackgroundColor:
+                            //       Theme.of(context).primaryColor,
+                            //   headerTextColor: Colors.white,
+                            // ),
                             SizedBox(
                               width: screenWidth * 0.01,
                             ),
@@ -145,11 +134,14 @@ class _EnterNumberState extends State<EnterNumber> {
                                   border: InputBorder.none,
                                   enabledBorder: InputBorder.none,
                                   focusedBorder: InputBorder.none,
-                                  contentPadding: EdgeInsets.symmetric(vertical: 13.5),
+                                  contentPadding:
+                                  EdgeInsets.symmetric(vertical: 13.5),
                                 ),
-                                controller: _contactEditingController,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [LengthLimitingTextInputFormatter(10)],
+                                controller: phoneController,
+                                //keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  //LengthLimitingTextInputFormatter(10)
+                                ],
                               ),
                             ),
                           ],
@@ -158,7 +150,23 @@ class _EnterNumberState extends State<EnterNumber> {
                       const SizedBox(
                         height: 8,
                       ),
-                      CustomButton(clickOnLogin),
+
+                      ElevatedButton(
+                          onPressed: () async {
+                            await FirebaseAuth.instance.verifyPhoneNumber(
+                                verificationCompleted:
+                                    (PhoneAuthCredential credential) {},
+                                verificationFailed:
+                                    (FirebaseAuthException ex) {},
+                                codeSent: (String verificationId,
+                                    int? resendToken) {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>OtpScreen(verificationId: verificationId,)));
+                                },
+                                codeAutoRetrievalTimeout:
+                                    (String verificationID) {},
+                                phoneNumber: phoneController.text.toString());
+                          },
+                          child: Text("Verify Phone Number"))
                     ],
                   ),
                 )

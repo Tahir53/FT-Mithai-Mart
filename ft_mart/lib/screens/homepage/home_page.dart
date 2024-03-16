@@ -57,12 +57,11 @@ class _homepageState extends State<homepage> {
   }
 
   void updateCart(String product, String price, double quantity) async {
-    print("updatecart");
     final stock = await MongoDatabase.getStock(product);
     if (stock == 0 || stock == 0.0) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Stock is finished, select another item!'),
+          content: Text('No Stock Available, please select another item!'),
           backgroundColor: Color(0xff63131C),
         ),
       );

@@ -1,15 +1,20 @@
-import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:ftmithaimart/screens/homepage/home_page.dart';
 import 'package:otp_pin_field/otp_pin_field.dart';
 
-// ignore: must_be_immutable
 class OtpScreen extends StatefulWidget {
-  bool _isInit = true;
+
   var _contact = '';
+  final String verificationId;
+
+  OtpScreen({
+    Key? key,
+    required this.verificationId,
+  });
 
   @override
   _OtpScreenState createState() => _OtpScreenState();
@@ -18,22 +23,13 @@ class OtpScreen extends StatefulWidget {
 class _OtpScreenState extends State<OtpScreen> {
   late String phoneNo;
   late String smsOTP;
-  late String verificationId;
-  String errorMessage = '';
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final _otpPinFieldKey = GlobalKey<OtpPinFieldState>();
 
-  //this is method is used to initialize data
+  //late String verificationId;
+  String errorMessage = '';
+  final _otpPinFieldKey = GlobalKey<OtpPinFieldState>();
+  TextEditingController OtpController = TextEditingController();
+
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Load data only once after screen load
-    if (widget._isInit) {
-      widget._contact = '${ModalRoute.of(context)?.settings.arguments as String}';
-      generateOtp(widget._contact);
-      widget._isInit = false;
-    }
-  }
 
   //dispose controllers
   @override
@@ -87,11 +83,11 @@ class _OtpScreenState extends State<OtpScreen> {
                   height: screenHeight * 0.04,
                 ),
                 Container(
-                  margin: EdgeInsets.symmetric(horizontal: screenWidth > 600 ? screenWidth * 0.2 : 2),
+                  margin: EdgeInsets.symmetric(
+                      horizontal: screenWidth > 600 ? screenWidth * 0.2 : 2),
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
                       color: Colors.white,
-                      // ignore: prefer_const_literals_to_create_immutables
                       boxShadow: [
                         const BoxShadow(
                           color: Colors.grey,
@@ -106,39 +102,31 @@ class _OtpScreenState extends State<OtpScreen> {
                     children: [
                       Container(
                         margin: EdgeInsets.only(left: screenWidth * 0.025),
-                        child: OtpPinField(
+                        child: TextField(
+                          controller: OtpController,
                           key: _otpPinFieldKey,
                           textInputAction: TextInputAction.done,
                           maxLength: 6,
-                          fieldWidth: 40,
-                          onSubmit: (text) {
-                            smsOTP = text;
-                          },
-                          onChange: (text) {},
+                          // fieldWidth: 40,
                         ),
                       ),
                       SizedBox(
                         height: screenHeight * 0.04,
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          verifyOtp();
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.all(8),
-                          height: 45,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: const Color(0xff63131C),
-                            borderRadius: BorderRadius.circular(36),
-                          ),
-                          alignment: Alignment.center,
-                          child: const Text(
-                            'Verify',
-                            style: TextStyle(color: Colors.white, fontSize: 16.0),
-                          ),
-                        ),
-                      ),
+                      ElevatedButton(
+                          onPressed: () async {
+                            try {
+                              PhoneAuthCredential credential =
+                              await PhoneAuthProvider.credential(
+                                  verificationId: widget.verificationId,
+                                  smsCode: OtpController.text.toString());
+                              FirebaseAuth.instance.signInWithCredential(credential);
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>homepage(name: "user")));
+                            } catch (ex) {
+                              //log(ex.toString())
+                            }
+                          },
+                          child: Text("Verify OTP"))
                     ],
                   ),
                 )
@@ -150,51 +138,6 @@ class _OtpScreenState extends State<OtpScreen> {
     );
   }
 
-  //Method for generate otp from firebase
-  Future<void> generateOtp(String contact) async {
-    final PhoneCodeSent smsOTPSent = (verId, forceResendingToken) {
-      verificationId = verId;
-    };
-    try {
-      await _auth.verifyPhoneNumber(
-        phoneNumber: contact,
-        codeAutoRetrievalTimeout: (String verId) {
-          verificationId = verId;
-        },
-        codeSent: smsOTPSent,
-        timeout: const Duration(seconds: 60),
-        verificationCompleted: (AuthCredential phoneAuthCredential) {},
-        verificationFailed: (error) {
-          print(error);
-        },
-      );
-    } catch (e) {
-      handleError(e as PlatformException);
-    }
-  }
-
-  //Method for verify otp entered by user
-  Future<void> verifyOtp() async {
-    if (smsOTP.isEmpty || smsOTP == '') {
-      showAlertDialog(context, 'please enter 6 digit otp');
-      return;
-    }
-    try {
-      final AuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: verificationId,
-        smsCode: smsOTP,
-      );
-      final UserCredential user = await _auth.signInWithCredential(credential);
-      final User? currentUser = _auth.currentUser;
-      assert(user.user?.uid == currentUser?.uid);
-      Navigator.pushReplacementNamed(context, '/home_page');
-    } on PlatformException catch(e){
-      handleError(e);
-    }
-    catch (e) {
-      print('error $e');
-    }
-  }
 
   //Method for handle the errors
   void handleError(PlatformException error) {
