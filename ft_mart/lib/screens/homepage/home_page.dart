@@ -487,10 +487,9 @@ class _homepageState extends State<homepage> {
             formattedQuantity: formattedQuantity,
             price: cartProvider.items[index].price,
             showDeleteIcon: true,
-            onTapDelete: () {
-              setState(() {
+            onTapDelete: () async {
+                await MongoDatabase.addStock(cartProvider.items[index].productName);
                 cartProvider.removeFromCart(cartProvider.items[index]);
-              });
             },
           );
         } else {

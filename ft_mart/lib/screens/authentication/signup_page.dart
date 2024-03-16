@@ -1,8 +1,10 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ftmithaimart/dbHelper/mongodb.dart';
 import 'package:ftmithaimart/model/customer_model.dart';
+import 'package:ftmithaimart/push_notifications.dart';
 import "package:mongo_dart/mongo_dart.dart" as M;
 import 'login_page.dart';
 
@@ -273,15 +275,21 @@ class _signupState extends State<signup> {
                       });
                       if (signupkey.currentState!.validate()) {
                         var id = M.ObjectId();
+                        PushNotifications.init();
+                        PushNotifications.localNotiInit();
+                        final String? token = await PushNotifications.returnToken() ?? " ";
                         final data = CustomerModel(
                           name:
                               "${firstNameController.text} ${lastNameController.text}",
                           email: emailController.text,
                           password: passwordController.text,
                           contact: contactController.text,
+                          deviceToken: token.toString(),
                         );
 
+                        
                         var result = await MongoDatabase.insert(data);
+                        // Listen to background notifications
                         showSuccessMessage();
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) => login()));

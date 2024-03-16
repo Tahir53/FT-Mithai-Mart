@@ -189,15 +189,39 @@ class MongoDatabase {
 
   static decreaseStock(String productName) async {
     print("stock depleted in mongodb");
-    await productsCollection.update(
-      where.eq('name', productName),
-      modify.inc('stock', -1),
-    );
+    try{
+      await productsCollection.update(
+        where.eq('name', productName),
+        modify.inc('stock', -1),
+      );
+    }
+    catch (e){
+      print("Error in decreaseStock: $e");
+    }
   }
 
   static getStock(String productName) async {
-    final product = await productsCollection.findOne(where.eq('name', productName));
-    return product['stock'];
+    try{
+      final product = await productsCollection.findOne(where.eq('name', productName));
+      return product['stock'];
+    }
+    catch (e){
+      print(e);
+    }
+    return 0;
+  }
+
+  static addStock(String productName){
+    print("stock added in mongodb");
+    try{
+      productsCollection.update(
+        where.eq('name', productName),
+        modify.inc('stock', 1),
+      );
+    }
+    catch(e){
+      print("Error in addStock: $e");
+    }
   }
 
 }
