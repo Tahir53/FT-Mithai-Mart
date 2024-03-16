@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +22,6 @@ class OtpScreen extends StatefulWidget {
 class _OtpScreenState extends State<OtpScreen> {
   late String phoneNo;
   late String smsOTP;
-
-  //late String verificationId;
   String errorMessage = '';
   final _otpPinFieldKey = GlobalKey<OtpPinFieldState>();
   TextEditingController OtpController = TextEditingController();
@@ -104,8 +101,8 @@ class _OtpScreenState extends State<OtpScreen> {
                         margin: EdgeInsets.only(left: screenWidth * 0.025),
                         child: TextField(
                           controller: OtpController,
-                          key: _otpPinFieldKey,
-                          textInputAction: TextInputAction.done,
+                         // key: _otpPinFieldKey,
+                          //textInputAction: TextInputAction.done,
                           maxLength: 6,
                           // fieldWidth: 40,
                         ),
@@ -124,6 +121,7 @@ class _OtpScreenState extends State<OtpScreen> {
                               Navigator.push(context, MaterialPageRoute(builder: (context)=>homepage(name: "user")));
                             } catch (ex) {
                               //log(ex.toString())
+
                             }
                           },
                           child: Text("Verify OTP"))

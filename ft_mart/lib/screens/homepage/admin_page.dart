@@ -114,6 +114,7 @@ class _adminState extends State<admin> {
                               bottom: 0,
                               right: 0,
                               child: DropdownButton<String>(
+                                isExpanded: true,
                                 value: 'In Process',
                                 items: <String>['In Process', 'Ready for Pickup', 'Shipped', 'Delivered'].map((String value) {
                                   Color backgroundColor = value == 'In Process' ? Color(0xffA4202E) : (value == 'Ready for Pickup' ? Color(0xff038200) : Colors.white);
