@@ -187,4 +187,17 @@ class MongoDatabase {
     return orders;
   }
 
+  static decreaseStock(String productName) async {
+    print("stock depleted in mongodb");
+    await productsCollection.update(
+      where.eq('name', productName),
+      modify.inc('stock', -1),
+    );
+  }
+
+  static getStock(String productName) async {
+    final product = await productsCollection.findOne(where.eq('name', productName));
+    return product['stock'];
+  }
+
 }

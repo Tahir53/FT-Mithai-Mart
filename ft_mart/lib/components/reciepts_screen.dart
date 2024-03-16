@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:ftmithaimart/model/cart_provider.dart';
 import 'package:ftmithaimart/screens/homepage/home_page.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import '../model/cart_model.dart';
 
@@ -151,6 +153,7 @@ class _ReceiptScreenState extends State<ReceiptScreen>
                     ),
                     ElevatedButton(
                       onPressed: () {
+                        Provider.of<CartProvider>(context, listen: false).clearCart();
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(

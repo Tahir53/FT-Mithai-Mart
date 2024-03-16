@@ -62,7 +62,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       contact: widget.contact ?? "no contact",
       productNames: productNames,
       quantities: quantities,
-      payment: _paymentOption!,
+      payment: _paymentOption ?? "Cash on Delivery",
       receiptImagePath: _receiptImage != null ? _receiptImage!.path : null,
 
       //paymentOption: _paymentOption,
@@ -71,7 +71,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     await saveOrderToDatabase(order);
 
     if (context.mounted) {
-      Provider.of<CartProvider>(context, listen: false).clearCart();
+      // Provider.of<CartProvider>(context, listen: false).clearCart();
 
       Navigator.pushAndRemoveUntil(
         context,
@@ -342,7 +342,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         );
                         return;
                       }
-                      if (_paymentOption == null) {
+                      if (_paymentOption == null && _forDelivery) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text('Please select a payment method.'),
@@ -351,7 +351,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         );
                         return;
                       }
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>EnterNumber()));
+                      _checkout();
+                      // Navigator.push(context, MaterialPageRoute(builder: (context)=>EnterNumber()));
                     },
                     child: Text('Place Order'),
                   )

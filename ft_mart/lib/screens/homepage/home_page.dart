@@ -56,10 +56,22 @@ class _homepageState extends State<homepage> {
     return product.category == selectedCat;
   }
 
-  void updateCart(String product, String price, double quantity) {
+  void updateCart(String product, String price, double quantity) async {
     print("updatecart");
-    Provider.of<CartProvider>(context, listen: false).addToCart(
-        Cart(productName: product, price: price, quantity: quantity));
+    final stock = await MongoDatabase.getStock(product);
+    if (stock == 0 || stock == 0.0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Stock is finished, select another item!'),
+          backgroundColor: Color(0xff63131C),
+        ),
+      );
+    } else {
+      await MongoDatabase.decreaseStock(product);
+      Provider.of<CartProvider>(context, listen: false).addToCart(
+          Cart(productName: product, price: price, quantity: quantity));
+    }
+
     // setState(() {});
   }
 
