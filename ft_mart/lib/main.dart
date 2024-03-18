@@ -28,18 +28,20 @@ Future _firebaseBackgroundMessage(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Platform.isAndroid
-      ? await Firebase.initializeApp(
-          options: const FirebaseOptions(
-              apiKey: 'AIzaSyBRPwp0O-kxX5wN5di787nUk5CNOdVcsH8',
-              appId: '1:722881978336:android:21e1bb38e3f2ab28c45585',
-              messagingSenderId: '722881978336',
-              projectId: 'ftmithaimart-4e059'))
-      : await Firebase.initializeApp();
+  // Platform.isAndroid
+  //     ? await Firebase.initializeApp(
+  //         options: const FirebaseOptions(
+  //             apiKey: 'AIzaSyBRPwp0O-kxX5wN5di787nUk5CNOdVcsH8',
+  //             appId: '1:722881978336:android:21e1bb38e3f2ab28c45585',
+  //             messagingSenderId: '722881978336',
+  //             authDomain: 'ftmithaimart-4e059.firebaseapp.com',
+  //             storageBucket: 'ftmithaimart-4e059.appspot.com',
+  //             projectId: 'ftmithaimart-4e059'))
+  //     : await Firebase.initializeApp();
 
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
     if (message.notification != null) {

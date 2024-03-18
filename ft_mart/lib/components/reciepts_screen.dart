@@ -132,7 +132,7 @@ class _ReceiptScreenState extends State<ReceiptScreen>
                     ),
                     ListTile(
                       title: Text(
-                          'Order Date & Time: ${DateFormat(' E,d MMM y H:m').format(widget.orderDateTime)}'),
+                          'Order Date & Time: ${DateFormat(' E,d MMM y hh:mm a').format(widget.orderDateTime)}'),
                     ),
                     ListView.builder(
                       shrinkWrap: true,
@@ -151,7 +151,10 @@ class _ReceiptScreenState extends State<ReceiptScreen>
                       title: Text(
                           'Total Amount: Rs. ${widget.totalAmount.toStringAsFixed(2)}'),
                     ),
-                    ElevatedButton(
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xff63131C),
+                      ),
                       onPressed: () {
                         Provider.of<CartProvider>(context, listen: false).clearCart();
                         Navigator.pushReplacement(
@@ -162,7 +165,11 @@ class _ReceiptScreenState extends State<ReceiptScreen>
                           ),
                         );
                       },
-                      child: Text("Track Order"),
+                      icon: Icon(Icons.track_changes,color: Colors.white,),
+                      label: Text("Track Order",style: TextStyle(
+                        color: Colors.white
+                      ),),
+
                     )
                   ],
                 ),

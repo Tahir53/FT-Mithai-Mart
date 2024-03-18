@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ftmithaimart/components/complaint_box.dart';
-import 'package:ftmithaimart/components/test.dart';
+import 'package:ftmithaimart/components/order_tracking.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/authentication/login_page.dart';
 import 'about_us.dart';
@@ -109,10 +109,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
               textColor: const Color(0xff801924),
               contentPadding: const EdgeInsets.all(5),
               leading: const Icon(
-                Icons.privacy_tip_outlined,
+                Icons.track_changes,
                 color: Color(0xff801924),
               ),
-              title: const Text('Privacy Policy',
+              title: const Text('Order Tracking',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -122,7 +122,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            Test())); //homepage(name: widget.name)));
+                            OrderTracking()));
               },
             ),
           ),

@@ -289,7 +289,6 @@ class _signupState extends State<signup> {
 
                         
                         var result = await MongoDatabase.insert(data);
-                        // Listen to background notifications
                         showSuccessMessage();
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) => login()));

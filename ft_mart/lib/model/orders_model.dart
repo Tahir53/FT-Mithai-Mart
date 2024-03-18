@@ -15,6 +15,7 @@ class Order {
   final List<String> productNames;
   final List<String> quantities;
   final String? receiptImagePath;
+  final String deviceToken; // Add device token field
 
   Order({
     required this.orderId,
@@ -29,6 +30,7 @@ class Order {
     required this.productNames,
     required this.quantities,
     required this.receiptImagePath,
+    required this.deviceToken, // Initialize device token
   });
 
   Map<String, dynamic> toJson() {
@@ -45,6 +47,7 @@ class Order {
       'quantities': quantities,
       'payment': payment,
       'receiptImagePath': receiptImagePath,
+      'deviceToken': deviceToken, // Serialize device token
     };
   }
 
@@ -62,8 +65,10 @@ class Order {
       productNames: (json['productNames'] as List<dynamic>).cast<String>(),
       quantities: (json['quantities'] as List<dynamic>).cast<String>(),
       receiptImagePath: json['receiptImagePath'],
+      deviceToken: json['deviceToken'], // Deserialize device token
     );
   }
+
   static Set<String> generatedOrderIds = Set<String>();
   static String generateOrderId() {
     Random random = Random();

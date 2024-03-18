@@ -151,7 +151,10 @@ class _EnterNumberState extends State<EnterNumber> {
                         height: 8,
                       ),
 
-                      ElevatedButton(
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xff63131C),
+                        ),
                           onPressed: () async {
                             await FirebaseAuth.instance.verifyPhoneNumber(
                                 verificationCompleted:
@@ -166,7 +169,10 @@ class _EnterNumberState extends State<EnterNumber> {
                                     (String verificationID) {},
                                 phoneNumber: phoneController.text.toString());
                           },
-                          child: Text("Verify Phone Number"))
+                          icon: Icon(Icons.verified,color: Colors.white,),
+                          label: Text("Verify Phone Number",style: TextStyle(
+                            color: Colors.white
+                          ),),),
                     ],
                   ),
                 )

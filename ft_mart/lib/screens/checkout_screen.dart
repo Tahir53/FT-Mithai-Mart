@@ -1,10 +1,12 @@
+
 import 'dart:io';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:ftmithaimart/model/cart_provider.dart';
 import 'package:ftmithaimart/otp/phone_number/enter_number.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../components/cart_item_tile.dart';
 import '../components/reciepts_screen.dart';
@@ -12,6 +14,7 @@ import '../components/total_card.dart';
 import '../dbHelper/mongodb.dart';
 import '../model/cart_model.dart';
 import '../model/orders_model.dart';
+import '../push_notifications.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final List<Cart> cartItems;
@@ -41,6 +44,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   File? _receiptImage;
   String? _uploadedImageUrl;
   String? _paymentOption;
+  Map payload = {};
 
   // Function to handle checkout process
   void _checkout() async {
@@ -50,6 +54,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       productNames.add(item.productName);
       quantities.add(item.formattedQuantity);
     }
+
 
     Order order = Order(
       orderId: Order.generateOrderId(),
@@ -64,6 +69,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       quantities: quantities,
       payment: _paymentOption ?? "Cash on Delivery",
       receiptImagePath: _receiptImage != null ? _receiptImage!.path : null,
+      deviceToken: await PushNotifications.returnToken(),
 
       //paymentOption: _paymentOption,
     );
@@ -71,7 +77,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     await saveOrderToDatabase(order);
 
     if (context.mounted) {
-      // Provider.of<CartProvider>(context, listen: false).clearCart();
 
       Navigator.pushAndRemoveUntil(
         context,
@@ -87,11 +92,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         (route) => false,
       );
     }
+    await _sendInAppNotification(order.orderId);
   }
+
+
 
   Future<void> saveOrderToDatabase(Order order) async {
     MongoDatabase.saveOrder(order);
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -215,7 +224,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             padding: const EdgeInsets.all(16.0),
                             child: Text(
                               'Delivery Details:\n'
-                              '${DateFormat(' E,d MMM y H:m').format(_pickupDateTime!)}\n'
+                              '${DateFormat(' E,d MMM y hh:mm a').format(_pickupDateTime!)}\n'
                               'Address: ${_addressController.text}\n'
                               'Payment Mode: ${_paymentOption}',
                               style: TextStyle(fontSize: 16),
@@ -303,11 +312,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
-                        'Pickup Details: ${DateFormat(' E,d MMM y H:m').format(_pickupDateTime!)}',
+                        'Pickup Details: ${DateFormat(' E,d MMM y hh:mm a').format(_pickupDateTime!)}',
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
-                  ElevatedButton(
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xff63131C),
+                      fixedSize: const Size(200, 40),
+                    ),
                     onPressed: () {
                       if (!_forDelivery && !_forPickup) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -324,7 +337,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           (_addressController.text.isEmpty ||
                               _pickupDateTime == null)) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
+                          const SnackBar(
                             content: Text(
                                 'Please enter the delivery address and select delivery date and time.'),
                             backgroundColor: Color(0xff63131C),
@@ -351,10 +364,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         );
                         return;
                       }
-                      //_checkout();
-                       Navigator.push(context, MaterialPageRoute(builder: (context)=>EnterNumber()));
+                      _checkout();
+                       //Navigator.push(context, MaterialPageRoute(builder: (context)=>EnterNumber()));
                     },
-                    child: Text('Place Order'),
+                    icon: Icon(Icons.delivery_dining,color: Colors.white,),
+                    label: Text('Place Order',style: TextStyle(
+                      color: Colors.white,
+                    ),),
+
                   )
                 ],
               ),
@@ -427,12 +444,27 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       setState(() {
         _receiptImage = File(pickedImage.path);
         _uploadedImageUrl =
-            pickedImage.path; // Store the path of the uploaded image
+            pickedImage.path;
       });
     } else {
       // Handle if user cancels image picking
     }
   }
+
+  Future<void> _sendInAppNotification(String orderId) async {
+    final deviceToken = await PushNotifications.returnToken();
+
+    final notificationTitle = 'Order Placed';
+    final notificationBody = 'Your order with ID $orderId has been successfully placed.';
+
+    // Show in-app notification
+    await PushNotifications.showSimpleNotification(
+      title: notificationTitle,
+      body: notificationBody,
+      payload: 'order',
+    );
+  }
+
 }
 
 // Utility function to calculate the total amount
@@ -443,3 +475,4 @@ double calculateTotal(List<Cart> items) {
   }
   return total;
 }
+

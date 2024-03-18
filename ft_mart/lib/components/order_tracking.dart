@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class Test extends StatefulWidget {
+class OrderTracking extends StatefulWidget {
   @override
-  _TestState createState() => _TestState();
+  _OrderTrackingState createState() => _OrderTrackingState();
 }
 
-class _TestState extends State<Test> with SingleTickerProviderStateMixin {
+class _OrderTrackingState extends State<OrderTracking> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<Offset> _slideAnimation;

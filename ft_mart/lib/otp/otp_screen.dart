@@ -99,18 +99,24 @@ class _OtpScreenState extends State<OtpScreen> {
                     children: [
                       Container(
                         margin: EdgeInsets.only(left: screenWidth * 0.025),
-                        child: TextField(
-                          controller: OtpController,
-                         // key: _otpPinFieldKey,
-                          //textInputAction: TextInputAction.done,
+                        child: OtpPinField(
+                          //controller: OtpController,
+                          key: _otpPinFieldKey,
+                          keyboardType: TextInputType.numberWithOptions(decimal: false),
+                          textInputAction: TextInputAction.done,
                           maxLength: 6,
-                          // fieldWidth: 40,
+                          fieldWidth: 30,
+                          onSubmit: (String text) {  },
+                          onChange: (String text) {  },
                         ),
                       ),
                       SizedBox(
                         height: screenHeight * 0.04,
                       ),
-                      ElevatedButton(
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xff63131C),
+                        ),
                           onPressed: () async {
                             try {
                               PhoneAuthCredential credential =
@@ -124,7 +130,11 @@ class _OtpScreenState extends State<OtpScreen> {
 
                             }
                           },
-                          child: Text("Verify OTP"))
+                          icon: Icon(Icons.verified_outlined,color: Colors.white,),
+                          label: Text("Verify OTP",style: TextStyle(
+                            color: Colors.white,
+                          ),))
+
                     ],
                   ),
                 )
