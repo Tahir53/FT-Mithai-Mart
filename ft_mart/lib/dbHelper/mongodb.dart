@@ -89,6 +89,7 @@ class MongoDatabase {
     List<Complaint> complaints = [];
     for (var data in dataList) {
       complaints.add(Complaint(
+        complaintId: data["complaintId"],
         id: data["_id"],
         name: data["name"],
         email: data["email"],

@@ -56,11 +56,12 @@ class PushNotifications {
         .pushNamed("/message", arguments: notificationResponse);
   }
 
+
   // show a simple notification
   static Future showSimpleNotification({
     required String title,
     required String body,
-    required String payload,
+    required String payload
   }) async {
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails('your channel id', 'your channel name',

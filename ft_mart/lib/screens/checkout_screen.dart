@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +54,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       quantities.add(item.formattedQuantity);
     }
 
-
     Order order = Order(
       orderId: Order.generateOrderId(),
       cartItems: widget.cartItems,
@@ -77,7 +75,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     await saveOrderToDatabase(order);
 
     if (context.mounted) {
-
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
@@ -95,12 +92,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     await _sendInAppNotification(order.orderId);
   }
 
-
-
   Future<void> saveOrderToDatabase(Order order) async {
     MongoDatabase.saveOrder(order);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -227,7 +221,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               '${DateFormat(' E,d MMM y hh:mm a').format(_pickupDateTime!)}\n'
                               'Address: ${_addressController.text}\n'
                               'Payment Mode: ${_paymentOption}',
-                              style: TextStyle(fontSize: 16),
+                              style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
                             ),
                           ),
                         Padding(
@@ -313,7 +307,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
                         'Pickup Details: ${DateFormat(' E,d MMM y hh:mm a').format(_pickupDateTime!)}',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ElevatedButton.icon(
@@ -365,13 +360,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         return;
                       }
                       _checkout();
-                       //Navigator.push(context, MaterialPageRoute(builder: (context)=>EnterNumber()));
+                      //Navigator.push(context, MaterialPageRoute(builder: (context)=>EnterNumber()));
                     },
-                    icon: Icon(Icons.delivery_dining,color: Colors.white,),
-                    label: Text('Place Order',style: TextStyle(
+                    icon: Icon(
+                      Icons.delivery_dining,
                       color: Colors.white,
-                    ),),
-
+                    ),
+                    label: Text(
+                      'Place Order',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
                   )
                 ],
               ),
@@ -443,8 +443,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     if (pickedImage != null) {
       setState(() {
         _receiptImage = File(pickedImage.path);
-        _uploadedImageUrl =
-            pickedImage.path;
+        _uploadedImageUrl = pickedImage.path;
       });
     } else {
       // Handle if user cancels image picking
@@ -455,7 +454,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final deviceToken = await PushNotifications.returnToken();
 
     final notificationTitle = 'Order Placed';
-    final notificationBody = 'Your order with ID $orderId has been successfully placed.';
+    final notificationBody =
+        'Your order with ID $orderId has been successfully placed.';
 
     // Show in-app notification
     await PushNotifications.showSimpleNotification(
@@ -464,7 +464,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       payload: 'order',
     );
   }
-
 }
 
 // Utility function to calculate the total amount
@@ -475,4 +474,3 @@ double calculateTotal(List<Cart> items) {
   }
   return total;
 }
-

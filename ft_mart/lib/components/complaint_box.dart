@@ -5,11 +5,12 @@ import '../dbHelper/mongodb.dart';
 import '../model/complaints_model.dart';
 
 class complaintbox extends StatefulWidget {
+  final String? id;
   final String? name;
   final String? email;
   final String? contact;
 
-  complaintbox({this.name, this.email, this.contact});
+  complaintbox({this.id,this.name, this.email, this.contact});
 
   @override
   State<complaintbox> createState() => _complaintboxState();
@@ -77,6 +78,7 @@ class _complaintboxState extends State<complaintbox> {
                     complainLoading = true;
                   });
                   final complaint = Complaint(
+                    complaintId: Complaint.generateComplaintId(),
                     name: widget.name ?? "user",
                     email: widget.email ?? "no email",
                     contact: widget.contact ?? "no contact",
@@ -85,11 +87,11 @@ class _complaintboxState extends State<complaintbox> {
                   var result = await MongoDatabase.saveComplaint(complaint);
                   if (result == 'Complaint submitted') {
                     _complaintController.text = "";
-                    submitComplaint(context);
+                    submitComplaint(context, complaint.complaintId);
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         backgroundColor: Color(0xff63131C),
                         content: Text(
-                          "Your complain has been submitted succesfully!",
+                          "Your complain has been submitted successfully!",
                           style: TextStyle(color: Colors.white),
                         )));
                   } else {
@@ -117,20 +119,20 @@ class _complaintboxState extends State<complaintbox> {
                     )),
                 label: complainLoading
                     ? const SizedBox(
-                        width: 10,
-                        height: 10,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                        ))
+                    width: 10,
+                    height: 10,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                    ))
                     : const Text(
-                        "Submit",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                  "Submit",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ),
             ],
           ),
@@ -139,14 +141,14 @@ class _complaintboxState extends State<complaintbox> {
     );
   }
 
-  void submitComplaint(BuildContext context) {
+  void submitComplaint(BuildContext context, String complaintId) {
     String complaint = _complaintController.text;
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text(
-            "Your complain has been submitted succesfully! Looking forward to serve you better!",
+          title: Text(
+            "Your complain with ID $complaintId has been submitted successfully! Looking forward to serve you better!",
             style: TextStyle(
               color: Color(0xff63131C),
             ),
