@@ -57,6 +57,7 @@ class PushNotifications {
   }
 
 
+
   // show a simple notification
   static Future showSimpleNotification({
     required String title,

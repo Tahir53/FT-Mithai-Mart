@@ -188,6 +188,12 @@ class MongoDatabase {
     return orders;
   }
 
+  static Future<void> updateOrderStatus(String orderId, String newStatus) async {
+    final query = where.eq('orderId', orderId);
+    final update = ModifierBuilder().set('status', newStatus);
+    await ordersCollection.update(query, update);
+  }
+
   static decreaseStock(String productName) async {
     print("stock depleted in mongodb");
     try{

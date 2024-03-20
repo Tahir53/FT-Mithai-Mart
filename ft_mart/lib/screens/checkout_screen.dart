@@ -68,6 +68,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       payment: _paymentOption ?? "Cash on Delivery",
       receiptImagePath: _receiptImage != null ? _receiptImage!.path : null,
       deviceToken: await PushNotifications.returnToken(),
+      status: 'In Process',
 
       //paymentOption: _paymentOption,
     );

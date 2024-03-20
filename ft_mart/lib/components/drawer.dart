@@ -122,7 +122,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            OrderTracking()));
+                            OrderTracking(name: 'user')));
               },
             ),
           ),

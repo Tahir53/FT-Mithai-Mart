@@ -15,7 +15,8 @@ class Order {
   final List<String> productNames;
   final List<String> quantities;
   final String? receiptImagePath;
-  final String deviceToken; // Add device token field
+  final String deviceToken;
+  late String status; // New field for order status
 
   Order({
     required this.orderId,
@@ -30,7 +31,8 @@ class Order {
     required this.productNames,
     required this.quantities,
     required this.receiptImagePath,
-    required this.deviceToken, // Initialize device token
+    required this.deviceToken,
+    required this.status, // Initialize order status
   });
 
   Map<String, dynamic> toJson() {
@@ -47,7 +49,8 @@ class Order {
       'quantities': quantities,
       'payment': payment,
       'receiptImagePath': receiptImagePath,
-      'deviceToken': deviceToken, // Serialize device token
+      'deviceToken': deviceToken,
+      'status': status, // Serialize order status
     };
   }
 
@@ -65,7 +68,8 @@ class Order {
       productNames: (json['productNames'] as List<dynamic>).cast<String>(),
       quantities: (json['quantities'] as List<dynamic>).cast<String>(),
       receiptImagePath: json['receiptImagePath'],
-      deviceToken: json['deviceToken'], // Deserialize device token
+      deviceToken: json['deviceToken'],
+      status: json['status'],
     );
   }
 
@@ -74,10 +78,10 @@ class Order {
     Random random = Random();
     String orderId;
     do {
-      int randomNumber = random.nextInt(10000); // Generate a random number between 0 and 9999
-      orderId = randomNumber.toString().padLeft(4, '0'); // Ensure the order ID is exactly 4 digits long
-    } while (generatedOrderIds.contains(orderId)); // Repeat if the generated order ID already exists
-    generatedOrderIds.add(orderId); // Add the generated order ID to the set
+      int randomNumber = random.nextInt(10000);
+      orderId = randomNumber.toString().padLeft(4, '0');
+    } while (generatedOrderIds.contains(orderId));
+    generatedOrderIds.add(orderId);
     return orderId;
   }
 }

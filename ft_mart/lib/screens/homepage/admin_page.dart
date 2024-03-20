@@ -5,6 +5,7 @@ import 'package:ftmithaimart/dbHelper/mongodb.dart';
 import 'package:intl/intl.dart';
 
 import '../../model/orders_model.dart';
+import '../../push_notifications.dart';
 
 class admin extends StatefulWidget {
   final String name;
@@ -18,6 +19,62 @@ class admin extends StatefulWidget {
 }
 
 class _adminState extends State<admin> {
+  List<Order> orders = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchOrders();
+  }
+
+  Future<void> fetchOrders() async {
+    final List<Order>? fetchedOrders = await MongoDatabase.getOrders();
+    if (fetchedOrders != null) {
+      setState(() {
+        orders = fetchedOrders;
+      });
+    }
+  }
+
+  Future<void> updateOrderStatus(String orderId, String newStatus) async {
+    final orderIndex = orders.indexWhere((order) => order.orderId == orderId);
+    if (orderIndex != -1) {
+      setState(() {
+        orders[orderIndex].status = newStatus;
+      });
+      await MongoDatabase.updateOrderStatus(orderId, newStatus);
+      if (newStatus == 'Ready for Pickup') {
+        _sendNotification(orderId);
+      }
+    }
+  }
+
+  void _sendNotification(String orderId) async {
+    Order? order = orders.firstWhere((order) => order.orderId == orderId);
+
+    if (order != null) {
+      String? deviceToken = order.deviceToken;
+
+      print('Device token for order $orderId: $deviceToken');
+
+      if (deviceToken != null) {
+        await PushNotifications.showSimpleNotification(
+          title: 'Order Ready for Pickup',
+          body: 'Your order with ID $orderId is ready for pickup!',
+          payload: 'order_$orderId',
+        );
+      } else {
+        print('Device token not found for order $orderId');
+      }
+    } else {
+      print('Order not found with ID $orderId');
+    }
+  }
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,8 +83,9 @@ class _adminState extends State<admin> {
         toolbarHeight: 100,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(16),
-              bottomRight: Radius.circular(16)),
+            bottomLeft: Radius.circular(16),
+            bottomRight: Radius.circular(16),
+          ),
         ),
         centerTitle: true,
         title: Padding(
@@ -42,7 +100,10 @@ class _adminState extends State<admin> {
         backgroundColor: const Color(0xff801924),
       ),
       drawer: AdminDrawer(
-          name: widget.name, email: widget.email, contact: widget.contact),
+        name: widget.name,
+        email: widget.email,
+        contact: widget.contact,
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,138 +120,143 @@ class _adminState extends State<admin> {
                 ),
               ),
             ),
-            // Using FutureBuilder to fetch and display orders
-            FutureBuilder<List<Order>>(
-              future: MongoDatabase.getOrders(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  // While waiting for data, show a loading indicator
-                  return Center(
-                    child: CircularProgressIndicator(color: Color(0xFF63131C)),
-                  );
-                } else if (snapshot.hasError) {
-                  // If an error occurs, display an error message
-                  return Center(
-                    child: Text('Error fetching orders: ${snapshot.error}'),
-                  );
-                } else {
-                  // Once data is available, display the list of orders
-                  List<Order> orders = snapshot.data ?? [];
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: orders.map((order) {
-                      return InkWell(
-                        onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            // Using ListView.builder to display orders
+            ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: orders.length,
+              itemBuilder: (context, index) {
+                final order = orders[index];
+                return InkWell(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                      ),
+                      builder: (context) {
+                        return SingleChildScrollView(
+                          child: Container(
+                            padding: EdgeInsets.all(20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Order Details', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                                SizedBox(height: 20),
+                                Text('Order ID: ${order.orderId}'),
+                                Text('Name: ${order.name}'),
+                                Text('Email: ${order.email}'),
+                                Text('Contact: ${order.contact}'),
+                                Text('Order Date: ${DateFormat('E, d MMM y | hh:mm a').format(order.orderDateTime)}'),
+                                Text('Delivery Address: ${order.deliveryAddress ?? 'N/A'}'),
+                                Text('Total Amount: ${order.totalAmount}'),
+                                Text('Payment Method: ${order.payment}'),
+                                SizedBox(height: 10),
+                                Text('Products:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                ...List.generate(order.productNames.length, (index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(left: 16.0),
+                                    child: Text('${order.productNames[index]} - ${order.quantities[index]} kg'),
+                                  );
+                                }),
+                              ],
                             ),
-                            builder: (context) {
-                              return SingleChildScrollView(
-                                child: Container(
-                                  padding: EdgeInsets.all(20),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text('Order Details', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                                      SizedBox(height: 20),
-                                      Text('Order ID: ${order.orderId}'),
-                                      Text('Name: ${order.name}'),
-                                      Text('Email: ${order.email}'),
-                                      Text('Contact: ${order.contact}'),
-                                      Text('Order Date: ${DateFormat('E, d MMM y | hh:mm a').format(order.orderDateTime)}'),
-                                      Text('Delivery Address: ${order.deliveryAddress ?? 'N/A'}'),
-                                      Text('Total Amount: ${order.totalAmount}'),
-                                      Text('Payment Method: ${order.payment}'),
-                                      SizedBox(height: 10),
-                                      Text('Products:', style: TextStyle(fontWeight: FontWeight.bold)),
-                                      ...List.generate(order.productNames.length, (index) {
-                                        return Padding(
-                                          padding: const EdgeInsets.only(left: 16.0),
-                                          child: Text('${order.productNames[index]} - ${order.quantities[index]} kg'),
-                                        );
-                                      }),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        },
-
-                        child: Card(
-                          elevation: 10,
-                          color: Color(0xffFFF8E6),
-                          margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                          child: Stack(
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  child: Card(
+                    elevation: 10,
+                    color: Color(0xffFFF8E6),
+                    margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    child: Stack(
+                      children: [
+                        ListTile(
+                          title: Text('Order No. ${order.orderId}'),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              ListTile(
-                                title: Text('Order No. ${order.orderId}'),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('${order.name}'),
-                                    Text('${DateFormat(' E,d MMM y | hh:mm a').format(order.orderDateTime)}'),
-                                  ],
-                                ),
-                              ),
-                              Positioned(
-                                top: 8,
-                                right: 8,
-                                child: Container(
-                                  padding: EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                    color: order.deliveryAddress == 'Pickup' ? Color(0xffFFEC8C) : Color(0xffFFEC8C),
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  child: Text(
-                                    order.deliveryAddress == 'Pickup' ? 'Pickup' : 'Delivery',
-                                    style: TextStyle(color: Color(0xff8C7502)),
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: DropdownButton<String>(
-                                  value: 'In Process',
-                                  items: <String>['In Process', 'Ready for Pickup', 'Shipped', 'Delivered'].map((String value) {
-                                    Color backgroundColor = value == 'In Process' ? Color(0xffA4202E) : (value == 'Ready for Pickup' ? Color(0xff038200) : Colors.white);
-                                    Color textColor = value == 'In Process' || value == 'Ready for Pickup' ? Colors.white : Colors.black;
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Container(
-                                        color: backgroundColor,
-                                        width: 70,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(5.0),
-                                          child: Text(
-                                            value,
-                                            style: TextStyle(
-                                              color: textColor,
-                                              fontSize: 10,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    // Implement your logic for dropdown menu selection
-                                  },
-                                ),
-                              ),
+                              Text('${order.name}'),
+                              Text('${DateFormat(' E,d MMM y | hh:mm a').format(order.orderDateTime)}'),
                             ],
                           ),
                         ),
-                      );
-                    }).toList(),
-                  );
-                }
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: Container(
+                            padding: EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: order.deliveryAddress == 'Pickup' ? Color(0xffFFEC8C) : Color(0xffFFEC8C),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Text(
+                              order.deliveryAddress == 'Pickup' ? 'Pickup' : 'Delivery',
+                              style: TextStyle(color: Color(0xff8C7502)),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: DropdownButton<String>(
+                            value: order.status,
+                            items: <String>['In Process', 'Ready for Pickup', 'Ready for Delivery', 'Delivered'].map((String value) {
+                              Color backgroundColor;
+                              Color textColor;
+                              switch (value) {
+                                case 'In Process':
+                                  backgroundColor = Color(0xffA4202E);
+                                  textColor = Colors.white;
+                                  break;
+                                case 'Ready for Pickup':
+                                  backgroundColor = Color(0xff038200);
+                                  textColor = Colors.white;
+                                  break;
+                                case 'Ready for Delivery':
+                                case 'Delivered':
+                                  backgroundColor = Colors.white;
+                                  textColor = Colors.black;
+                                  break;
+                                default:
+                                  backgroundColor = Colors.white;
+                                  textColor = Colors.black;
+                              }
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Container(
+                                  color: backgroundColor,
+                                  width: 100,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: Text(
+                                      value,
+                                      style: TextStyle(
+                                        color: textColor,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) async {
+                              if (newValue != null) {
+                                setState(() {
+                                  order.status = newValue;
+                                });
+                                updateOrderStatus(order.orderId, newValue);
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
               },
             ),
-
           ],
         ),
       ),

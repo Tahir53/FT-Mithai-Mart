@@ -36,16 +36,18 @@ class homepage extends StatefulWidget {
 class _homepageState extends State<homepage> {
   void initState() {
     super.initState();
+    _scaffoldKey = GlobalKey<ScaffoldState>();
     MongoDatabase.getProducts();
   }
 
   final ScrollController _scrollController = ScrollController();
   String? text;
   String selectedCat = "Classic Sweets";
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  late GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Cart> cart = [];
   List _searchResults = [];
   final TextEditingController searchController = TextEditingController();
+
 
   Future<String?> getData() async {
     var data = await SharedPreferences.getInstance();
