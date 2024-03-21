@@ -1,8 +1,16 @@
+import 'dart:convert';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'main.dart';
+import 'model/orders_model.dart';
+import 'package:http/http.dart' as http;
 
 class PushNotifications {
+
+  static final String serverKey = 'AAAAqE8fn-A:APA91bGiNXM_cOPad95u-e78Af6alBfTUouU1Enc6gP8ydNX6tg9kQ0CcA4I_Xds-0CON7RQbMCuLVdvTHs0g3rp1KPBXrPvoEbBEBcaz7MGqcp1l8u2NW9Yik0c6q8UoJc2dcCq7Z2Z';
+  static final String fcmUrl = 'https://fcm.googleapis.com/fcm/send';
+
   static final _firebaseMessaging = FirebaseMessaging.instance;
   static final FlutterLocalNotificationsPlugin
       _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -28,6 +36,43 @@ class PushNotifications {
     return await _firebaseMessaging.getToken();
   
   }
+
+  static Future<void> sendNotification(String orderId, String deviceToken) async {
+
+    final Map<String, dynamic> notification = {
+      'title': 'Order Ready for Pickup',
+      'body': 'Your order with ID $orderId is ready for pickup!',
+      'priority': 'high',
+    };
+
+    final Map<String, dynamic> data = {
+      'orderId': orderId,
+    };
+
+    final Map<String, dynamic> body = {
+      'notification': notification,
+      'data': data,
+      'to': deviceToken,
+    };
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'key=$serverKey',
+    };
+
+    final response = await http.post(
+      Uri.parse(fcmUrl),
+      headers: headers,
+      body: json.encode(body),
+    );
+
+    if (response.statusCode == 200) {
+      print('Notification sent successfully to device token $deviceToken');
+    } else {
+      print('Failed to send notification: ${response.statusCode}');
+    }
+  }
+
 
 
 //initalize local notifications

@@ -44,36 +44,11 @@ class _adminState extends State<admin> {
       });
       await MongoDatabase.updateOrderStatus(orderId, newStatus);
       if (newStatus == 'Ready for Pickup') {
-        _sendNotification(orderId);
+        // Call the sendNotification method here
+        await PushNotifications.sendNotification(orderId, orders[orderIndex].deviceToken);
       }
     }
   }
-
-  void _sendNotification(String orderId) async {
-    Order? order = orders.firstWhere((order) => order.orderId == orderId);
-
-    if (order != null) {
-      String? deviceToken = order.deviceToken;
-
-      print('Device token for order $orderId: $deviceToken');
-
-      if (deviceToken != null) {
-        await PushNotifications.showSimpleNotification(
-          title: 'Order Ready for Pickup',
-          body: 'Your order with ID $orderId is ready for pickup!',
-          payload: 'order_$orderId',
-        );
-      } else {
-        print('Device token not found for order $orderId');
-      }
-    } else {
-      print('Order not found with ID $orderId');
-    }
-  }
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
