@@ -1,9 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:ftmithaimart/otp/otp_screen.dart';
-import 'package:ftmithaimart/otp/phone_number/widget/country_picker.dart';
+import 'package:http/http.dart' as http;
 
 class EnterNumber extends StatefulWidget {
   @override
@@ -13,10 +14,16 @@ class EnterNumber extends StatefulWidget {
 class _EnterNumberState extends State<EnterNumber> {
   final phoneController = TextEditingController();
   var _dialCode = '';
-
+  
   //callback function of country picker
   void _callBackFunction(String name, String dialCode, String flag) {
     _dialCode = dialCode;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+   
   }
 
   //Alert dialogue to show error and response
@@ -135,7 +142,7 @@ class _EnterNumberState extends State<EnterNumber> {
                                   enabledBorder: InputBorder.none,
                                   focusedBorder: InputBorder.none,
                                   contentPadding:
-                                  EdgeInsets.symmetric(vertical: 13.5),
+                                      EdgeInsets.symmetric(vertical: 13.5),
                                 ),
                                 controller: phoneController,
                                 //keyboardType: TextInputType.number,
@@ -150,29 +157,69 @@ class _EnterNumberState extends State<EnterNumber> {
                       const SizedBox(
                         height: 8,
                       ),
-
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xff63131C),
                         ),
-                          onPressed: () async {
-                            await FirebaseAuth.instance.verifyPhoneNumber(
-                                verificationCompleted:
-                                    (PhoneAuthCredential credential) {},
-                                verificationFailed:
-                                    (FirebaseAuthException ex) {},
-                                codeSent: (String verificationId,
-                                    int? resendToken) {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>OtpScreen(verificationId: verificationId,)));
-                                },
-                                codeAutoRetrievalTimeout:
-                                    (String verificationID) {},
-                                phoneNumber: phoneController.text.toString());
-                          },
-                          icon: Icon(Icons.verified,color: Colors.white,),
-                          label: Text("Verify Phone Number",style: TextStyle(
-                            color: Colors.white
-                          ),),),
+                        onPressed: () async {
+                          
+                          
+                          Random random = Random();
+                          int randomNumber = random.nextInt(90000) + 100000;
+                          
+                          final apiUrl = Uri.parse(
+                              'https://muhammadqsolutions.pythonanywhere.com/send-sms?message=$randomNumber&phone=${phoneController.text}'); // API endpoint
+
+                          try {
+                            // Make POST request to the API
+                            var response = await http.get(
+                              apiUrl,
+                              headers: {
+                                'Content-Type':
+                                    'application/json', // Set content-type header
+                                "Access-Control-Allow-Origin": "*"
+                              },
+                            );
+
+                            // Check if the request was successful (status code 200)
+                            if (response.statusCode == 200) {
+                              print(
+                                  'Message SID: ${json.decode(response.body)['message_sid']}');
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => OtpScreen(verificationId: randomNumber.toString(),)));
+                            } else {
+                              print(
+                                  'Failed to send message. Error: ${response.statusCode}');
+                            }
+                          } catch (e) {
+                            // Print error message if an exception occurs
+                            print('Exception: $e');
+                          }
+                          // await FirebaseAuth.instance.verifyPhoneNumber(
+                          //     verificationCompleted:
+                          //         (PhoneAuthCredential credential) {},
+                          //     verificationFailed: (FirebaseAuthException ex) {},
+                          //     codeSent:
+                          //         (String verificationId, int? resendToken) {
+                          //       Navigator.push(
+                          //           context,
+                          //           MaterialPageRoute(
+                          //               builder: (context) => OtpScreen(
+                          //                     verificationId: verificationId,
+                          //                   )));
+                          //     },
+                          //     codeAutoRetrievalTimeout:
+                          //         (String verificationID) {},
+                          //     phoneNumber: phoneController.text.toString());
+                        },
+                        icon: Icon(
+                          Icons.verified,
+                          color: Colors.white,
+                        ),
+                        label: Text(
+                          "Verify Phone Number",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
                     ],
                   ),
                 )
