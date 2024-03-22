@@ -9,10 +9,11 @@ class OtpScreen extends StatefulWidget {
 
   var _contact = '';
   final String verificationId;
-
+  final Function() function;
   OtpScreen({
     Key? key,
     required this.verificationId,
+    required this.function,
   });
 
   @override
@@ -100,7 +101,6 @@ class _OtpScreenState extends State<OtpScreen> {
                       Container(
                         margin: EdgeInsets.only(left: screenWidth * 0.025),
                         child: OtpPinField(
-                          //controller: OtpController,
                           key: _otpPinFieldKey,
                           keyboardType: TextInputType.numberWithOptions(decimal: false),
                           textInputAction: TextInputAction.done,
@@ -124,7 +124,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                   verificationId: widget.verificationId,
                                   smsCode: OtpController.text.toString());
                               FirebaseAuth.instance.signInWithCredential(credential);
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=>homepage(name: "user")));
+                             Navigator.push(context, MaterialPageRoute(builder: (context)=>homepage(name: "user")));
                             } catch (ex) {
                               //log(ex.toString())
 
@@ -187,4 +187,6 @@ class _OtpScreenState extends State<OtpScreen> {
       },
     );
   }
+
+
 }

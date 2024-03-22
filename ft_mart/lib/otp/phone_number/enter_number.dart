@@ -3,30 +3,29 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:ftmithaimart/otp/otp_screen.dart';
 import 'package:http/http.dart' as http;
 
 class EnterNumber extends StatefulWidget {
+  final Function() function;
+
+  const EnterNumber({
+    Key? key,
+    required this.function
+  }) : super(key: key);
   @override
   _EnterNumberState createState() => _EnterNumberState();
 }
 
 class _EnterNumberState extends State<EnterNumber> {
   final phoneController = TextEditingController();
-  var _dialCode = '';
-  
-  //callback function of country picker
-  void _callBackFunction(String name, String dialCode, String flag) {
-    _dialCode = dialCode;
-  }
 
   @override
   void initState() {
     super.initState();
-   
   }
 
-  //Alert dialogue to show error and response
   void showErrorDialog(BuildContext context, String message) {
     // set up the AlertDialog
     final CupertinoAlertDialog alert = CupertinoAlertDialog(
@@ -122,15 +121,7 @@ class _EnterNumberState extends State<EnterNumber> {
                           borderRadius: BorderRadius.circular(36),
                         ),
                         child: Row(
-                          // ignore: prefer_const_literals_to_create_immutables
                           children: [
-                            // CountryPicker(
-                            //   callBackFunction: _callBackFunction,
-                            //   headerText: 'Select Country',
-                            //   headerBackgroundColor:
-                            //       Theme.of(context).primaryColor,
-                            //   headerTextColor: Colors.white,
-                            // ),
                             SizedBox(
                               width: screenWidth * 0.01,
                             ),
@@ -145,9 +136,9 @@ class _EnterNumberState extends State<EnterNumber> {
                                       EdgeInsets.symmetric(vertical: 13.5),
                                 ),
                                 controller: phoneController,
-                                //keyboardType: TextInputType.number,
+                                keyboardType: TextInputType.number,
                                 inputFormatters: [
-                                  //LengthLimitingTextInputFormatter(10)
+                                  LengthLimitingTextInputFormatter(12)
                                 ],
                               ),
                             ),
@@ -162,30 +153,31 @@ class _EnterNumberState extends State<EnterNumber> {
                           backgroundColor: Color(0xff63131C),
                         ),
                         onPressed: () async {
-                          
-                          
                           Random random = Random();
                           int randomNumber = random.nextInt(90000) + 100000;
-                          
+
                           final apiUrl = Uri.parse(
                               'https://muhammadqsolutions.pythonanywhere.com/send-sms?message=$randomNumber&phone=${phoneController.text}'); // API endpoint
 
                           try {
-                            // Make POST request to the API
                             var response = await http.get(
                               apiUrl,
                               headers: {
-                                'Content-Type':
-                                    'application/json', // Set content-type header
+                                'Content-Type': 'application/json',
                                 "Access-Control-Allow-Origin": "*"
                               },
                             );
 
-                            // Check if the request was successful (status code 200)
                             if (response.statusCode == 200) {
                               print(
                                   'Message SID: ${json.decode(response.body)['message_sid']}');
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => OtpScreen(verificationId: randomNumber.toString(),)));
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => OtpScreen(
+                                            verificationId:
+                                                randomNumber.toString(), function: () { _checkout() },
+                                          )));
                             } else {
                               print(
                                   'Failed to send message. Error: ${response.statusCode}');
@@ -194,22 +186,6 @@ class _EnterNumberState extends State<EnterNumber> {
                             // Print error message if an exception occurs
                             print('Exception: $e');
                           }
-                          // await FirebaseAuth.instance.verifyPhoneNumber(
-                          //     verificationCompleted:
-                          //         (PhoneAuthCredential credential) {},
-                          //     verificationFailed: (FirebaseAuthException ex) {},
-                          //     codeSent:
-                          //         (String verificationId, int? resendToken) {
-                          //       Navigator.push(
-                          //           context,
-                          //           MaterialPageRoute(
-                          //               builder: (context) => OtpScreen(
-                          //                     verificationId: verificationId,
-                          //                   )));
-                          //     },
-                          //     codeAutoRetrievalTimeout:
-                          //         (String verificationID) {},
-                          //     phoneNumber: phoneController.text.toString());
                         },
                         icon: Icon(
                           Icons.verified,

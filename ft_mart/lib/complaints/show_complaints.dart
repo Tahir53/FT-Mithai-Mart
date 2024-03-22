@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ftmithaimart/dbHelper/mongodb.dart';
 import 'package:ftmithaimart/model/customer_model.dart';
+import 'package:intl/intl.dart';
 import '../components/admindrawer.dart';
 import '../model/complaints_model.dart';
 import '../push_notifications.dart';
@@ -16,8 +17,9 @@ class _ShowComplainState extends State<ShowComplain> {
   List<Complaint> complaints = [];
 
   void getComplain() async {
-    complaints = await MongoDatabase.getComplaints();
+    List<Complaint> updatedComplaints = await MongoDatabase.getComplaints();
     setState(() {
+      complaints = updatedComplaints;
       complainLoading = false;
     });
   }
@@ -53,10 +55,11 @@ class _ShowComplainState extends State<ShowComplain> {
       drawer: AdminDrawer(name: "user"),
       body: complainLoading
           ? const Center(
-          child: CircularProgressIndicator(
-            color: const Color(0xff801924),
-          ))
-          : ComplaintList(complaints: complaints, refreshComplaints: getComplain),
+              child: CircularProgressIndicator(
+              color: const Color(0xff801924),
+            ))
+          : ComplaintList(
+              complaints: complaints, refreshComplaints: getComplain),
     );
   }
 }
@@ -65,7 +68,8 @@ class ComplaintList extends StatefulWidget {
   final List<Complaint> complaints;
   final Function refreshComplaints;
 
-  const ComplaintList({required this.complaints, required this.refreshComplaints});
+  const ComplaintList(
+      {required this.complaints, required this.refreshComplaints});
 
   @override
   State<ComplaintList> createState() => _ComplaintListState();
@@ -77,29 +81,52 @@ class _ComplaintListState extends State<ComplaintList> {
     return ListView.builder(
       itemCount: widget.complaints.length,
       itemBuilder: (context, index) {
+        Complaint complaint = widget.complaints[index];
         return Card(
           elevation: 8,
           margin: EdgeInsets.all(8),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          child: InkWell(
-            onTap: () {
-              _showOptionsDialog(context, index);
-            },
-            child: Container(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Complaint No. ${widget.complaints[index].complaintId}"),
-                  Text("Name: ${widget.complaints[index].name}"),
-                  Text("Email: ${widget.complaints[index].email}"),
-                  Text("Contact: ${widget.complaints[index].contact}"),
-                  Text("Description: ${widget.complaints[index].description}"),
-                ],
+          child: Stack(
+            children: [
+              InkWell(
+                onTap: () {
+                  _showOptionsDialog(context, index);
+                },
+                child: Container(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                          "Complaint No. ${widget.complaints[index].complaintId}"),
+                      Text("Name: ${widget.complaints[index].name}"),
+                      Text("Email: ${widget.complaints[index].email}"),
+                      Text("Contact: ${widget.complaints[index].contact}"),
+                      Text(
+                          "Description: ${widget.complaints[index].description}"),
+                    ],
+                  ),
+                ),
               ),
-            ),
+              Positioned(
+                  bottom: 0, right: 0, child: Text("${DateFormat('E, d MMM y | hh:mm a').format(complaint.dateTime)}",style: TextStyle(
+                fontSize: 12,
+              ),)),
+              if (complaint.notified)
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: _buildNotifiedTab(),
+                ),
+              if (!complaint.notified)
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: _buildWaitingTab(),
+                ),
+            ],
           ),
         );
       },
@@ -121,18 +148,37 @@ class _ComplaintListState extends State<ComplaintList> {
                 title: Text('Delete'),
                 onTap: () async {
                   if (complaint.id != null) {
-                    await MongoDatabase.deleteComplaint(complaint.id!.toHexString());
+                    await MongoDatabase.deleteComplaint(
+                        complaint.id!.toHexString());
                     Navigator.of(context).pop();
                     _showDeletedMessage();
                     setState(() {});
-                    widget.refreshComplaints(); // Reload complaints after deleting
+                    widget
+                        .refreshComplaints(); // Reload complaints after deleting
                   }
                 },
               ),
               ListTile(
                 leading: Icon(Icons.notifications),
                 title: Text('Notify'),
-                onTap: () {},
+                onTap: () async {
+                  if (complaint.id != null) {
+                    await PushNotifications.sendComplaintNotification(
+                      complaint.complaintId,
+                      complaint.deviceToken,
+                      'Complaint Recieved for Complaint No. ${complaint.complaintId} ',
+                      'Dear Customer,\n'
+                          'Your complaint has been received by our team and you will be contacted shortly.\n'
+                          'We apologize for any inconvenience!',
+                    );
+                    await MongoDatabase.updateComplaint(complaint.id!, true);
+                    setState(() {
+                      widget.complaints[index].notified = true;
+                    });
+                    Navigator.of(context).pop();
+                    _showSuccessMessage();
+                  }
+                },
               ),
             ],
           ),
@@ -141,9 +187,47 @@ class _ComplaintListState extends State<ComplaintList> {
     );
   }
 
+  Widget _buildNotifiedTab() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      decoration: BoxDecoration(
+        color: Colors.green,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        "Notified",
+        style: TextStyle(color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _buildWaitingTab() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      decoration: BoxDecoration(
+        color: Colors.orange, // Change color as needed
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        "Waiting",
+        style: TextStyle(color: Colors.white),
+      ),
+    );
+  }
+
   static void _showDeletedMessage() {
     Fluttertoast.showToast(
       msg: 'Successfully Deleted',
+      backgroundColor: Color(0xff63131C),
+      textColor: Colors.white,
+      gravity: ToastGravity.BOTTOM,
+      toastLength: Toast.LENGTH_LONG,
+    );
+  }
+
+  static void _showSuccessMessage() {
+    Fluttertoast.showToast(
+      msg: 'Successfully Notified',
       backgroundColor: Color(0xff63131C),
       textColor: Colors.white,
       gravity: ToastGravity.BOTTOM,

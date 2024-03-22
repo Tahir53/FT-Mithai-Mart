@@ -96,6 +96,9 @@ class MongoDatabase {
         email: data["email"],
         contact: data["contact"],
         description: data["description"],
+        dateTime: data["dateTime"],
+        deviceToken: data["deviceToken"],
+
       ));
     }
     return complaints;
@@ -108,6 +111,19 @@ class MongoDatabase {
         .remove(where.id(ObjectId.parse(complaintid)));
     print('Complaint deleted successfully.');
   }
+
+
+  static Future<void> updateComplaint(ObjectId complaintId, bool notified) async {
+    final collection = db.collection('complaints');
+    final selector = where.id(complaintId);
+    final modifier = {
+      r'$set': {'notified': notified}
+    };
+    final result = await collection.update(selector, modifier);
+    print('Complaint updated: ${result["nModified"]} document(s) modified');
+
+  }
+
 
   static Future<List<Product>> getProducts() async {
     final int maxRetries = 3;

@@ -222,7 +222,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               '${DateFormat(' E,d MMM y hh:mm a').format(_pickupDateTime!)}\n'
                               'Address: ${_addressController.text}\n'
                               'Payment Mode: ${_paymentOption}',
-                              style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ),
                         Padding(
@@ -361,7 +362,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         return;
                       }
                       // _checkout();
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>EnterNumber()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EnterNumber(
+                              function: () {
+                                _checkout();
+                              },
+                            ),
+                          ));
                     },
                     icon: Icon(
                       Icons.delivery_dining,

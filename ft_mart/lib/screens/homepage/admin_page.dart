@@ -43,10 +43,25 @@ class _adminState extends State<admin> {
         orders[orderIndex].status = newStatus;
       });
       await MongoDatabase.updateOrderStatus(orderId, newStatus);
+
+      Order order = orders[orderIndex];
+
       if (newStatus == 'Ready for Pickup') {
-        // Call the sendNotification method here
-        await PushNotifications.sendNotification(orderId, orders[orderIndex].deviceToken);
+        await PushNotifications.sendNotification(
+            orderId,
+            order.deviceToken,
+            'Order Ready for Pickup',
+            'Your order with ID $orderId is ready for pickup!\nTrack Your Order By Clicking Here.'
+        );
+      } else if (newStatus == 'Ready for Delivery') {
+        await PushNotifications.sendNotification(
+            orderId,
+            order.deviceToken,
+            'Order Ready For Delivery',
+            'Your order with ID $orderId is ready for delivery!\nRider on the Way! Track now.'
+        );
       }
+
     }
   }
 
@@ -122,7 +137,7 @@ class _adminState extends State<admin> {
                                 Text('Name: ${order.name}'),
                                 Text('Email: ${order.email}'),
                                 Text('Contact: ${order.contact}'),
-                                Text('Order Date: ${DateFormat('E, d MMM y | hh:mm a').format(order.orderDateTime)}'),
+                                Text('Pickup/Delivery Date & Time: ${DateFormat('E, d MMM y | hh:mm a').format(order.orderDateTime)}'),
                                 Text('Delivery Address: ${order.deliveryAddress ?? 'N/A'}'),
                                 Text('Total Amount: ${order.totalAmount}'),
                                 Text('Payment Method: ${order.payment}'),

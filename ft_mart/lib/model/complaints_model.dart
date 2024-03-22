@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:mongo_dart/mongo_dart.dart';
 
 class Complaint {
@@ -9,14 +8,21 @@ class Complaint {
   late String contact;
   late String description;
   late String complaintId;
+  late String deviceToken;
+  bool notified;
+  DateTime dateTime;
 
-  Complaint(
-      {this.id,
-        required this.name,
-        required this.email,
-        required this.contact,
-        required this.description,
-        required this.complaintId});
+  Complaint({
+    this.id,
+    required this.name,
+    required this.email,
+    required this.contact,
+    required this.description,
+    required this.complaintId,
+    required this.deviceToken,
+    required this.dateTime,
+    this.notified = false,
+  });
 
   factory Complaint.fromJson(Map<String, dynamic> json) {
     return Complaint(
@@ -26,6 +32,8 @@ class Complaint {
       contact: json['contact'],
       description: json['description'],
       complaintId: json['complaintId'],
+      dateTime: json['dateTime'],
+      deviceToken: json['deviceToken'], // Initialize device token from JSON
     );
   }
 
@@ -37,6 +45,8 @@ class Complaint {
       'contact': contact,
       'description': description,
       'complaintId': complaintId,
+      'dateTime': dateTime,
+      'deviceToken': deviceToken, // Include device token in JSON
     };
   }
 
@@ -45,10 +55,10 @@ class Complaint {
     Random random = Random();
     String orderId;
     do {
-      int randomNumber = random.nextInt(10000); // Generate a random number between 0 and 9999
-      orderId = randomNumber.toString().padLeft(4, '0'); // Ensure the order ID is exactly 4 digits long
-    } while (generatedComplaintIds.contains(orderId)); // Repeat if the generated order ID already exists
-    generatedComplaintIds.add(orderId); // Add the generated order ID to the set
+      int randomNumber = random.nextInt(10000);
+      orderId = randomNumber.toString().padLeft(4, '0');
+    } while (generatedComplaintIds.contains(orderId));
+    generatedComplaintIds.add(orderId);
     return orderId;
   }
 }

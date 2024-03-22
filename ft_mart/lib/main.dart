@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:ftmithaimart/components/order_tracking.dart';
 import 'package:ftmithaimart/dbHelper/mongodb.dart';
 import 'package:ftmithaimart/model/cart_provider.dart';
 import 'package:ftmithaimart/push_notifications.dart';
@@ -28,16 +29,6 @@ Future _firebaseBackgroundMessage(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Platform.isAndroid
-  //     ? await Firebase.initializeApp(
-  //         options: const FirebaseOptions(
-  //             apiKey: 'AIzaSyBRPwp0O-kxX5wN5di787nUk5CNOdVcsH8',
-  //             appId: '1:722881978336:android:21e1bb38e3f2ab28c45585',
-  //             messagingSenderId: '722881978336',
-  //             authDomain: 'ftmithaimart-4e059.firebaseapp.com',
-  //             storageBucket: 'ftmithaimart-4e059.appspot.com',
-  //             projectId: 'ftmithaimart-4e059'))
-  //     : await Firebase.initializeApp();
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -74,7 +65,7 @@ void main() async {
   if (message != null) {
     print("Launched from terminated state");
     Future.delayed(Duration(seconds: 1), () {
-      navigatorKey.currentState!.pushNamed("/message", arguments: message);
+      navigatorKey.currentState!.pushNamed("/order_tracking", arguments: message);
     });
   }
   runApp(ChangeNotifierProvider(
@@ -126,6 +117,7 @@ class MainApp extends StatelessWidget {
               name: "User",
             ),
         '/message': (context) => const Message(),
+        '/order_tracking': (context) => const OrderTracking(name: "user"),
        // '/otpScreen': (BuildContext ctx) => OtpScreen(),
       },
     );

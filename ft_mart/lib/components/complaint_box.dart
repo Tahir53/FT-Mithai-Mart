@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ftmithaimart/components/drawer.dart';
 import '../dbHelper/mongodb.dart';
 import '../model/complaints_model.dart';
+import '../push_notifications.dart';
 
 class complaintbox extends StatefulWidget {
   final String? id;
@@ -83,17 +84,13 @@ class _complaintboxState extends State<complaintbox> {
                     email: widget.email ?? "no email",
                     contact: widget.contact ?? "no contact",
                     description: _complaintController.text,
+                    dateTime: DateTime.now(),
+                    deviceToken: await PushNotifications.returnToken(),
                   );
                   var result = await MongoDatabase.saveComplaint(complaint);
                   if (result == 'Complaint submitted') {
                     _complaintController.text = "";
                     submitComplaint(context, complaint.complaintId);
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        backgroundColor: Color(0xff63131C),
-                        content: Text(
-                          "Your complain has been submitted successfully!",
-                          style: TextStyle(color: Colors.white),
-                        )));
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         backgroundColor: Color(0xff63131C),
@@ -148,7 +145,7 @@ class _complaintboxState extends State<complaintbox> {
       builder: (context) {
         return AlertDialog(
           title: Text(
-            "Your complain with ID $complaintId has been submitted successfully! Looking forward to serve you better!",
+            "Your complain with ID $complaintId has been submitted successfully! You will be notified further!",
             style: TextStyle(
               color: Color(0xff63131C),
             ),
