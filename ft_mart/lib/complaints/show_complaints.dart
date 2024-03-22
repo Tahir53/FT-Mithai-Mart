@@ -110,9 +110,14 @@ class _ComplaintListState extends State<ComplaintList> {
                 ),
               ),
               Positioned(
-                  bottom: 0, right: 0, child: Text("${DateFormat('E, d MMM y | hh:mm a').format(complaint.dateTime)}",style: TextStyle(
-                fontSize: 12,
-              ),)),
+                  bottom: 0,
+                  right: 0,
+                  child: Text(
+                    "${DateFormat('E, d MMM y | hh:mm a').format(complaint.dateTime)}",
+                    style: TextStyle(
+                      fontSize: 12,
+                    ),
+                  )),
               if (complaint.notified)
                 Positioned(
                   top: 8,
@@ -152,8 +157,7 @@ class _ComplaintListState extends State<ComplaintList> {
                     Navigator.of(context).pop();
                     _showDeletedMessage();
                     setState(() {});
-                    widget
-                        .refreshComplaints(); // Reload complaints after deleting
+                    widget.refreshComplaints();
                   }
                 },
               ),
@@ -204,7 +208,7 @@ class _ComplaintListState extends State<ComplaintList> {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       decoration: BoxDecoration(
-        color: Colors.orange, // Change color as needed
+        color: Colors.orange,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(

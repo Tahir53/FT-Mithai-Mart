@@ -141,14 +141,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     ],
                   ),
                 ),
-                Padding(padding: EdgeInsets.only(top: 20)),
-                Text(
-                  "Not your Number?",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xff63131C),
-                  ),
-                ),
+                Padding(padding: EdgeInsets.only(top: 10)),
                 TextButton(
                   onPressed: () {
                     Navigator.pushReplacement(
@@ -157,11 +150,12 @@ class _OtpScreenState extends State<OtpScreen> {
                             builder: (context) =>
                                 EnterNumber(function: widget.function)));
                   },
-                  child: Text(
-                    "Click Here To Change",
+                  child: const Text(
+                    "Try Another Number",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Color(0xff63131C),
+                      decoration: TextDecoration.underline,
                     ),
                   ),
                 )

@@ -361,13 +361,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         );
                         return;
                       }
-                      // _checkout();
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => EnterNumber(
                               function: () {
                                 _checkout();
+
                               },
                             ),
                           ));

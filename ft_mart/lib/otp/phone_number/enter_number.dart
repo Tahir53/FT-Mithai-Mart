@@ -11,10 +11,8 @@ import 'package:http/http.dart' as http;
 class EnterNumber extends StatefulWidget {
   final Function() function;
 
-  const EnterNumber({
-    Key? key,
-    required this.function
-  }) : super(key: key);
+  const EnterNumber({Key? key, required this.function}) : super(key: key);
+
   @override
   _EnterNumberState createState() => _EnterNumberState();
 }
@@ -27,31 +25,6 @@ class _EnterNumberState extends State<EnterNumber> {
     super.initState();
   }
 
-  void showErrorDialog(BuildContext context, String message) {
-    // set up the AlertDialog
-    final CupertinoAlertDialog alert = CupertinoAlertDialog(
-      title: const Text('Error'),
-      content: Text('\n$message'),
-      actions: <Widget>[
-        CupertinoDialogAction(
-          isDefaultAction: true,
-          child: const Text('Yes'),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        )
-      ],
-    );
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
-
-  //build method for UI Representation
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -79,13 +52,16 @@ class _EnterNumberState extends State<EnterNumber> {
                 ),
                 const Text(
                   'Verification',
-                  style: TextStyle(fontSize: 28, color: Colors.black),
+                  style: TextStyle(
+                      fontSize: 28,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold),
                 ),
                 SizedBox(
                   height: screenHeight * 0.02,
                 ),
                 const Text(
-                  'Enter your mobile number to receive a verification code',
+                  'We Need To Verify Your Phone Number To Place The Order.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 18,
@@ -115,12 +91,6 @@ class _EnterNumberState extends State<EnterNumber> {
                         margin: const EdgeInsets.all(8),
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         height: 45,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: const Color(0xff63131C),
-                          ),
-                          borderRadius: BorderRadius.circular(36),
-                        ),
                         child: Row(
                           children: [
                             SizedBox(
@@ -128,14 +98,24 @@ class _EnterNumberState extends State<EnterNumber> {
                             ),
                             Expanded(
                               child: TextField(
-                                decoration: const InputDecoration(
+                                decoration: InputDecoration(
                                   prefixText: '92',
-                                  hintText: 'Contact Number',
-                                  border: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  contentPadding:
-                                      EdgeInsets.symmetric(vertical: 13.5),
+                                  prefixStyle: TextStyle(
+                                      color: Colors.black87, fontSize: 16),
+                                  labelText: 'Contact Number',
+                                  labelStyle:
+                                      TextStyle(color: Color(0xff63131C)),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  focusedBorder: const OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 2, color: Color(0xff63131C)),
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.phone,
+                                    color: Color(0xff63131C),
+                                  ),
                                 ),
                                 controller: phoneController,
                                 keyboardType: TextInputType.phone,
@@ -187,11 +167,13 @@ class _EnterNumberState extends State<EnterNumber> {
                                   MaterialPageRoute(
                                       builder: (_) => OtpScreen(
                                             verificationId:
-                                                randomNumber.toString(), function: () { widget.function();}, phoneNo: phoneController.text,
+                                                randomNumber.toString(),
+                                            function: () {
+                                              widget.function();
+                                            },
+                                            phoneNo: phoneController.text,
                                           )));
                             } else {
-                              print(
-                                  'Failed to send message. Error: ${response.statusCode}');
                               Fluttertoast.showToast(
                                 msg: "Failed to send OTP",
                                 toastLength: Toast.LENGTH_SHORT,
@@ -199,7 +181,6 @@ class _EnterNumberState extends State<EnterNumber> {
                               );
                             }
                           } catch (e) {
-                            // Print error message if an exception occurs
                             print('Exception: $e');
                           }
                         },

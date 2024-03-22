@@ -33,7 +33,7 @@ class Complaint {
       description: json['description'],
       complaintId: json['complaintId'],
       dateTime: json['dateTime'],
-      deviceToken: json['deviceToken'], // Initialize device token from JSON
+      deviceToken: json['deviceToken'],
     );
   }
 
@@ -46,7 +46,7 @@ class Complaint {
       'description': description,
       'complaintId': complaintId,
       'dateTime': dateTime,
-      'deviceToken': deviceToken, // Include device token in JSON
+      'deviceToken': deviceToken,
     };
   }
 
