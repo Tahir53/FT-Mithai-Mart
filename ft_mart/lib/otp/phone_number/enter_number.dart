@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ftmithaimart/otp/otp_screen.dart';
 import 'package:http/http.dart' as http;
 
@@ -128,6 +129,7 @@ class _EnterNumberState extends State<EnterNumber> {
                             Expanded(
                               child: TextField(
                                 decoration: const InputDecoration(
+                                  prefixText: '92',
                                   hintText: 'Contact Number',
                                   border: InputBorder.none,
                                   enabledBorder: InputBorder.none,
@@ -136,9 +138,9 @@ class _EnterNumberState extends State<EnterNumber> {
                                       EdgeInsets.symmetric(vertical: 13.5),
                                 ),
                                 controller: phoneController,
-                                keyboardType: TextInputType.number,
+                                keyboardType: TextInputType.phone,
                                 inputFormatters: [
-                                  LengthLimitingTextInputFormatter(12)
+                                  LengthLimitingTextInputFormatter(10)
                                 ],
                               ),
                             ),
@@ -153,11 +155,20 @@ class _EnterNumberState extends State<EnterNumber> {
                           backgroundColor: Color(0xff63131C),
                         ),
                         onPressed: () async {
+                          if (phoneController.text.isEmpty) {
+                            Fluttertoast.showToast(
+                              msg: "Please enter your phone number",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                            );
+                            return;
+                          }
+
                           Random random = Random();
                           int randomNumber = random.nextInt(90000) + 100000;
 
                           final apiUrl = Uri.parse(
-                              'https://muhammadqsolutions.pythonanywhere.com/send-sms?message=$randomNumber&phone=${phoneController.text}'); // API endpoint
+                              'https://muhammadqsolutions.pythonanywhere.com/send-sms?message=$randomNumber&phone=92${phoneController.text}'); // API endpoint
 
                           try {
                             var response = await http.get(
@@ -171,16 +182,21 @@ class _EnterNumberState extends State<EnterNumber> {
                             if (response.statusCode == 200) {
                               print(
                                   'Message SID: ${json.decode(response.body)['message_sid']}');
-                              Navigator.push(
+                              Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                       builder: (_) => OtpScreen(
                                             verificationId:
-                                                randomNumber.toString(), function: () { _checkout() },
+                                                randomNumber.toString(), function: () { widget.function();}, phoneNo: phoneController.text,
                                           )));
                             } else {
                               print(
                                   'Failed to send message. Error: ${response.statusCode}');
+                              Fluttertoast.showToast(
+                                msg: "Failed to send OTP",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                              );
                             }
                           } catch (e) {
                             // Print error message if an exception occurs

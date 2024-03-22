@@ -16,7 +16,7 @@ class Order {
   final List<String> quantities;
   final String? receiptImagePath;
   final String deviceToken;
-  late String status; // New field for order status
+  late String status;
 
   Order({
     required this.orderId,
@@ -32,7 +32,7 @@ class Order {
     required this.quantities,
     required this.receiptImagePath,
     required this.deviceToken,
-    required this.status, // Initialize order status
+    required this.status,
   });
 
   Map<String, dynamic> toJson() {

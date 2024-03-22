@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ftmithaimart/dbHelper/mongodb.dart';
-import 'package:ftmithaimart/model/customer_model.dart';
 import 'package:intl/intl.dart';
 import '../components/admindrawer.dart';
 import '../model/complaints_model.dart';
