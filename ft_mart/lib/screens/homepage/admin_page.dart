@@ -51,17 +51,14 @@ class _adminState extends State<admin> {
             orderId,
             order.deviceToken,
             'Order Ready for Pickup',
-            'Your order with ID $orderId is ready for pickup!\nTrack Your Order By Clicking Here.'
-        );
+            'Your order with ID $orderId is ready for pickup!\nTrack Your Order By Clicking Here.');
       } else if (newStatus == 'Ready for Delivery') {
         await PushNotifications.sendNotification(
             orderId,
             order.deviceToken,
             'Order Ready For Delivery',
-            'Your order with ID $orderId is ready for delivery!\nRider on the Way! Track now.'
-        );
+            'Your order with ID $orderId is ready for delivery!\nRider on the Way! Track now.');
       }
-
     }
   }
 
@@ -69,7 +66,7 @@ class _adminState extends State<admin> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         toolbarHeight: 100,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -98,19 +95,29 @@ class _adminState extends State<admin> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.only(left: 15.0, bottom: 10),
+            const SizedBox(height: 20),
+            const Padding(
+              padding: EdgeInsets.only(left: 15.0, bottom: 10),
               child: Text(
                 "Welcome, Admin!",
                 style: TextStyle(
                   color: Color(0xFF63131C),
                   fontSize: 24,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-            // Using ListView.builder to display orders
+            const Padding(
+              padding: EdgeInsets.only(left: 15.0, bottom: 10),
+              child: Text(
+                "Current Orders",
+                style: TextStyle(
+                  color: Color(0xFF63131C),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
             ListView.builder(
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
@@ -121,8 +128,9 @@ class _adminState extends State<admin> {
                   onTap: () {
                     showModalBottomSheet(
                       context: context,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(20)),
                       ),
                       builder: (context) {
                         return SingleChildScrollView(
@@ -131,24 +139,50 @@ class _adminState extends State<admin> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Order Details', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                                Text('Order Details',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold)),
                                 SizedBox(height: 20),
                                 Text('Order ID: ${order.orderId}'),
                                 Text('Name: ${order.name}'),
                                 Text('Email: ${order.email}'),
                                 Text('Contact: ${order.contact}'),
-                                Text('Pickup/Delivery Date & Time: ${DateFormat('E, d MMM y | hh:mm a').format(order.orderDateTime)}'),
-                                Text('Delivery Address: ${order.deliveryAddress ?? 'N/A'}'),
+                                Text(
+                                    'Pickup/Delivery Date & Time: ${DateFormat('E, d MMM y | hh:mm a').format(order.orderDateTime)}'),
+                                Text(
+                                    'Delivery Address: ${order.deliveryAddress ?? 'N/A'}'),
                                 Text('Total Amount: ${order.totalAmount}'),
                                 Text('Payment Method: ${order.payment}'),
                                 SizedBox(height: 10),
-                                Text('Products:', style: TextStyle(fontWeight: FontWeight.bold)),
-                                ...List.generate(order.productNames.length, (index) {
+                                Text('Products:',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                                ...List.generate(order.productNames.length,
+                                    (index) {
                                   return Padding(
                                     padding: const EdgeInsets.only(left: 16.0),
-                                    child: Text('${order.productNames[index]} - ${order.quantities[index]} kg'),
+                                    child: Text(
+                                        '${order.productNames[index]} - ${order.quantities[index]} kg'),
                                   );
                                 }),
+                                SizedBox(height: 10),
+                                ElevatedButton.icon(
+                                    onPressed: () {
+                                      MongoDatabase.deleteOrder(order.orderId);
+                                      Navigator.of(context).pop();
+                                      fetchOrders();
+                                    },
+                                    icon: Icon(
+                                      Icons.delete_outlined,
+                                      color: Color(0xFF63131C),
+                                    ),
+                                    label: Text(
+                                      "Delete Order",
+                                      style: TextStyle(
+                                        color: Color(0xFF63131C),
+                                      ),
+                                    )),
                               ],
                             ),
                           ),
@@ -163,12 +197,18 @@ class _adminState extends State<admin> {
                     child: Stack(
                       children: [
                         ListTile(
-                          title: Text('Order No. ${order.orderId}'),
+                          title: Text('Order No. ${order.orderId}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF63131C),
+                              )),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text('${order.name}'),
-                              Text('${DateFormat(' E,d MMM y | hh:mm a').format(order.orderDateTime)}'),
+                              Text(
+                                '${DateFormat(' E,d MMM y | hh:mm a').format(order.orderDateTime)}',
+                              ),
                             ],
                           ),
                         ),
@@ -178,11 +218,15 @@ class _adminState extends State<admin> {
                           child: Container(
                             padding: EdgeInsets.all(4),
                             decoration: BoxDecoration(
-                              color: order.deliveryAddress == 'Pickup' ? Color(0xffFFEC8C) : Color(0xffFFEC8C),
+                              color: order.deliveryAddress == 'Pickup'
+                                  ? Color(0xffFFEC8C)
+                                  : Color(0xffFFEC8C),
                               borderRadius: BorderRadius.circular(5),
                             ),
                             child: Text(
-                              order.deliveryAddress == 'Pickup' ? 'Pickup' : 'Delivery',
+                              order.deliveryAddress == 'Pickup'
+                                  ? 'Pickup'
+                                  : 'Delivery',
                               style: TextStyle(color: Color(0xff8C7502)),
                             ),
                           ),
@@ -192,7 +236,12 @@ class _adminState extends State<admin> {
                           right: 0,
                           child: DropdownButton<String>(
                             value: order.status,
-                            items: <String>['In Process', 'Ready for Pickup', 'Ready for Delivery', 'Delivered'].map((String value) {
+                            items: <String>[
+                              'In Process',
+                              'Ready for Pickup',
+                              'Ready for Delivery',
+                              'Delivered'
+                            ].map((String value) {
                               Color backgroundColor;
                               Color textColor;
                               switch (value) {
@@ -201,13 +250,15 @@ class _adminState extends State<admin> {
                                   textColor = Colors.white;
                                   break;
                                 case 'Ready for Pickup':
-                                  backgroundColor = Color(0xff038200);
+                                  backgroundColor = Colors.orange;
                                   textColor = Colors.white;
                                   break;
                                 case 'Ready for Delivery':
+                                  backgroundColor = Colors.blueGrey;
+                                  textColor = Colors.white;
                                 case 'Delivered':
-                                  backgroundColor = Colors.white;
-                                  textColor = Colors.black;
+                                  backgroundColor = Color(0xff038200);
+                                  textColor = Colors.white;
                                   break;
                                 default:
                                   backgroundColor = Colors.white;
@@ -217,7 +268,7 @@ class _adminState extends State<admin> {
                                 value: value,
                                 child: Container(
                                   color: backgroundColor,
-                                  width: 100,
+                                  width: 95,
                                   child: Padding(
                                     padding: const EdgeInsets.all(5.0),
                                     child: Text(

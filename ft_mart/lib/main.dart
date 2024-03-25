@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:ftmithaimart/components/order_tracking.dart';
@@ -9,9 +8,6 @@ import 'package:ftmithaimart/push_notifications.dart';
 import 'package:ftmithaimart/screens/splash.dart';
 import 'package:provider/provider.dart';
 import 'components/message.dart';
-import 'components/push_noti.dart';
-import 'components/reciepts_screen.dart';
-import 'otp/otp_screen.dart';
 import 'screens/homepage/home_page.dart';
 import 'screens/authentication/login_page.dart';
 import '../splash_screen.dart';
@@ -52,33 +48,25 @@ void main() async {
     print("Got a message in foreground");
     if (message.notification != null) {
       PushNotifications.showSimpleNotification(
-          title: message.notification!.title!,
-          body: message.notification!.body!,
-          payload: payloadData,);
+        title: message.notification!.title!,
+        body: message.notification!.body!,
+        payload: payloadData,
+      );
     }
   });
 
-  // for handling in terminated state
   final RemoteMessage? message =
       await FirebaseMessaging.instance.getInitialMessage();
 
   if (message != null) {
     print("Launched from terminated state");
     Future.delayed(Duration(seconds: 1), () {
-      navigatorKey.currentState!.pushNamed("/order_tracking", arguments: message);
+      navigatorKey.currentState!
+          .pushNamed("/order_tracking", arguments: message);
     });
   }
   runApp(ChangeNotifierProvider(
       create: (context) => CartProvider(), child: const MainApp()));
-}
-
-class MyHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
-  }
 }
 
 class MainApp extends StatelessWidget {
@@ -118,7 +106,6 @@ class MainApp extends StatelessWidget {
             ),
         '/message': (context) => const Message(),
         '/order_tracking': (context) => const OrderTracking(name: "user"),
-       // '/otpScreen': (BuildContext ctx) => OtpScreen(),
       },
     );
   }

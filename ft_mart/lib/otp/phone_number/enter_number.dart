@@ -195,7 +195,15 @@ class _EnterNumberState extends State<EnterNumber> {
                       ),
                     ],
                   ),
-                )
+                ),
+                TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => widget.function()));
+                    },
+                    child: Text("Skip"))
               ],
             ),
           ),

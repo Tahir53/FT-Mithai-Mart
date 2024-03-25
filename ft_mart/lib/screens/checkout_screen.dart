@@ -1,8 +1,5 @@
 import 'dart:io';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:ftmithaimart/model/cart_provider.dart';
 import 'package:ftmithaimart/otp/phone_number/enter_number.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -43,9 +40,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   File? _receiptImage;
   String? _uploadedImageUrl;
   String? _paymentOption;
+
   Map payload = {};
 
-  // Function to handle checkout process
   void _checkout() async {
     List<String> productNames = [];
     List<String> quantities = [];
@@ -69,8 +66,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       receiptImagePath: _receiptImage != null ? _receiptImage!.path : null,
       deviceToken: await PushNotifications.returnToken(),
       status: 'In Process',
-
-      //paymentOption: _paymentOption,
     );
 
     await saveOrderToDatabase(order);
@@ -152,7 +147,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             Theme(
               data: Theme.of(context).copyWith(
                 unselectedWidgetColor: Colors.grey,
-                // Color of unselected radio buttons
                 radioTheme: RadioThemeData(
                   fillColor: MaterialStateColor.resolveWith((states) {
                     if (states.contains(MaterialState.selected)) {
@@ -267,7 +261,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 if (_uploadedImageUrl != null) ...[
                                   GestureDetector(
                                     onTap: () {
-                                      launch(_uploadedImageUrl!);
+                                      launchUrl(_uploadedImageUrl! as Uri);
                                     },
                                     child: Text(
                                       'Uploaded Reciept',
@@ -367,7 +361,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             builder: (context) => EnterNumber(
                               function: () {
                                 _checkout();
-
                               },
                             ),
                           ));
@@ -461,8 +454,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Future<void> _sendInAppNotification(String orderId) async {
-    final deviceToken = await PushNotifications.returnToken();
-
+     await PushNotifications.returnToken();
     final notificationTitle = 'Order Placed';
     final notificationBody =
         'Your order with ID $orderId has been successfully placed.';

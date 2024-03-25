@@ -99,7 +99,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => aboutus(name: "User")));
+                        builder: (context) => aboutus(name: widget.name)));
               },
             ),
           ),
@@ -122,7 +122,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            OrderTracking(name: 'user')));
+                            OrderTracking(name: widget.name)));
               },
             ),
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ftmithaimart/dbHelper/mongodb.dart';
+import 'package:intl/intl.dart';
 import '../model/orders_model.dart';
 import 'drawer.dart';
 
@@ -17,10 +18,12 @@ class _OrderTrackingState extends State<OrderTracking> {
   String orderId = '';
   List<String> orderedItems = [];
   String status = '';
+  double totalAmount = 0.0;
+  String orderType = 'Delivery';
+  DateTime? dateTime;
 
   Future<void> _trackOrder() async {
     if (orderId.isEmpty) {
-      // Show toast for empty order ID
       Fluttertoast.showToast(
         msg: "Please enter an order ID",
         toastLength: Toast.LENGTH_SHORT,
@@ -33,14 +36,22 @@ class _OrderTrackingState extends State<OrderTracking> {
       return;
     }
 
-    List<Order> orders = await fetchOrders(); // Fetch orders from MongoDB
+    List<Order> orders = await fetchOrders();
 
     bool isValidOrder = false;
     for (Order order in orders) {
       if (order.orderId == orderId) {
         setState(() {
-          orderedItems = order.cartItems.map((item) => item.productName).toList();
+          orderedItems = order.cartItems
+              .map((item) => "${item.productName} x ${item.quantity}kgs")
+              .toList();
           status = order.status;
+          totalAmount = order.totalAmount;
+          orderType = (order.deliveryAddress != null &&
+                  order.deliveryAddress!.toLowerCase() != "pickup")
+              ? "Delivery"
+              : "Pickup";
+          dateTime = order.orderDateTime!;
         });
         isValidOrder = true;
         break;
@@ -48,7 +59,6 @@ class _OrderTrackingState extends State<OrderTracking> {
     }
 
     if (!isValidOrder) {
-      // Show toast for invalid order ID
       Fluttertoast.showToast(
         msg: "Invalid order ID",
         toastLength: Toast.LENGTH_SHORT,
@@ -62,7 +72,6 @@ class _OrderTrackingState extends State<OrderTracking> {
   }
 
   Future<List<Order>> fetchOrders() async {
-    // Call the MongoDB helper method to fetch orders
     return await MongoDatabase.getOrders();
   }
 
@@ -100,62 +109,106 @@ class _OrderTrackingState extends State<OrderTracking> {
             TextField(
               decoration: InputDecoration(
                 labelText: 'Enter Order ID',
-                border: OutlineInputBorder(),
+                labelStyle: TextStyle(color: Color(0xff63131C)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                focusedBorder: const OutlineInputBorder(
+                  borderSide: BorderSide(width: 2, color: Color(0xff63131C)),
+                ),
               ),
               onChanged: (value) {
                 setState(() {
                   orderId = value;
-                  // Reset orderedItems and status when a new order ID is entered
                   orderedItems = [];
                   status = '';
                 });
               },
             ),
             SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _trackOrder,
-              child: Text('Track Order'),
+            Center(
+              child: ElevatedButton.icon(
+                  onPressed: _trackOrder,
+                  icon: Icon(
+                    Icons.track_changes_rounded,
+                    color: Color(0xFF63131C),
+                  ),
+                  label: Text(
+                    "Track Order",
+                    style: TextStyle(
+                      color: Color(0xFF63131C),
+                    ),
+                  )),
             ),
             SizedBox(height: 16),
             if (orderId.isNotEmpty && orderedItems.isNotEmpty)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Order ID: $orderId',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    'Ordered Items:',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Column(
-                    children: orderedItems
-                        .map(
-                          (item) => ListTile(
-                        title: Text(item),
-                        // You can add more information about the items here
+              Card(
+                elevation: 5,
+                margin: const EdgeInsets.all(8.0),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Order ID: $orderId',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    )
-                        .toList(),
+                      Divider(color: Color(0xFF63131C)),
+                      SizedBox(height: 10),
+                      if (dateTime != null)
+                        Text(
+                          'Order Date: ${DateFormat('yyyy-MM-dd – kk:mm').format(dateTime!)}',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      Text(
+                        'Order Type: $orderType',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        'Ordered Items:',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      ...orderedItems.map(
+                        (item) => Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(item),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        'Total Amount: Rs.${totalAmount.toStringAsFixed(2)}',
+                        // Display total amount
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        'Status: $status',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 16),
-                  Text(
-                    'Status: $status',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              )
+                ),
+              ),
           ],
         ),
       ),

@@ -80,12 +80,21 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
                 decoration: InputDecoration(labelText: 'Image URL'),
               ),
               SizedBox(height: 16.0),
-              ElevatedButton(
+              ElevatedButton.icon(
                 onPressed: () {
                   check();
                   widget.onProductAdded();
                 },
-                child: Text('Add Product'),
+                  icon: Icon(
+                    Icons.inventory_outlined,
+                    color: Color(0xFF63131C),
+                  ),
+                  label: Text(
+                    "Add Product",
+                    style: TextStyle(
+                      color: Color(0xFF63131C),
+                    ),
+                  )
               ),
             ],
           ),

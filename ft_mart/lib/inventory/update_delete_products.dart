@@ -57,69 +57,71 @@ class ProductDialogs {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Update Product'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(labelText: 'Name'),
-              ),
-              TextField(
-                controller: priceController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(labelText: 'Price'),
-              ),
-              TextField(
-                controller: stockController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(labelText: 'Stock'),
-              ),
-              TextField(
-                controller: descriptionController,
-                decoration: InputDecoration(labelText: 'Description'),
-              ),
-              DropdownButtonFormField<String>(
-                value: dropdownValue,
-                items: categoryValues
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(
-                      value,
-                      style: TextStyle(fontSize: 15),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  dropdownValue = newValue!;
-                },
-                decoration: const InputDecoration(
-                  labelText: 'Category',
+        return SingleChildScrollView(
+          child: AlertDialog(
+            title: Text('Update Product'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(labelText: 'Name'),
                 ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Product updatedProduct = Product(
-                    id: product.id,
-                    name: nameController.text,
-                    price: priceController.text,
-                    stock: double.parse(stockController.text),
-                    category: dropdownValue,
-                    image: product.image,
-                    quantity: [],
-                    description: descriptionController.text,
-                  );
+                TextField(
+                  controller: priceController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(labelText: 'Price'),
+                ),
+                TextField(
+                  controller: stockController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(labelText: 'Stock'),
+                ),
+                TextField(
+                  controller: descriptionController,
+                  decoration: InputDecoration(labelText: 'Description'),
+                ),
+                DropdownButtonFormField<String>(
+                  value: dropdownValue,
+                  items: categoryValues
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value,
+                        style: TextStyle(fontSize: 15),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    dropdownValue = newValue!;
+                  },
+                  decoration: const InputDecoration(
+                    labelText: 'Category',
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Product updatedProduct = Product(
+                      id: product.id,
+                      name: nameController.text,
+                      price: priceController.text,
+                      stock: double.parse(stockController.text),
+                      category: dropdownValue,
+                      image: product.image,
+                      quantity: [],
+                      description: descriptionController.text,
+                    );
 
-                  MongoDatabase.updateProduct(updatedProduct);
-                  Navigator.pop(context);
-                  _showUpdateMessage();
-                  setStateCallback();
-                },
-                child: Text('Update'),
-              ),
-            ],
+                    MongoDatabase.updateProduct(updatedProduct);
+                    Navigator.pop(context);
+                    _showUpdateMessage();
+                    setStateCallback();
+                  },
+                  child: Text('Update'),
+                ),
+              ],
+            ),
           ),
         );
       },

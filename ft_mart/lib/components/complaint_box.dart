@@ -7,11 +7,11 @@ import '../push_notifications.dart';
 
 class complaintbox extends StatefulWidget {
   final String? id;
-  final String? name;
+  final String name;
   final String? email;
   final String? contact;
 
-  complaintbox({this.id,this.name, this.email, this.contact});
+  complaintbox({this.id, this.email, this.contact, required this.name});
 
   @override
   State<complaintbox> createState() => _complaintboxState();
@@ -43,7 +43,7 @@ class _complaintboxState extends State<complaintbox> {
         backgroundColor: const Color(0xff801924),
       ),
       drawer: CustomDrawer(
-        name: "user",
+        name: widget.name,
       ),
       body: SingleChildScrollView(
         child: Padding(

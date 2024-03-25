@@ -88,12 +88,17 @@ class _ReceiptScreenState extends State<ReceiptScreen>
                 ? Container()
                 : SlideTransition(
               position: _offsetAnimation!,
-              child: const Text(
-                "Thank you for choosing F.T Sweets",
-                style: TextStyle(
-                  color: Color(0xFF63131C),
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+              child: const FittedBox(
+                fit: BoxFit.scaleDown, 
+                child: Text(
+                  "Thank you for choosing F.T Mithai Mart",
+                  style: TextStyle(
+                    color: Color(0xFF63131C),
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 1,
+                  textAlign: TextAlign.center,
                 ),
               ),
             ),
@@ -109,7 +114,7 @@ class _ReceiptScreenState extends State<ReceiptScreen>
                     color: Colors.grey.withOpacity(0.5),
                     spreadRadius: 5,
                     blurRadius: 7,
-                    offset: Offset(0, 3), // changes position of shadow
+                    offset: Offset(0, 3),
                   ),
                 ],
               ),
@@ -141,8 +146,7 @@ class _ReceiptScreenState extends State<ReceiptScreen>
                         final cartItem = widget.cartItems[index];
                         return ListTile(
                           title: Text(cartItem.productName),
-                          subtitle:
-                          Text('${cartItem.formattedQuantity} kgs'),
+                          subtitle: Text('${cartItem.formattedQuantity} kgs'),
                           trailing: Text('Rs. ${cartItem.price}'),
                         );
                       },
@@ -156,20 +160,23 @@ class _ReceiptScreenState extends State<ReceiptScreen>
                         backgroundColor: Color(0xff63131C),
                       ),
                       onPressed: () {
-                        Provider.of<CartProvider>(context, listen: false).clearCart();
+                        Provider.of<CartProvider>(context, listen: false)
+                            .clearCart();
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                homepage(name: widget.name),
+                            builder: (context) => homepage(name: widget.name),
                           ),
                         );
                       },
-                      icon: Icon(Icons.track_changes,color: Colors.white,),
-                      label: Text("Track Order",style: TextStyle(
-                        color: Colors.white
-                      ),),
-
+                      icon: Icon(
+                        Icons.track_changes,
+                        color: Colors.white,
+                      ),
+                      label: Text(
+                        "Track Order",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     )
                   ],
                 ),

@@ -217,7 +217,6 @@ class _homepageState extends State<homepage> {
                                 MaterialPageRoute(
                                   builder: (context) => CheckoutScreen(
                                     cartItems: cartProvider.items,
-                                    // Pass the list of Cart items
                                     totalAmount:
                                         _calculateTotal(cartProvider.items),
                                     name: widget.name,

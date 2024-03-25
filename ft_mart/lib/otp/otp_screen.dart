@@ -1,7 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ftmithaimart/otp/phone_number/enter_number.dart';
 import 'package:otp_pin_field/otp_pin_field.dart';
 
@@ -22,22 +22,12 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OtpScreenState extends State<OtpScreen> {
+  String enteredOtp = "";
   late String smsOTP;
-  String errorMessage = '';
   final _otpPinFieldKey = GlobalKey<OtpPinFieldState>();
-  TextEditingController OtpController = TextEditingController();
 
-  @override
-  //dispose controllers
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  //build method for UI
   @override
   Widget build(BuildContext context) {
-    //Getting screen height width
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -107,7 +97,11 @@ class _OtpScreenState extends State<OtpScreen> {
                           maxLength: 6,
                           fieldWidth: 30,
                           onSubmit: (String text) {},
-                          onChange: (String text) {},
+                          onChange: (String text) {
+                            setState(() {
+                              enteredOtp = text;
+                            });
+                          },
                         ),
                       ),
                       SizedBox(
@@ -118,15 +112,14 @@ class _OtpScreenState extends State<OtpScreen> {
                             backgroundColor: Color(0xff63131C),
                           ),
                           onPressed: () async {
-                            try {
-                              PhoneAuthCredential credential =
-                                  await PhoneAuthProvider.credential(
-                                      verificationId: widget.verificationId,
-                                      smsCode: OtpController.text.toString());
-                              FirebaseAuth.instance
-                                  .signInWithCredential(credential);
+                            if (enteredOtp == widget.verificationId)
                               widget.function();
-                            } catch (ex) {}
+                            else {
+                              Fluttertoast.showToast(
+                                  msg: ("Invalid OTP"),
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM);
+                            }
                           },
                           icon: Icon(
                             Icons.verified_outlined,
@@ -164,47 +157,6 @@ class _OtpScreenState extends State<OtpScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  //Method for handle the errors
-  void handleError(PlatformException error) {
-    switch (error.code) {
-      case 'ERROR_INVALID_VERIFICATION_CODE':
-        FocusScope.of(context).requestFocus(FocusNode());
-        setState(() {
-          errorMessage = 'Invalid Code';
-        });
-        showAlertDialog(context, 'Invalid Code');
-        break;
-      default:
-        showAlertDialog(context, error.message ?? 'Error');
-        break;
-    }
-  }
-
-  //Basic alert dialogue for alert errors and confirmations
-  void showAlertDialog(BuildContext context, String message) {
-    // set up the AlertDialog
-    final CupertinoAlertDialog alert = CupertinoAlertDialog(
-      title: const Text('Error'),
-      content: Text('\n$message'),
-      actions: <Widget>[
-        CupertinoDialogAction(
-          isDefaultAction: true,
-          child: const Text('Ok'),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        )
-      ],
-    );
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
     );
   }
 }

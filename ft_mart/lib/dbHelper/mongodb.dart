@@ -211,6 +211,10 @@ class MongoDatabase {
     await ordersCollection.update(query, update);
   }
 
+  static Future<void> deleteOrder(String orderId) async {
+    await ordersCollection.deleteOne(where.eq('orderId', orderId));
+  }
+
   static decreaseStock(String productName) async {
     print("stock depleted in mongodb");
     try{

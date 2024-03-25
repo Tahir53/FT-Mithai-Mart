@@ -5,7 +5,8 @@ class BoxCustomizationPage extends StatefulWidget {
   _BoxCustomizationPageState createState() => _BoxCustomizationPageState();
 }
 
-class _BoxCustomizationPageState extends State<BoxCustomizationPage> with TickerProviderStateMixin {
+class _BoxCustomizationPageState extends State<BoxCustomizationPage>
+    with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _animation;
   bool isBoxSelected = false;
@@ -42,8 +43,8 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> with Ticker
         title: Padding(
           padding: const EdgeInsets.all(0.0),
           child: Image.asset("assets/Logo.png", width: 50, height: 50
-            // alignment: Alignment.center,
-          ),
+              // alignment: Alignment.center,
+              ),
         ),
         backgroundColor: const Color(0xff801924),
       ),
@@ -61,9 +62,9 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> with Ticker
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            ),// Adjust the height according to your preference
+            ),
 
-            Padding(padding: EdgeInsets.only(top:20)),
+            Padding(padding: EdgeInsets.only(top: 20)),
             GestureDetector(
               onTap: () {
                 setState(() {
@@ -77,44 +78,44 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> with Ticker
               },
               child: isBoxSelected
                   ? (_animation != null
-                  ? SlideTransition(
-                position: _animation,
-                child: Container(
-                  width: 150,
-                  height: 150,
-                  decoration: BoxDecoration(
-                    color: Color(0xff801924),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Box',
-                      style: TextStyle(
-                        fontSize: 20,
+                      ? SlideTransition(
+                          position: _animation,
+                          child: Container(
+                            width: 150,
+                            height: 150,
+                            decoration: BoxDecoration(
+                              color: Color(0xff801924),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Box',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      : Container())
+                  : Container(
+                      width: 150,
+                      height: 150,
+                      decoration: BoxDecoration(
                         color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Box',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.black,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              )
-                  : Container())
-                  : Container(
-                width: 150,
-                height: 150,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Center(
-                  child: Text(
-                    'Box',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ),
             ),
             SizedBox(height: 20),
             ElevatedButton(
