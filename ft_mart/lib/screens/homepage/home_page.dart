@@ -222,6 +222,7 @@ class _homepageState extends State<homepage> {
                                     name: widget.name,
                                     email: widget.email,
                                     contact: widget.contact,
+                                    loggedIn: widget.email != null,
                                   ),
                                 ),
                               );

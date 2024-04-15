@@ -1,9 +1,11 @@
+import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:ftmithaimart/components/admindrawer.dart';
 import 'package:ftmithaimart/dbHelper/mongodb.dart';
 import 'package:intl/intl.dart';
-
+import 'package:fl_chart/fl_chart.dart';
 import '../../model/orders_model.dart';
 import '../../push_notifications.dart';
 
@@ -18,13 +20,21 @@ class admin extends StatefulWidget {
   State<admin> createState() => _adminState();
 }
 
-class _adminState extends State<admin> {
+class _adminState extends State<admin> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   List<Order> orders = [];
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 3, vsync: this, initialIndex: 0);
     fetchOrders();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   Future<void> fetchOrders() async {
@@ -62,6 +72,27 @@ class _adminState extends State<admin> {
     }
   }
 
+  Map<String, double> calculateTotalSalesPerDay(List<Order> orders) {
+    Map<String, double> totalSalesPerDay = {};
+    final dateFormat = DateFormat('yyyy-MM-dd');
+    orders.forEach((order) {
+      final dateKey = dateFormat.format(order.orderDateTime);
+      totalSalesPerDay.update(dateKey, (value) => value + order.totalAmount,
+          ifAbsent: () => order.totalAmount);
+    });
+    return totalSalesPerDay;
+  }
+
+  Map<String, int> calculateTotalOrdersPerDay(List<Order> orders) {
+    Map<String, int> totalOrdersPerDay = {};
+    final dateFormat = DateFormat('yyyy-MM-dd');
+    orders.forEach((order) {
+      final dateKey = dateFormat.format(order.orderDateTime);
+      totalOrdersPerDay.update(dateKey, (value) => value + 1, ifAbsent: () => 1);
+    });
+    return totalOrdersPerDay;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,218 +116,298 @@ class _adminState extends State<admin> {
           ),
         ),
         backgroundColor: const Color(0xff801924),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: [
+            Tab(text: 'Current Orders',),
+            Tab(text: 'Completed Orders'),
+            Tab(text: 'Total Sales'),
+          ],
+          indicatorColor: Colors.white,
+          labelColor: Colors.yellow,
+          unselectedLabelColor: Colors.white,
+          labelPadding: EdgeInsets.symmetric(horizontal: 2.0),
+        ),
       ),
       drawer: AdminDrawer(
         name: widget.name,
         email: widget.email,
         contact: widget.contact,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            const Padding(
-              padding: EdgeInsets.only(left: 15.0, bottom: 10),
-              child: Text(
-                "Welcome, Admin!",
-                style: TextStyle(
-                  color: Color(0xFF63131C),
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              'Welcome, Admin!',
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Color(0xff63131C),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.only(left: 15.0, bottom: 10),
-              child: Text(
-                "Current Orders",
-                style: TextStyle(
-                  color: Color(0xFF63131C),
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                buildCurrentOrdersTab(),
+                buildCompletedOrdersTab(),
+                buildTotalSalesTab(),
+              ],
             ),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: orders.length,
-              itemBuilder: (context, index) {
-                final order = orders[index];
-                return InkWell(
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(20)),
-                      ),
-                      builder: (context) {
-                        return SingleChildScrollView(
-                          child: Container(
-                            padding: EdgeInsets.all(20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Order Details',
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold)),
-                                SizedBox(height: 20),
-                                Text('Order ID: ${order.orderId}'),
-                                Text('Name: ${order.name}'),
-                                Text('Email: ${order.email}'),
-                                Text('Contact: ${order.contact}'),
-                                Text(
-                                    'Pickup/Delivery Date & Time: ${DateFormat('E, d MMM y | hh:mm a').format(order.orderDateTime)}'),
-                                Text(
-                                    'Delivery Address: ${order.deliveryAddress ?? 'N/A'}'),
-                                Text('Total Amount: ${order.totalAmount}'),
-                                Text('Payment Method: ${order.payment}'),
-                                SizedBox(height: 10),
-                                Text('Products:',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                                ...List.generate(order.productNames.length,
-                                    (index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(left: 16.0),
-                                    child: Text(
-                                        '${order.productNames[index]} - ${order.quantities[index]} kg'),
-                                  );
-                                }),
-                                SizedBox(height: 10),
-                                ElevatedButton.icon(
-                                    onPressed: () {
-                                      MongoDatabase.deleteOrder(order.orderId);
-                                      Navigator.of(context).pop();
-                                      fetchOrders();
-                                    },
-                                    icon: Icon(
-                                      Icons.delete_outlined,
-                                      color: Color(0xFF63131C),
-                                    ),
-                                    label: Text(
-                                      "Delete Order",
-                                      style: TextStyle(
-                                        color: Color(0xFF63131C),
-                                      ),
-                                    )),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  child: Card(
-                    elevation: 10,
-                    color: Color(0xffFFF8E6),
-                    margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    child: Stack(
-                      children: [
-                        ListTile(
-                          title: Text('Order No. ${order.orderId}',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF63131C),
-                              )),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('${order.name}'),
-                              Text(
-                                '${DateFormat(' E,d MMM y | hh:mm a').format(order.orderDateTime)}',
-                              ),
-                            ],
-                          ),
-                        ),
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child: Container(
-                            padding: EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: order.deliveryAddress == 'Pickup'
-                                  ? Color(0xffFFEC8C)
-                                  : Color(0xffFFEC8C),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Text(
-                              order.deliveryAddress == 'Pickup'
-                                  ? 'Pickup'
-                                  : 'Delivery',
-                              style: TextStyle(color: Color(0xff8C7502)),
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: DropdownButton<String>(
-                            value: order.status,
-                            items: <String>[
-                              'In Process',
-                              'Ready for Pickup',
-                              'Ready for Delivery',
-                              'Delivered'
-                            ].map((String value) {
-                              Color backgroundColor;
-                              Color textColor;
-                              switch (value) {
-                                case 'In Process':
-                                  backgroundColor = Color(0xffA4202E);
-                                  textColor = Colors.white;
-                                  break;
-                                case 'Ready for Pickup':
-                                  backgroundColor = Colors.orange;
-                                  textColor = Colors.white;
-                                  break;
-                                case 'Ready for Delivery':
-                                  backgroundColor = Colors.blueGrey;
-                                  textColor = Colors.white;
-                                case 'Delivered':
-                                  backgroundColor = Color(0xff038200);
-                                  textColor = Colors.white;
-                                  break;
-                                default:
-                                  backgroundColor = Colors.white;
-                                  textColor = Colors.black;
-                              }
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Container(
-                                  color: backgroundColor,
-                                  width: 95,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: Text(
-                                      value,
-                                      style: TextStyle(
-                                        color: textColor,
-                                        fontSize: 10,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValue) async {
-                              if (newValue != null) {
-                                setState(() {
-                                  order.status = newValue;
-                                });
-                                updateOrderStatus(order.orderId, newValue);
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildCurrentOrdersTab() {
+    final currentOrders =
+        orders.where((order) => order.status != 'Delivered').toList();
+    return ListView.builder(
+      itemCount: currentOrders.length,
+      itemBuilder: (context, index) {
+        final order = currentOrders[index];
+        return buildOrderItem(order);
+      },
+    );
+  }
+
+  Widget buildCompletedOrdersTab() {
+    final completedOrders =
+        orders.where((order) => order.status == 'Delivered').toList();
+    return ListView.builder(
+      itemCount: completedOrders.length,
+      itemBuilder: (context, index) {
+        final order = completedOrders[index];
+        return buildOrderItem(order);
+      },
+    );
+  }
+
+
+  Widget buildTotalSalesTab() {
+    final completedOrders = orders.where((order) => order.status == 'Delivered').toList();
+    final Map<String, double> totalSalesPerDay = calculateTotalSalesPerDay(completedOrders);
+    final Map<String, int> totalOrdersPerDay = calculateTotalOrdersPerDay(completedOrders);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          flex: 1,
+          child: PieChart(
+            PieChartData(
+              sections: totalSalesPerDay.entries.map((entry) {
+                return PieChartSectionData(
+                  color: getRandomColor(),
+                  value: entry.value,
+                  title: '${entry.key}\nOrders:${totalOrdersPerDay[entry.key]}',
+                  radius: 70,
                 );
-              },
+              }).toList(),
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: SingleChildScrollView(
+            child: DataTable(
+              columns: [
+                DataColumn(label: Text('Date')),
+                DataColumn(label: Text('Total Sales')),
+              ],
+              rows: totalSalesPerDay.entries.map((entry) {
+                return DataRow(
+                  cells: [
+                    DataCell(Text(entry.key)),
+                    DataCell(Text('Rs.${entry.value.toStringAsFixed(2)}')),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Color getRandomColor() {
+    final Random random = Random();
+    return Color.fromARGB(
+      255,
+      random.nextInt(256),
+      random.nextInt(256),
+      random.nextInt(256),
+    );
+  }
+
+  Widget buildOrderItem(Order order) {
+    return InkWell(
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          builder: (context) {
+            return SingleChildScrollView(
+              child: Container(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Order Details',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 20),
+                    Text('Order ID: ${order.orderId}'),
+                    Text('Name: ${order.name}'),
+                    Text('Email: ${order.email}'),
+                    Text('Contact: ${order.contact}'),
+                    Text(
+                        'Pickup/Delivery Date & Time: ${DateFormat('E, d MMM y | hh:mm a').format(order.orderDateTime)}'),
+                    Text('Delivery Address: ${order.deliveryAddress ?? 'N/A'}'),
+                    Text('Total Amount: ${order.totalAmount}'),
+                    Text('Payment Method: ${order.payment}'),
+                    SizedBox(height: 10),
+                    Text('Products:',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    ...List.generate(order.productNames.length, (index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 16.0),
+                        child: Text(
+                            '${order.productNames[index]} - ${order.quantities[index]} kg'),
+                      );
+                    }),
+                    SizedBox(height: 10),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        MongoDatabase.deleteOrder(order.orderId);
+                        Navigator.of(context).pop();
+                        fetchOrders();
+                      },
+                      icon: Icon(
+                        Icons.delete_outlined,
+                        color: Color(0xFF63131C),
+                      ),
+                      label: Text(
+                        "Delete Order",
+                        style: TextStyle(
+                          color: Color(0xFF63131C),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+      child: Card(
+        elevation: 10,
+        color: Color(0xffFFF8E6),
+        margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        child: Stack(
+          children: [
+            ListTile(
+              title: Text('Order No. ${order.orderId}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF63131C),
+                  )),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('${order.name}'),
+                  Text(
+                    '${DateFormat(' E,d MMM y | hh:mm a').format(order.orderDateTime)}',
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Container(
+                padding: EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: order.deliveryAddress == 'Pickup'
+                      ? Color(0xffFFEC8C)
+                      : Color(0xffFFEC8C),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Text(
+                  order.deliveryAddress == 'Pickup' ? 'Pickup' : 'Delivery',
+                  style: TextStyle(color: Color(0xff8C7502)),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: DropdownButton<String>(
+                value: order.status,
+                items: <String>[
+                  'In Process',
+                  'Ready for Pickup',
+                  'Ready for Delivery',
+                  'Delivered'
+                ].map((String value) {
+                  Color backgroundColor;
+                  Color textColor;
+                  switch (value) {
+                    case 'In Process':
+                      backgroundColor = Color(0xffA4202E);
+                      textColor = Colors.white;
+                      break;
+                    case 'Ready for Pickup':
+                      backgroundColor = Colors.orange;
+                      textColor = Colors.white;
+                      break;
+                    case 'Ready for Delivery':
+                      backgroundColor = Colors.blueGrey;
+                      textColor = Colors.white;
+                      break;
+                    case 'Delivered':
+                      backgroundColor = Color(0xff038200);
+                      textColor = Colors.white;
+                      break;
+                    default:
+                      backgroundColor = Colors.white;
+                      textColor = Colors.black;
+                  }
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Container(
+                      color: backgroundColor,
+                      width: 95,
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Text(
+                          value,
+                          style: TextStyle(
+                            color: textColor,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) async {
+                  if (newValue != null) {
+                    setState(() {
+                      order.status = newValue;
+                    });
+                    updateOrderStatus(order.orderId, newValue);
+                  }
+                },
+              ),
             ),
           ],
         ),

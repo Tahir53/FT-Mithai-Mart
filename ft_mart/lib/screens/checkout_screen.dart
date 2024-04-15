@@ -18,6 +18,7 @@ class CheckoutScreen extends StatefulWidget {
   final String? name;
   final String? email;
   final String? contact;
+  final bool loggedIn;
 
   const CheckoutScreen({
     Key? key,
@@ -26,6 +27,7 @@ class CheckoutScreen extends StatefulWidget {
     required this.name,
     required this.email,
     required this.contact,
+    required this.loggedIn,
   }) : super(key: key);
 
   @override
@@ -37,6 +39,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   bool _forPickup = false;
   DateTime? _pickupDateTime;
   final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
   File? _receiptImage;
   String? _uploadedImageUrl;
   String? _paymentOption;
@@ -57,7 +60,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       totalAmount: widget.totalAmount,
       orderDateTime: _pickupDateTime ?? DateTime.now(),
       deliveryAddress: _forDelivery ? _addressController.text : "Pickup",
-      name: widget.name ?? "user",
+      name: widget.loggedIn ? widget.name ?? "user" : _nameController.text,
       email: widget.email ?? "no email",
       contact: widget.contact ?? "no contact",
       productNames: productNames,
@@ -94,6 +97,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isNotLoggedIn = !widget.loggedIn;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF63131C),
@@ -182,6 +186,22 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        if (widget.loggedIn == false)
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: TextField(
+                              controller: _nameController,
+                              onChanged: (value) {
+                                setState(() {
+                                  _nameController.text = value;
+                                });
+                              },
+                              decoration: InputDecoration(
+                                labelText: 'Enter Your Name',
+                              ),
+                            ),
+                          ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: TextField(
@@ -307,6 +327,24 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ),
+                  if (_forPickup && !widget.loggedIn)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: TextField(
+                        controller: _nameController,
+                        onChanged: (value) {
+                          setState(() {
+                            _nameController.text = value;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Enter Your Name',
+                        ),
+                      ),
+                    ),
+                  SizedBox(
+                    height: 20,
+                  ),
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xff63131C),
@@ -326,21 +364,23 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
                       if (_forDelivery &&
                           (_addressController.text.isEmpty ||
+                              _nameController.text.isEmpty ||
                               _pickupDateTime == null)) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text(
-                                'Please enter the delivery address and select delivery date and time.'),
+                                'Please enter the details and select delivery date and time.'),
                             backgroundColor: Color(0xff63131C),
                           ),
                         );
                         return;
                       }
-                      if (_forPickup && _pickupDateTime == null) {
+                      if (_forPickup && _pickupDateTime == null ||
+                          _nameController.text.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content:
-                                Text('Please select pickup date and time.'),
+                            content: Text(
+                                'Please enter your name & select pickup date and time.'),
                             backgroundColor: Color(0xff63131C),
                           ),
                         );
@@ -413,7 +453,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           pickedTime.minute,
         );
 
-        if (combinedDateTime.hour >= 12 && combinedDateTime.hour <= 20) {
+        if (combinedDateTime.isAfter(now) ||
+            (combinedDateTime.day == now.day &&
+                combinedDateTime.hour > now.hour &&
+                combinedDateTime.hour <= 20)) {
           setState(() {
             _pickupDateTime = combinedDateTime;
           });
@@ -421,7 +464,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                  'Pickup/Delivery time should be between 12 PM and 8 PM.'),
+                'Orders cannot be placed for previous timings or after 8 PM!',
+              ),
+              backgroundColor: Color(0xff63131C),
             ),
           );
         }
@@ -454,7 +499,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Future<void> _sendInAppNotification(String orderId) async {
-     await PushNotifications.returnToken();
+    await PushNotifications.returnToken();
     final notificationTitle = 'Order Placed';
     final notificationBody =
         'Your order with ID $orderId has been successfully placed.';

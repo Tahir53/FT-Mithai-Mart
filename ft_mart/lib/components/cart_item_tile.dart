@@ -51,7 +51,7 @@ class CartItemTile extends StatelessWidget {
               GestureDetector(
                 onTap: () => onTapDelete(),
                 child: Icon(
-                  Icons.delete,
+                  Icons.remove_circle_outline_rounded,
                   color: Colors.white,
                 ),
               ),

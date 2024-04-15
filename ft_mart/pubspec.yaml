@@ -32,6 +32,8 @@ dependencies:
   image_picker: ^1.0.7
   url_launcher: ^6.2.5
   otp_pin_field: ^1.2.2
+  fl_chart: ^0.67.0
+  flutter_randomcolor: ^1.0.15
 
 
 
