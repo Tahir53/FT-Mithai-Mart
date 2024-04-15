@@ -23,6 +23,8 @@ class admin extends StatefulWidget {
 class _adminState extends State<admin> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   List<Order> orders = [];
+  int selectedWeek = 1;
+  int selectedYear = DateTime.now().year;
 
   @override
   void initState() {
@@ -88,7 +90,8 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
     final dateFormat = DateFormat('yyyy-MM-dd');
     orders.forEach((order) {
       final dateKey = dateFormat.format(order.orderDateTime);
-      totalOrdersPerDay.update(dateKey, (value) => value + 1, ifAbsent: () => 1);
+      totalOrdersPerDay.update(dateKey, (value) => value + 1,
+          ifAbsent: () => 1);
     });
     return totalOrdersPerDay;
   }
@@ -115,16 +118,18 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
             // alignment: Alignment.center,
           ),
         ),
-        backgroundColor: const Color(0xff801924),
+        backgroundColor: const Color(0xff63131C),
         bottom: TabBar(
           controller: _tabController,
           tabs: [
-            Tab(text: 'Current Orders',),
+            Tab(
+              text: 'Current Orders',
+            ),
             Tab(text: 'Completed Orders'),
             Tab(text: 'Total Sales'),
           ],
           indicatorColor: Colors.white,
-          labelColor: Colors.yellow,
+          labelColor: Color(0xffffC937),
           unselectedLabelColor: Colors.white,
           labelPadding: EdgeInsets.symmetric(horizontal: 2.0),
         ),
@@ -165,15 +170,42 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
   }
 
   Widget buildCurrentOrdersTab() {
-    final currentOrders =
-        orders.where((order) => order.status != 'Delivered').toList();
-    return ListView.builder(
-      itemCount: currentOrders.length,
-      itemBuilder: (context, index) {
-        final order = currentOrders[index];
-        return buildOrderItem(order);
+    return FutureBuilder<List<Order>>(
+      future: fetchCurrentOrders(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(color: Color(0xff63131C),),
+          );
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
+          );
+        } else if (snapshot.hasData) {
+          final currentOrders = snapshot.data!;
+          return ListView.builder(
+            itemCount: currentOrders.length,
+            itemBuilder: (context, index) {
+              final order = currentOrders[index];
+              return buildOrderItem(order);
+            },
+          );
+        } else {
+          return Center(
+            child: Text('No data available.'),
+          );
+        }
       },
     );
+  }
+
+  Future<List<Order>> fetchCurrentOrders() async {
+    final List<Order>? fetchedOrders = await MongoDatabase.getOrders();
+    if (fetchedOrders != null) {
+      return fetchedOrders.where((order) => order.status != 'Delivered').toList();
+    } else {
+      return [];
+    }
   }
 
   Widget buildCompletedOrdersTab() {
@@ -188,27 +220,104 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
     );
   }
 
-
   Widget buildTotalSalesTab() {
-    final completedOrders = orders.where((order) => order.status == 'Delivered').toList();
-    final Map<String, double> totalSalesPerDay = calculateTotalSalesPerDay(completedOrders);
-    final Map<String, int> totalOrdersPerDay = calculateTotalOrdersPerDay(completedOrders);
+    // Set the initial value of selectedWeek to the current week
+    if(selectedWeek == 1 && selectedYear == DateTime.now().year) {
+      selectedWeek = getIsoWeekNumber(DateTime.now());
+    }
+
+    final List<Order> selectedWeekOrders = orders.where((order) {
+      final orderWeek = getIsoWeekNumber(order.orderDateTime);
+      final orderYear = order.orderDateTime.year;
+      return order.status == 'Delivered' &&
+          orderWeek == selectedWeek &&
+          orderYear == selectedYear;
+    }).toList();
+
+    final Map<String, double> totalSalesPerDay = calculateTotalSalesPerDay(selectedWeekOrders);
+    final Map<String, int> totalOrdersPerDay = calculateTotalOrdersPerDay(selectedWeekOrders);
+
+    final List<Color> fixedColors = [
+      Colors.red,
+      Colors.green,
+      Colors.blue,
+      Colors.yellow,
+      Colors.orange,
+      Colors.purple,
+      Colors.cyan,
+    ];
+
+    final List<PieChartSectionData> pieChartSections = List.generate(7, (index) {
+      if (index < selectedWeekOrders.length) {
+        final day = DateFormat('yyyy-MM-dd').format(selectedWeekOrders[index].orderDateTime);
+        final sales = totalSalesPerDay[day] ?? 0.0;
+        final orders = totalOrdersPerDay[day] ?? 0;
+
+        return PieChartSectionData(
+          color: fixedColors[index],
+          value: sales,
+          title: '$day\nOrders: $orders',
+          radius: 70,
+        );
+      } else {
+        return PieChartSectionData(
+          color: Colors.transparent,
+          value: 0.0,
+          title: 'No sales',
+          radius: 70,
+        );
+      }
+    });
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        Row(
+          children: [
+            IconButton(
+              icon: Icon(Icons.remove),
+              onPressed: () {
+                setState(() {
+                  if (selectedYear > 2000) selectedYear--;
+                });
+              },
+            ),
+            Text('$selectedYear',style: TextStyle(color: Color(0xff63131C)),),
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () {
+                setState(() {
+                  if (selectedYear < DateTime.now().year) selectedYear++;
+                });
+              },
+            ),
+            SizedBox(width: 130,),
+            DropdownButton<int>(
+              icon: Icon(Icons.calendar_today,color: Color(0xff63131C),),
+              value: selectedWeek,
+              items: List.generate(52, (index) {
+                return DropdownMenuItem<int>(
+                  value: index + 1,
+                  child: Text(
+                    'Week ${index + 1}',
+                    style: TextStyle(color: Color(0xff63131C)),
+                  ),
+                );
+              }),
+              onChanged: (value) {
+                setState(() {
+                  selectedWeek = value!;
+                });
+              },
+            ),
+          ],
+        ),
+        SizedBox(height: 20,),
         Expanded(
           flex: 1,
           child: PieChart(
             PieChartData(
-              sections: totalSalesPerDay.entries.map((entry) {
-                return PieChartSectionData(
-                  color: getRandomColor(),
-                  value: entry.value,
-                  title: '${entry.key}\nOrders:${totalOrdersPerDay[entry.key]}',
-                  radius: 70,
-                );
-              }).toList(),
+              sections: pieChartSections,
             ),
           ),
         ),
@@ -220,19 +329,36 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
                 DataColumn(label: Text('Date')),
                 DataColumn(label: Text('Total Sales')),
               ],
-              rows: totalSalesPerDay.entries.map((entry) {
+              rows: List.generate(7, (index) {
+                final day = DateFormat('yyyy-MM-dd').format(DateTime(selectedYear, 1, 1).add(Duration(days: (selectedWeek - 1) * 7 + index)));
+                final sales = totalSalesPerDay[day] ?? 0.0;
                 return DataRow(
                   cells: [
-                    DataCell(Text(entry.key)),
-                    DataCell(Text('Rs.${entry.value.toStringAsFixed(2)}')),
+                    DataCell(Text(day)),
+                    DataCell(Text('Rs.${sales.toStringAsFixed(2)}')),
                   ],
                 );
-              }).toList(),
+              }),
             ),
           ),
         ),
       ],
     );
+  }
+
+
+
+
+  int getIsoWeekNumber(DateTime date) {
+    // Calculate ISO week number
+    final startOfYear = DateTime(date.year, 1, 1);
+    final firstMonday = startOfYear.weekday <= 4
+        ? startOfYear.subtract(Duration(days: startOfYear.weekday - 1))
+        : startOfYear.add(Duration(days: 8 - startOfYear.weekday));
+
+    final diff = date.difference(firstMonday);
+    final weekNumber = (diff.inDays / 7).ceil();
+    return weekNumber;
   }
 
   Color getRandomColor() {
