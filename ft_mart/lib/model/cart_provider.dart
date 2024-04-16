@@ -28,7 +28,6 @@ class CartProvider extends ChangeNotifier {
     prefs.setString('cart', jsonEncode(cartData));
   }
 
-  // Method to load the cart data from SharedPreferences
   Future<void> loadCart() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? cartData = prefs.getString('cart');

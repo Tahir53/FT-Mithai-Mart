@@ -1,4 +1,3 @@
-
 import 'dart:developer';
 import 'package:mongo_dart/mongo_dart.dart';
 import '../constant.dart';
@@ -6,7 +5,6 @@ import '../model/complaints_model.dart';
 import '../model/customer_model.dart';
 import '../model/orders_model.dart';
 import '../model/product_model.dart';
-
 
 class MongoDatabase {
   static var db,
@@ -98,7 +96,6 @@ class MongoDatabase {
         description: data["description"],
         dateTime: data["dateTime"],
         deviceToken: data["deviceToken"],
-
       ));
     }
     return complaints;
@@ -112,8 +109,8 @@ class MongoDatabase {
     print('Complaint deleted successfully.');
   }
 
-
-  static Future<void> updateComplaint(ObjectId complaintId, bool notified) async {
+  static Future<void> updateComplaint(
+      ObjectId complaintId, bool notified) async {
     final collection = db.collection('complaints');
     final selector = where.id(complaintId);
     final modifier = {
@@ -121,9 +118,7 @@ class MongoDatabase {
     };
     final result = await collection.update(selector, modifier);
     print('Complaint updated: ${result["nModified"]} document(s) modified');
-
   }
-
 
   static Future<List<Product>> getProducts() async {
     final int maxRetries = 3;
@@ -135,19 +130,15 @@ class MongoDatabase {
         final List<Map<String, dynamic>> productsData =
             await productsCollection.find().toList();
         products = productsData.map((data) => Product.fromJson(data)).toList();
-        // If database connection and data fetching succeed, break out of the loop
         break;
       } catch (error) {
-        // If an error occurs, print the error message and retry after a delay
         print("Error fetching products: $error");
         products = [];
         retryCount++;
-        // Wait for a short delay before retrying
         await Future.delayed(const Duration(seconds: 2));
       }
     }
     return products;
-    
   }
 
   static Future<void> updateProduct(Product product) async {
@@ -158,6 +149,8 @@ class MongoDatabase {
           .set('price', product.price)
           .set('stock', product.stock)
           .set('category', product.category)
+          .set('discount', product.discount)
+          .set('discountedPrice', product.discountedPrice)
           .set('image', product.image),
     );
   }
@@ -173,6 +166,16 @@ class MongoDatabase {
   static Future<void> deleteProduct(String productId) async {
     final collection = db.collection('products');
     await collection.remove(where.eq('_id', ObjectId.parse(productId)));
+  }
+
+  static Future<List<Map<String, dynamic>>> getProductsByCategory(
+      String category) async {
+    final collection = db.collection('products');
+
+    final products =
+        await collection.find(where.eq('category', category)).toList();
+
+    return products;
   }
 
   static Future<void> addToCart(Product product, double quantity) async {
@@ -199,13 +202,16 @@ class MongoDatabase {
   }
 
   static Future<List<Order>> getOrders() async {
-    final List<Map<String, dynamic>> ordersJson = await ordersCollection.find().toList();
-    final List<Order> orders = ordersJson.map((json) => Order.fromJson(json)).toList();
+    final List<Map<String, dynamic>> ordersJson =
+        await ordersCollection.find().toList();
+    final List<Order> orders =
+        ordersJson.map((json) => Order.fromJson(json)).toList();
     print('Fetched orders: $orders');
     return orders;
   }
 
-  static Future<void> updateOrderStatus(String orderId, String newStatus) async {
+  static Future<void> updateOrderStatus(
+      String orderId, String newStatus) async {
     final query = where.eq('orderId', orderId);
     final update = ModifierBuilder().set('status', newStatus);
     await ordersCollection.update(query, update);
@@ -217,41 +223,68 @@ class MongoDatabase {
 
   static decreaseStock(String productName) async {
     print("stock depleted in mongodb");
-    try{
+    try {
       await productsCollection.update(
         where.eq('name', productName),
         modify.inc('stock', -1),
       );
-    }
-    catch (e){
+    } catch (e) {
       print("Error in decreaseStock: $e");
     }
   }
 
   static getStock(String productName) async {
-    try{
-      final product = await productsCollection.findOne(where.eq('name', productName));
+    try {
+      final product =
+          await productsCollection.findOne(where.eq('name', productName));
       return product['stock'];
-    }
-    catch (e){
+    } catch (e) {
       print(e);
     }
     return 0;
   }
 
-  static addStock(String productName){
+  static addStock(String productName) {
     print("stock added in mongodb");
-    try{
+    try {
       productsCollection.update(
         where.eq('name', productName),
         modify.inc('stock', 1),
       );
-    }
-    catch(e){
+    } catch (e) {
       print("Error in addStock: $e");
     }
   }
 
+  // Add a discount for a product
+  static Future<void> addDiscount(String productId, double discountRate) async {
+    await db.collection(productsCollection).update(
+          where.eq('_id', ObjectId.fromHexString(productId)),
+          modify.set('discount', discountRate),
+        );
+  }
 
+  // Get the discounted price for a product
+  static Future<double> getDiscountedPrice(String productId) async {
+    var product = await db.collection(productsCollection).findOne(
+          where.eq('_id', ObjectId.fromHexString(productId)),
+        );
+    if (product != null && product['discount'] != null) {
+      double price = product['price'] as double;
+      double discountRate = product['discount'] as double;
+      double discountedPrice = price * (1 - discountRate);
+      return discountedPrice;
+    } else {
+      // Return the original price if no discount is set
+      return (product['price'] as double);
+    }
+  }
 
+  // Remove the discount for a product
+  static Future<void> removeDiscount(String productId) async {
+    await db.collection(productsCollection).update(
+          where.eq('_id', ObjectId.fromHexString(productId)),
+          modify.unset('discount'),
+        );
+  }
 }

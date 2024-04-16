@@ -89,7 +89,7 @@ class AdminDrawer extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   )),
               onTap: () {
-                Navigator.of(context).pop();
+               Navigator.of(context).pop();
               },
             ),
           ),

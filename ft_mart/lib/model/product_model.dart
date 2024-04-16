@@ -1,24 +1,29 @@
+import 'dart:ffi';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class Product {
   ObjectId? id;
-  List<double> quantity;
   String name;
   String price;
-  String image;
   double stock;
   String category;
+  String image;
+  List<double> quantity;
   String description;
+  double? discount;
+  String discountedPrice;
 
   Product({
     this.id,
-    required this.quantity,
     required this.name,
     required this.price,
-    required this.image,
     required this.stock,
     required this.category,
+    required this.image,
+    required this.quantity,
     required this.description,
+    required this.discount,
+    required this.discountedPrice,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -26,11 +31,13 @@ class Product {
       quantity: List<double>.from(json['quantity']),
       id: json['_id'],
       name: json['name'],
-      price: json['price'],
+      price: json['price'].toString(),
       image: json['image'],
       stock: json['stock'].toDouble(),
       category: json['category'],
       description: json['description'],
+      discount: json['discount']?.toDouble(),
+      discountedPrice: json['discountedPrice'] ?? '0',
     );
   }
 
@@ -44,6 +51,8 @@ class Product {
       'stock': stock,
       'category': category,
       'description': description,
+      'discount': discount,
+      'discountedPrice': discountedPrice,
     };
   }
 }

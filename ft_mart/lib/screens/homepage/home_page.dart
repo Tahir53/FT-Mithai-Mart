@@ -48,7 +48,6 @@ class _homepageState extends State<homepage> {
   List _searchResults = [];
   final TextEditingController searchController = TextEditingController();
 
-
   Future<String?> getData() async {
     var data = await SharedPreferences.getInstance();
     return data.getString("user");
@@ -443,6 +442,7 @@ class _homepageState extends State<homepage> {
                               assetPath: filteredProducts[i].image,
                               price: int.parse(filteredProducts[i].price),
                               productName: filteredProducts[i].name,
+                              discount: filteredProducts[i].discount ?? 0.0,
                               onTap: updateCart,
                             ),
                             if (i + 1 < filteredProducts.length)
@@ -450,6 +450,8 @@ class _homepageState extends State<homepage> {
                                 assetPath: filteredProducts[i + 1].image,
                                 price: int.parse(filteredProducts[i + 1].price),
                                 productName: filteredProducts[i + 1].name,
+                                discount:
+                                    filteredProducts[i + 1].discount ?? 0.0,
                                 onTap: updateCart,
                               ),
                             if (i + 1 >= filteredProducts.length)
@@ -489,8 +491,9 @@ class _homepageState extends State<homepage> {
             price: cartProvider.items[index].price,
             showDeleteIcon: true,
             onTapDelete: () async {
-                await MongoDatabase.addStock(cartProvider.items[index].productName);
-                cartProvider.removeFromCart(cartProvider.items[index]);
+              await MongoDatabase.addStock(
+                  cartProvider.items[index].productName);
+              cartProvider.removeFromCart(cartProvider.items[index]);
             },
           );
         } else {

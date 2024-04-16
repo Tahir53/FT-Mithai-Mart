@@ -174,8 +174,10 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
       future: fetchCurrentOrders(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(color: Color(0xff63131C),),
+          return const Center(
+            child: CircularProgressIndicator(
+              color: Color(0xff63131C),
+            ),
           );
         } else if (snapshot.hasError) {
           return Center(
@@ -191,7 +193,7 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
             },
           );
         } else {
-          return Center(
+          return const Center(
             child: Text('No data available.'),
           );
         }
@@ -200,9 +202,11 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
   }
 
   Future<List<Order>> fetchCurrentOrders() async {
-    final List<Order>? fetchedOrders = await MongoDatabase.getOrders();
+    final List<Order> ? fetchedOrders = await MongoDatabase.getOrders();
     if (fetchedOrders != null) {
-      return fetchedOrders.where((order) => order.status != 'Delivered').toList();
+      return fetchedOrders
+          .where((order) => order.status != 'Delivered')
+          .toList();
     } else {
       return [];
     }
@@ -221,8 +225,7 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
   }
 
   Widget buildTotalSalesTab() {
-    // Set the initial value of selectedWeek to the current week
-    if(selectedWeek == 1 && selectedYear == DateTime.now().year) {
+    if (selectedWeek == 1 && selectedYear == DateTime.now().year) {
       selectedWeek = getIsoWeekNumber(DateTime.now());
     }
 
@@ -234,8 +237,10 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
           orderYear == selectedYear;
     }).toList();
 
-    final Map<String, double> totalSalesPerDay = calculateTotalSalesPerDay(selectedWeekOrders);
-    final Map<String, int> totalOrdersPerDay = calculateTotalOrdersPerDay(selectedWeekOrders);
+    final Map<String, double> totalSalesPerDay =
+        calculateTotalSalesPerDay(selectedWeekOrders);
+    final Map<String, int> totalOrdersPerDay =
+        calculateTotalOrdersPerDay(selectedWeekOrders);
 
     final List<Color> fixedColors = [
       Colors.red,
@@ -247,9 +252,11 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
       Colors.cyan,
     ];
 
-    final List<PieChartSectionData> pieChartSections = List.generate(7, (index) {
+    final List<PieChartSectionData> pieChartSections =
+        List.generate(7, (index) {
       if (index < selectedWeekOrders.length) {
-        final day = DateFormat('yyyy-MM-dd').format(selectedWeekOrders[index].orderDateTime);
+        final day = DateFormat('yyyy-MM-dd')
+            .format(selectedWeekOrders[index].orderDateTime);
         final sales = totalSalesPerDay[day] ?? 0.0;
         final orders = totalOrdersPerDay[day] ?? 0;
 
@@ -282,7 +289,10 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
                 });
               },
             ),
-            Text('$selectedYear',style: TextStyle(color: Color(0xff63131C)),),
+            Text(
+              '$selectedYear',
+              style: TextStyle(color: Color(0xff63131C)),
+            ),
             IconButton(
               icon: Icon(Icons.add),
               onPressed: () {
@@ -291,16 +301,21 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
                 });
               },
             ),
-            SizedBox(width: 130,),
+            const SizedBox(
+              width: 130,
+            ),
             DropdownButton<int>(
-              icon: Icon(Icons.calendar_today,color: Color(0xff63131C),),
+              icon: const Icon(
+                Icons.calendar_today,
+                color: Color(0xff63131C),
+              ),
               value: selectedWeek,
               items: List.generate(52, (index) {
                 return DropdownMenuItem<int>(
                   value: index + 1,
                   child: Text(
                     'Week ${index + 1}',
-                    style: TextStyle(color: Color(0xff63131C)),
+                    style: const TextStyle(color: Color(0xff63131C)),
                   ),
                 );
               }),
@@ -312,7 +327,9 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
             ),
           ],
         ),
-        SizedBox(height: 20,),
+        SizedBox(
+          height: 20,
+        ),
         Expanded(
           flex: 1,
           child: PieChart(
@@ -325,12 +342,14 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
           flex: 1,
           child: SingleChildScrollView(
             child: DataTable(
-              columns: [
+              columns: const [
                 DataColumn(label: Text('Date')),
                 DataColumn(label: Text('Total Sales')),
               ],
               rows: List.generate(7, (index) {
-                final day = DateFormat('yyyy-MM-dd').format(DateTime(selectedYear, 1, 1).add(Duration(days: (selectedWeek - 1) * 7 + index)));
+                final day = DateFormat('yyyy-MM-dd').format(
+                    DateTime(selectedYear, 1, 1)
+                        .add(Duration(days: (selectedWeek - 1) * 7 + index)));
                 final sales = totalSalesPerDay[day] ?? 0.0;
                 return DataRow(
                   cells: [
@@ -345,9 +364,6 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
       ],
     );
   }
-
-
-
 
   int getIsoWeekNumber(DateTime date) {
     // Calculate ISO week number
@@ -382,14 +398,14 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
           builder: (context) {
             return SingleChildScrollView(
               child: Container(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Order Details',
+                    const Text('Order Details',
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Text('Order ID: ${order.orderId}'),
                     Text('Name: ${order.name}'),
                     Text('Email: ${order.email}'),
@@ -399,8 +415,8 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
                     Text('Delivery Address: ${order.deliveryAddress ?? 'N/A'}'),
                     Text('Total Amount: ${order.totalAmount}'),
                     Text('Payment Method: ${order.payment}'),
-                    SizedBox(height: 10),
-                    Text('Products:',
+                    const SizedBox(height: 10),
+                    const Text('Products:',
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     ...List.generate(order.productNames.length, (index) {
                       return Padding(
@@ -416,11 +432,11 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
                         Navigator.of(context).pop();
                         fetchOrders();
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.delete_outlined,
                         color: Color(0xFF63131C),
                       ),
-                      label: Text(
+                      label: const Text(
                         "Delete Order",
                         style: TextStyle(
                           color: Color(0xFF63131C),
@@ -437,12 +453,12 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
       child: Card(
         elevation: 10,
         color: Color(0xffFFF8E6),
-        margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         child: Stack(
           children: [
             ListTile(
               title: Text('Order No. ${order.orderId}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF63131C),
                   )),
@@ -451,7 +467,7 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
                 children: [
                   Text('${order.name}'),
                   Text(
-                    '${DateFormat(' E,d MMM y | hh:mm a').format(order.orderDateTime)}',
+                    DateFormat(' E,d MMM y | hh:mm a').format(order.orderDateTime),
                   ),
                 ],
               ),

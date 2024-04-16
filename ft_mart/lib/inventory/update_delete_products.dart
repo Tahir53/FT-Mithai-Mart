@@ -43,8 +43,7 @@ class ProductDialogs {
       'Classic Sweets',
       'Malai Khaja'
     ];
-    print(product.id);
-    print(product.name);
+
     TextEditingController nameController =
         TextEditingController(text: product.name);
     TextEditingController priceController =
@@ -53,6 +52,8 @@ class ProductDialogs {
         TextEditingController(text: product.stock.toString());
     TextEditingController descriptionController =
         TextEditingController(text: product.description);
+    TextEditingController discountController =
+        TextEditingController(text: product.discount.toString());
 
     showDialog(
       context: context,
@@ -81,6 +82,11 @@ class ProductDialogs {
                   controller: descriptionController,
                   decoration: InputDecoration(labelText: 'Description'),
                 ),
+                TextField(
+                  controller: discountController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(labelText: 'Discount %'),
+                ),
                 DropdownButtonFormField<String>(
                   value: dropdownValue,
                   items: categoryValues
@@ -102,21 +108,17 @@ class ProductDialogs {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    Product updatedProduct = Product(
-                      id: product.id,
-                      name: nameController.text,
-                      price: priceController.text,
-                      stock: double.parse(stockController.text),
-                      category: dropdownValue,
-                      image: product.image,
-                      quantity: [],
-                      description: descriptionController.text,
+                    updateProduct(
+                      context,
+                      product,
+                      setStateCallback,
+                      nameController,
+                      priceController,
+                      stockController,
+                      descriptionController,
+                      discountController,
+                      dropdownValue,
                     );
-
-                    MongoDatabase.updateProduct(updatedProduct);
-                    Navigator.pop(context);
-                    _showUpdateMessage();
-                    setStateCallback();
                   },
                   child: Text('Update'),
                 ),
@@ -179,5 +181,39 @@ class ProductDialogs {
       gravity: ToastGravity.BOTTOM,
       toastLength: Toast.LENGTH_LONG,
     );
+  }
+
+  static void updateProduct(
+      BuildContext context,
+      Product product,
+      VoidCallback setStateCallback,
+      TextEditingController nameController,
+      TextEditingController priceController,
+      TextEditingController stockController,
+      TextEditingController descriptionController,
+      TextEditingController discountController,
+      String dropdownValue) {
+    int originalPrice = double.parse(priceController.text).truncate();
+    double discount = double.parse(discountController.text);
+    int discountedPrice =
+        (originalPrice - (originalPrice * (discount / 100))).truncate();
+
+    Product updatedProduct = Product(
+      id: product.id,
+      name: nameController.text,
+      price: originalPrice.toString(),
+      stock: double.parse(stockController.text),
+      category: dropdownValue,
+      image: product.image,
+      quantity: [],
+      description: descriptionController.text,
+      discount: double.parse(discountController.text),
+      discountedPrice: discountedPrice.toString(),
+    );
+
+    MongoDatabase.updateProduct(updatedProduct);
+    Navigator.pop(context);
+    _showUpdateMessage();
+    setStateCallback();
   }
 }

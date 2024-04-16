@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -20,9 +22,8 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final TextEditingController stockController = TextEditingController();
-  final TextEditingController categoryController = TextEditingController();
-  final TextEditingController imageController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController discountController = TextEditingController(text: '0.0');
 
   @override
   Widget build(BuildContext context) {
@@ -76,8 +77,11 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
                 ),
               ),
               TextField(
-                controller: imageController,
-                decoration: InputDecoration(labelText: 'Image URL'),
+                controller: discountController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Discount',
+                ),
               ),
               SizedBox(height: 16.0),
               ElevatedButton.icon(
@@ -85,16 +89,16 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
                   check();
                   widget.onProductAdded();
                 },
-                  icon: Icon(
-                    Icons.inventory_outlined,
+                icon: Icon(
+                  Icons.inventory_outlined,
+                  color: Color(0xFF63131C),
+                ),
+                label: Text(
+                  "Add Product",
+                  style: TextStyle(
                     color: Color(0xFF63131C),
                   ),
-                  label: Text(
-                    "Add Product",
-                    style: TextStyle(
-                      color: Color(0xFF63131C),
-                    ),
-                  )
+                ),
               ),
             ],
           ),
@@ -105,11 +109,9 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
 
   void check() async {
     if (nameController.text.isEmpty ||
-            priceController.text.isEmpty ||
-            stockController.text.isEmpty ||
-            descriptionController.text.isEmpty
-        //  imageController.text.isEmpty)
-        ) {
+        priceController.text.isEmpty ||
+        stockController.text.isEmpty ||
+        descriptionController.text.isEmpty) {
       errormsg();
       return;
     } else {
@@ -117,42 +119,54 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
       showSuccessMessage();
     }
 
+    // Parse discount value
+    double discount = double.tryParse(discountController.text) ?? 0.0;
+
+    // Calculate discounted price
+    double originalPrice = double.parse(priceController.text);
+    double discountedPrice = originalPrice * (1 - discount / 100);
+
     // Create a new product
     Product newProduct = Product(
       name: nameController.text,
-      price: priceController.text,
+      price: priceController.text, // Use original price
       stock: double.parse(stockController.text),
       category: dropdownValue,
-      image: imageController.text,
-      quantity: [0.5, 1],
-      description: '',
+      image: '', // Add image URL if needed
+      quantity: [0.5, 1], // Adjust as needed
+      description: descriptionController.text,
+      discount: discount,
+      discountedPrice: discountedPrice.toStringAsFixed(0),
     );
 
+    // Insert the new product
     await MongoDatabase.insertProduct(newProduct);
 
+    // Clear text controllers
     nameController.clear();
     priceController.clear();
     stockController.clear();
-    categoryController.clear();
-    imageController.clear();
     descriptionController.clear();
+    discountController.clear();
   }
 
   void errormsg() {
     Fluttertoast.showToast(
-        msg: "Please fill all fields",
-        backgroundColor: Color(0xff63131C),
-        textColor: Colors.white,
-        gravity: ToastGravity.BOTTOM,
-        toastLength: Toast.LENGTH_LONG);
+      msg: "Please fill all fields",
+      backgroundColor: Color(0xff63131C),
+      textColor: Colors.white,
+      gravity: ToastGravity.BOTTOM,
+      toastLength: Toast.LENGTH_LONG,
+    );
   }
 
   void showSuccessMessage() {
     Fluttertoast.showToast(
-        msg: "Product Successfully Added",
-        backgroundColor: Color(0xff63131C),
-        textColor: Colors.white,
-        gravity: ToastGravity.BOTTOM,
-        toastLength: Toast.LENGTH_LONG);
+      msg: "Product Successfully Added",
+      backgroundColor: Color(0xff63131C),
+      textColor: Colors.white,
+      gravity: ToastGravity.BOTTOM,
+      toastLength: Toast.LENGTH_LONG,
+    );
   }
 }
