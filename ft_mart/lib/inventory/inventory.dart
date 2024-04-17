@@ -17,7 +17,8 @@ class inventory extends StatefulWidget {
   State<inventory> createState() => _inventoryState();
 }
 
-class _inventoryState extends State<inventory> with SingleTickerProviderStateMixin {
+class _inventoryState extends State<inventory>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -47,7 +48,7 @@ class _inventoryState extends State<inventory> with SingleTickerProviderStateMix
             // alignment: Alignment.center,
           ),
         ),
-        backgroundColor: const Color(0xff801924),
+        backgroundColor: const Color(0xff63131C),
         actions: [
           IconButton(
             onPressed: () {
@@ -104,7 +105,9 @@ class _inventoryState extends State<inventory> with SingleTickerProviderStateMix
           );
         } else {
           final List<Map<String, dynamic>> productsData = snapshot.data!;
-          final List<Product> products = productsData.map((productData) => Product.fromJson(productData)).toList();
+          final List<Product> products = productsData
+              .map((productData) => Product.fromJson(productData))
+              .toList();
           return ListView.builder(
             itemCount: products.length,
             itemBuilder: (context, index) {
@@ -114,14 +117,18 @@ class _inventoryState extends State<inventory> with SingleTickerProviderStateMix
                   ProductDialogs.showUpdateDeleteDialog(
                     context,
                     product,
-                        () {
+                    () {
                       setState(() {});
                     },
                   );
                 },
                 child: Card(
                   elevation: 5,
-                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  color: Color(0xff801924),
+                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                   child: Column(
                     children: [
                       Image.network(
@@ -131,10 +138,15 @@ class _inventoryState extends State<inventory> with SingleTickerProviderStateMix
                         fit: BoxFit.cover,
                       ),
                       ListTile(
-                        title: Text(product.name),
+                        title: Text(
+                          product.name,
+                          style: TextStyle(color: Colors.white),
+                        ),
                         subtitle: Text(
-                            'Price: Rs.${product.price}/kg | Stock: ${product.stock}kgs | Category: ${product.category} | Discount: ${product.discount}% | Discounted Price: Rs.${product.discountedPrice}'),
-                      )
+                          'Price: Rs.${product.price}/kg\nStock: ${product.stock}kgs\nCategory: ${product.category}\nDiscount: ${product.discount}%\nDiscounted Price: Rs.${product.discountedPrice}',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -145,6 +157,7 @@ class _inventoryState extends State<inventory> with SingleTickerProviderStateMix
       },
     );
   }
+
   void _refreshInventory() {
     setState(() {
       // Refresh inventory logic

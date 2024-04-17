@@ -12,14 +12,18 @@ class ShowComplain extends StatefulWidget {
 }
 
 class _ShowComplainState extends State<ShowComplain> {
-  bool complainLoading = true;
-  List<Complaint> complaints = [];
+  List<Complaint> ongoingComplaints = [];
+  List<Complaint> completedComplaints = [];
 
   void getComplain() async {
     List<Complaint> updatedComplaints = await MongoDatabase.getComplaints();
     setState(() {
-      complaints = updatedComplaints;
-      complainLoading = false;
+      ongoingComplaints = updatedComplaints
+          .where((complaint) => !complaint.notified)
+          .toList();
+      completedComplaints = updatedComplaints
+          .where((complaint) => complaint.notified)
+          .toList();
     });
   }
 
@@ -31,34 +35,46 @@ class _ShowComplainState extends State<ShowComplain> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
-        toolbarHeight: 100,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(16),
-              bottomRight: Radius.circular(16)),
-        ),
-        centerTitle: true,
-        title: Padding(
-          padding: const EdgeInsets.all(0.0),
-          child: Image.asset(
-            "assets/Logo.png",
-            width: 50,
-            height: 50,
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          iconTheme: IconThemeData(color: Colors.white),
+          toolbarHeight: 100,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(16),
+                bottomRight: Radius.circular(16)),
+          ),
+          centerTitle: true,
+          title: Padding(
+            padding: const EdgeInsets.all(0.0),
+            child: Image.asset(
+              "assets/Logo.png",
+              width: 50,
+              height: 50,
+            ),
+          ),
+          backgroundColor: const Color(0xff63131C),
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: 'Ongoing'),
+              Tab(text: 'Addressed'),
+            ],
+            indicatorColor: Colors.white,
+            labelColor: Color(0xffffC937),
+            unselectedLabelColor: Colors.white,
+            labelPadding: EdgeInsets.symmetric(horizontal: 2.0),
           ),
         ),
-        backgroundColor: const Color(0xff801924),
+        drawer: AdminDrawer(name: "user"),
+        body: TabBarView(
+          children: [
+            ComplaintList(complaints: ongoingComplaints, refreshComplaints: getComplain),
+            ComplaintList(complaints: completedComplaints, refreshComplaints: getComplain),
+          ],
+        ),
       ),
-      drawer: AdminDrawer(name: "user"),
-      body: complainLoading
-          ? const Center(
-              child: CircularProgressIndicator(
-              color: const Color(0xff801924),
-            ))
-          : ComplaintList(
-              complaints: complaints, refreshComplaints: getComplain),
     );
   }
 }
@@ -67,8 +83,7 @@ class ComplaintList extends StatefulWidget {
   final List<Complaint> complaints;
   final Function refreshComplaints;
 
-  const ComplaintList(
-      {required this.complaints, required this.refreshComplaints});
+  const ComplaintList({required this.complaints, required this.refreshComplaints});
 
   @override
   State<ComplaintList> createState() => _ComplaintListState();
@@ -98,26 +113,25 @@ class _ComplaintListState extends State<ComplaintList> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                          "Complaint No. ${widget.complaints[index].complaintId}"),
-                      Text("Name: ${widget.complaints[index].name}"),
-                      Text("Email: ${widget.complaints[index].email}"),
-                      Text("Contact: ${widget.complaints[index].contact}"),
-                      Text(
-                          "Description: ${widget.complaints[index].description}"),
+                      Text("Complaint No. ${complaint.complaintId}"),
+                      Text("Name: ${complaint.name}"),
+                      Text("Email: ${complaint.email}"),
+                      Text("Contact: ${complaint.contact}"),
+                      Text("Description: ${complaint.description}"),
                     ],
                   ),
                 ),
               ),
               Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Text(
-                    "${DateFormat('E, d MMM y | hh:mm a').format(complaint.dateTime)}",
-                    style: TextStyle(
-                      fontSize: 12,
-                    ),
-                  )),
+                bottom: 0,
+                right: 0,
+                child: Text(
+                  "${DateFormat('E, d MMM y | hh:mm a').format(complaint.dateTime)}",
+                  style: TextStyle(
+                    fontSize: 12,
+                  ),
+                ),
+              ),
               if (complaint.notified)
                 Positioned(
                   top: 8,
@@ -152,8 +166,7 @@ class _ComplaintListState extends State<ComplaintList> {
                 title: Text('Delete'),
                 onTap: () async {
                   if (complaint.id != null) {
-                    await MongoDatabase.deleteComplaint(
-                        complaint.id!.toHexString());
+                    await MongoDatabase.deleteComplaint(complaint.id!.toHexString());
                     Navigator.of(context).pop();
                     _showDeletedMessage();
                     setState(() {});
@@ -161,28 +174,29 @@ class _ComplaintListState extends State<ComplaintList> {
                   }
                 },
               ),
-              ListTile(
-                leading: Icon(Icons.notifications),
-                title: Text('Notify'),
-                onTap: () async {
-                  if (complaint.id != null) {
-                    await PushNotifications.sendComplaintNotification(
-                      complaint.complaintId,
-                      complaint.deviceToken,
-                      'Complaint Recieved for Complaint No. ${complaint.complaintId} ',
-                      'Dear Customer,\n'
-                          'Your complaint has been received by our team and you will be contacted shortly.\n'
-                          'We apologize for any inconvenience!',
-                    );
-                    await MongoDatabase.updateComplaint(complaint.id!, true);
-                    setState(() {
-                      widget.complaints[index].notified = true;
-                    });
-                    Navigator.of(context).pop();
-                    _showSuccessMessage();
-                  }
-                },
-              ),
+              if (!complaint.notified)
+                ListTile(
+                  leading: Icon(Icons.notifications),
+                  title: Text('Notify'),
+                  onTap: () async {
+                    if (complaint.id != null) {
+                      await PushNotifications.sendComplaintNotification(
+                        complaint.complaintId,
+                        complaint.deviceToken,
+                        'Complaint Received for Complaint No. ${complaint.complaintId}',
+                        'Dear Customer,\n'
+                            'Your complaint has been received by our team and you will be contacted shortly.\n'
+                            'We apologize for any inconvenience!',
+                      );
+                      await MongoDatabase.updateComplaint(complaint.id!, true);
+                      setState(() {
+                        widget.complaints[index].notified = true;
+                      });
+                      Navigator.of(context).pop();
+                      _showSuccessMessage();
+                    }
+                  },
+                ),
             ],
           ),
         );

@@ -154,6 +154,7 @@ class _ChatPageState extends State<ChatPage> {
                             stock: 44,
                             description:
                                 "Indulge in the sweet nostalgia of our traditional recipe for “Gulaab Jamun”, these golden brown dumplings are made up of pure khoya, fried to perfection and lovingly dipped in fragrant sugar syrup.",
+                            discount: 0,
                             onPopupMenuButtonPressed: updateCart),
                       ],
                     );

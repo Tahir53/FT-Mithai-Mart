@@ -7,14 +7,14 @@ class ProductCard extends StatefulWidget {
     required this.assetPath,
     required this.productName,
     required this.price,
-    required this.discount,
+    required this.discount, // Add this line
     this.onTap,
   }) : super(key: key);
 
   final String assetPath;
   final String productName;
   final int price;
-  final double discount;
+  final double discount; // Add this line
   Function(String, String, double)? onTap;
 
   @override
@@ -144,7 +144,7 @@ class _ProductCardState extends State<ProductCard> {
         if (widget.onTap != null) {
           widget.onTap!(
             widget.productName,
-            calculatedPrice.toStringAsFixed(0),
+            discountedPrice.toStringAsFixed(0), // Pass the discounted price
             selectedWeight,
           );
         }
@@ -152,7 +152,7 @@ class _ProductCardState extends State<ProductCard> {
       itemBuilder: (BuildContext context) {
         return [1.0, 0.5].map((double choice) {
           num calculatedPrice =
-              choice == 0.5 ? widget.price * 0.5 : widget.price;
+          choice == 0.5 ? widget.price * 0.5 : widget.price;
           double discountedPrice =
               calculatedPrice * (1 - widget.discount / 100);
 

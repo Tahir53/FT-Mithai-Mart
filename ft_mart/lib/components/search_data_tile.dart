@@ -7,8 +7,9 @@ class SearchDataField extends StatelessWidget {
   final String image;
   final double stock;
   final String description;
+  final double discount; // Add this line
   final Function(String name, String price, double stock)
-      onPopupMenuButtonPressed;
+  onPopupMenuButtonPressed;
 
   const SearchDataField({
     Key? key,
@@ -18,6 +19,7 @@ class SearchDataField extends StatelessWidget {
     required this.image,
     required this.stock,
     required this.description,
+    required this.discount, // Add this line
     required this.onPopupMenuButtonPressed,
   }) : super(key: key);
 
@@ -90,7 +92,7 @@ class SearchDataField extends StatelessWidget {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 15.0),
-                        child: buildPopupMenuButton(name, int.parse(price)),
+                        child: buildPopupMenuButton(name, int.parse(price), discount),
                       ),
                     ],
                   ),
@@ -103,17 +105,19 @@ class SearchDataField extends StatelessWidget {
     );
   }
 
-  Widget buildPopupMenuButton(String product, int price) {
+  Widget buildPopupMenuButton(String product, int price, double discount) {
     return PopupMenuButton<double>(
       color: const Color(0xFFFFF8E6),
       onSelected: (value) {
         num calculatedPrice = value == 0.5 ? price * 0.5 : price;
-        onPopupMenuButtonPressed(product, calculatedPrice.toString(), value);
+        double discountedPrice = calculatedPrice * (1 - discount / 100);
+        onPopupMenuButtonPressed(product, discountedPrice.toStringAsFixed(0), value);
       },
       itemBuilder: (BuildContext context) {
         return [1.0, 0.5].map((double choice) {
           // Calculating the price for each choice
           num calculatedPrice = choice == 0.5 ? price * 0.5 : price;
+          double discountedPrice = calculatedPrice * (1 - discount / 100);
 
           return PopupMenuItem<double>(
             value: choice,
@@ -137,12 +141,35 @@ class SearchDataField extends StatelessWidget {
                       fontSize: 15,
                     ),
                   ),
-                  Text(
-                    'Rs.${calculatedPrice.toString()}',
-                    style: const TextStyle(
-                      color: Color(0xFF63131C),
-                      fontSize: 15,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Original: ',
+                        style: TextStyle(
+                          color: Color(0xFF63131C),
+                          fontSize: 12,
+                        ),
+                      ),
+                      Text(
+                        'Rs.${calculatedPrice.truncate()}',
+                        style: TextStyle(
+                          decoration: discount > 0
+                              ? TextDecoration.lineThrough
+                              : null,
+                          color: Color(0xFF63131C),
+                          fontSize: 15,
+                        ),
+                      ),
+                      if (discount > 0)
+                        Text(
+                          'Discounted: Rs.${discountedPrice.toStringAsFixed(0)}',
+                          style: const TextStyle(
+                            color: Color(0xFF63131C),
+                            fontSize: 12,
+                          ),
+                        ),
+                    ],
                   ),
                 ],
               ),
@@ -172,6 +199,7 @@ class SearchDataField extends StatelessWidget {
       ),
     );
   }
+
 
   void showProductDialog(BuildContext context) {
     showDialog(

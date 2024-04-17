@@ -15,6 +15,7 @@ class OrderTracking extends StatefulWidget {
 }
 
 class _OrderTrackingState extends State<OrderTracking> {
+  String name = '';
   String orderId = '';
   List<String> orderedItems = [];
   String status = '';
@@ -42,6 +43,7 @@ class _OrderTrackingState extends State<OrderTracking> {
     for (Order order in orders) {
       if (order.orderId == orderId) {
         setState(() {
+          name = order.name;
           orderedItems = order.cartItems
               .map((item) => "${item.productName} x ${item.quantity}kgs")
               .toList();
@@ -128,19 +130,21 @@ class _OrderTrackingState extends State<OrderTracking> {
             SizedBox(height: 16),
             Center(
               child: ElevatedButton.icon(
-                  onPressed: _trackOrder,
-                  icon: Icon(
-                    Icons.track_changes_rounded,
+                onPressed: _trackOrder,
+                icon: Icon(
+                  Icons.track_changes_rounded,
+                  color: Color(0xFF63131C),
+                ),
+                label: Text(
+                  "Track Order",
+                  style: TextStyle(
                     color: Color(0xFF63131C),
                   ),
-                  label: Text(
-                    "Track Order",
-                    style: TextStyle(
-                      color: Color(0xFF63131C),
-                    ),
-                  )),
+                ),
+              ),
             ),
             SizedBox(height: 16),
+
             if (orderId.isNotEmpty && orderedItems.isNotEmpty)
               Card(
                 elevation: 5,
@@ -159,6 +163,13 @@ class _OrderTrackingState extends State<OrderTracking> {
                       ),
                       Divider(color: Color(0xFF63131C)),
                       SizedBox(height: 10),
+                      Text(
+                        'Name: ${name}' ?? widget.name,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       if (dateTime != null)
                         Text(
                           'Order Date: ${DateFormat('yyyy-MM-dd – kk:mm').format(dateTime!)}',
@@ -183,7 +194,7 @@ class _OrderTrackingState extends State<OrderTracking> {
                         ),
                       ),
                       ...orderedItems.map(
-                        (item) => Padding(
+                            (item) => Padding(
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Text(item),
                         ),
@@ -197,6 +208,35 @@ class _OrderTrackingState extends State<OrderTracking> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      SizedBox(height: 10),
+                      if (status == 'In Process')
+                        Image.network(
+                          'https://i.ibb.co/grjzWpj/confirmed.gif',
+                          width: 200,
+                          height: 200,
+                          alignment: Alignment.center,
+                        ),
+                      if (status == 'Ready for Pickup')
+                        Image.network(
+                          'https://i.ibb.co/CVK0Ty0/Pickup.gif',
+                          width: 150,
+                          height: 150,
+                          alignment: Alignment.center,
+                        ),
+                      if (status == 'Ready for Delivery')
+                        Image.network(
+                          'https://i.ibb.co/51gcgkg/delivery.gif',
+                          width: 200,
+                          height: 200,
+                          alignment: Alignment.center,
+                        ),
+                      if (status == 'Delivered')
+                        Image.network(
+                          'https://i.ibb.co/VN46xt2/delivered.gif',
+                          width: 200,
+                          height: 200,
+                          alignment: Alignment.center,
+                        ),
                       SizedBox(height: 16),
                       Text(
                         'Status: $status',

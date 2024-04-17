@@ -96,6 +96,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   @override
+  @override
+  @override
   Widget build(BuildContext context) {
     final isNotLoggedIn = !widget.loggedIn;
     return Scaffold(
@@ -186,10 +188,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (widget.loggedIn == false)
+                        if (isNotLoggedIn)
                           Padding(
                             padding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            const EdgeInsets.symmetric(horizontal: 16.0),
                             child: TextField(
                               controller: _nameController,
                               onChanged: (value) {
@@ -198,17 +200,42 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 });
                               },
                               decoration: InputDecoration(
-                                labelText: 'Enter Your Name',
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      width: 2, color: Color(0xff63131C)),
+                                ),
+                                labelText: "Enter Your Name",
+                                labelStyle: TextStyle(
+                                  color: Color(0xff63131C),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
                               ),
                             ),
                           ),
+                        SizedBox(height: 10),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: TextField(
                             controller: _addressController,
+                            onChanged: (value) {
+                              setState(() {
+                                _addressController.text = value;
+                              });
+                            },
                             decoration: InputDecoration(
-                              labelText: 'Address for Delivery',
-                              hintText: 'Enter your address',
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 2, color: Color(0xff63131C)),
+                              ),
+                              labelText: "Enter Address For Delivery",
+                              labelStyle: TextStyle(
+                                color: Color(0xff63131C),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                             ),
                           ),
                         ),
@@ -231,38 +258,89 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         if (_forDelivery && _pickupDateTime != null)
                           Padding(
                             padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                              'Delivery Details:\n'
-                              '${DateFormat(' E,d MMM y hh:mm a').format(_pickupDateTime!)}\n'
-                              'Address: ${_addressController.text}\n'
-                              'Payment Mode: ${_paymentOption}',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              padding: EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Delivery Details:',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    'Delivery Date and Time: ${DateFormat(' E, d MMM y hh:mm a').format(_pickupDateTime!)}',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    'Name: ${isNotLoggedIn ? _nameController.text : widget.name}',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    'Delivery Address: ${_addressController.text}',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  SizedBox(height: 10),
+                                  if (_paymentOption != null)
+                                    Text(
+                                      'Payment Mode: ${_paymentOption}',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  SizedBox(height: 10),
+                                  if (_paymentOption == 'EasyPaisa' &&
+                                      _uploadedImageUrl != null)
+                                    GestureDetector(
+                                      onTap: () {
+                                        launchUrl(_uploadedImageUrl! as Uri);
+                                      },
+                                      child: Text(
+                                        'Uploaded Receipt',
+                                        style: TextStyle(
+                                          color: Color(0xff63131C),
+                                          decoration: TextDecoration.underline,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Row(
-                            children: [
-                              Text('Payment Method: '),
-                              DropdownButton<String>(
-                                value: _paymentOption,
-                                onChanged: (String? value) {
-                                  setState(() {
-                                    _paymentOption = value;
-                                  });
-                                },
-                                items: <String>[
-                                  'Cash on Delivery',
-                                  'EasyPaisa'
-                                ].map<DropdownMenuItem<String>>((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
-                              ),
-                            ],
+                        Visibility(
+                          visible: _forDelivery && _pickupDateTime != null,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Row(
+                              children: [
+                                Text('Payment Method: '),
+                                DropdownButton<String>(
+                                  value: _paymentOption,
+                                  onChanged: (String? value) {
+                                    setState(() {
+                                      _paymentOption = value;
+                                    });
+                                  },
+                                  items: <String>[
+                                    'Cash on Delivery',
+                                    'EasyPaisa'
+                                  ].map<DropdownMenuItem<String>>((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  }).toList(),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                         if (_paymentOption == 'EasyPaisa')
@@ -284,7 +362,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                       launchUrl(_uploadedImageUrl! as Uri);
                                     },
                                     child: Text(
-                                      'Uploaded Reciept',
+                                      'Uploaded Receipt',
                                       style: TextStyle(
                                           color: Color(0xff63131C),
                                           decoration: TextDecoration.underline),
@@ -338,7 +416,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           });
                         },
                         decoration: InputDecoration(
-                          labelText: 'Enter Your Name',
+                          focusedBorder: OutlineInputBorder(
+                            borderSide:
+                            BorderSide(width: 2, color: Color(0xff63131C)),
+                          ),
+                          labelText: "Enter Your Name",
+                          labelStyle: TextStyle(
+                            color: Color(0xff63131C),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
                       ),
                     ),
@@ -364,7 +452,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
                       if (_forDelivery &&
                           (_addressController.text.isEmpty ||
-                              _nameController.text.isEmpty ||
                               _pickupDateTime == null)) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -375,18 +462,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         );
                         return;
                       }
-                      if (_forPickup && _pickupDateTime == null ||
-                          _nameController.text.isEmpty) {
+                      if (_forPickup && _pickupDateTime == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                                'Please enter your name & select pickup date and time.'),
+                                'Please select pickup date and time.'),
                             backgroundColor: Color(0xff63131C),
                           ),
                         );
                         return;
                       }
-                      if (_paymentOption == null && _forDelivery) {
+                      if (_forDelivery && _paymentOption == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text('Please select a payment method.'),
@@ -424,6 +510,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       ),
     );
   }
+
 
   Future<void> _showDateTimePicker() async {
     DateTime now = DateTime.now();

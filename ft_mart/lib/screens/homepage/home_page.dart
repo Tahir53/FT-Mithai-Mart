@@ -93,7 +93,7 @@ class _homepageState extends State<homepage> {
         },
         child: const Icon(
           Icons.message,
-          color: Color(0xff801924),
+          color: Color(0xff63131C),
         ),
       ),
       appBar: AppBar(
@@ -125,7 +125,7 @@ class _homepageState extends State<homepage> {
                       return Text(
                         cartProvider.items.length.toString(),
                         style: const TextStyle(
-                            color: Color(0xff801924),
+                            color: Color(0xff63131C),
                             fontWeight: FontWeight.bold),
                       );
                     }))),
@@ -142,7 +142,7 @@ class _homepageState extends State<homepage> {
             ),
           ),
         ],
-        backgroundColor: const Color(0xff801924),
+        backgroundColor: const Color(0xff63131C),
       ),
       drawer: CustomDrawer(
           name: widget.name, email: widget.email, contact: widget.contact),
@@ -310,6 +310,7 @@ class _homepageState extends State<homepage> {
                                   image: result['image'],
                                   stock: result['stock'],
                                   description: result['description'],
+                                  discount: result['discount'],
                                   onPopupMenuButtonPressed: updateCart);
                             },
                           )

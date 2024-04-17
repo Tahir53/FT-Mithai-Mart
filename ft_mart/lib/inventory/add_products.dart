@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -23,13 +21,29 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
   final TextEditingController priceController = TextEditingController();
   final TextEditingController stockController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
-  final TextEditingController discountController = TextEditingController(text: '0.0');
+  final TextEditingController discountController =
+      TextEditingController(text: '0.0');
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Product'),
+        iconTheme: const IconThemeData(color: Colors.white),
+        toolbarHeight: 100,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(16),
+              bottomRight: Radius.circular(16)),
+        ),
+        centerTitle: true,
+        title: const Padding(
+          padding: EdgeInsets.all(0.0),
+          child: Text(
+            "Add Product",
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+        backgroundColor: const Color(0xff63131C),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -129,11 +143,14 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
     // Create a new product
     Product newProduct = Product(
       name: nameController.text,
-      price: priceController.text, // Use original price
+      price: priceController.text,
+      // Use original price
       stock: double.parse(stockController.text),
       category: dropdownValue,
-      image: '', // Add image URL if needed
-      quantity: [0.5, 1], // Adjust as needed
+      image: '',
+      // Add image URL if needed
+      quantity: [0.5, 1],
+      // Adjust as needed
       description: descriptionController.text,
       discount: discount,
       discountedPrice: discountedPrice.toStringAsFixed(0),

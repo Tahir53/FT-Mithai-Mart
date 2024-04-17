@@ -32,8 +32,9 @@ class Complaint {
       contact: json['contact'],
       description: json['description'],
       complaintId: json['complaintId'],
-      dateTime: json['dateTime'],
+      dateTime: DateTime.parse(json['dateTime']),
       deviceToken: json['deviceToken'],
+      notified: json['notified'] ?? false,
     );
   }
 
