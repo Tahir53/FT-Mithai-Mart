@@ -34,6 +34,13 @@ dependencies:
   otp_pin_field: ^1.2.2
   fl_chart: ^0.67.0
   flutter_randomcolor: ^1.0.15
+  logger: ^2.0.2+1
+  animated_text_kit: ^4.2.2
+  get: ^4.6.6
+  share_plus: ^7.2.2
+  speech_to_text: ^6.6.0
+  velocity_x: ^4.1.1
+  flutter_tts: ^3.8.5
 
 
 
