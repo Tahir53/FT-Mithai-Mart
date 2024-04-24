@@ -12,6 +12,7 @@ import 'package:ftmithaimart/components/search_textfield.dart';
 import 'package:ftmithaimart/components/total_card.dart';
 import 'package:ftmithaimart/dbHelper/mongodb.dart';
 import 'package:ftmithaimart/model/cart_provider.dart';
+import 'package:ftmithaimart/screens/chatbot/chat_page.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,7 +20,6 @@ import '../../components/drawer.dart';
 import '../../components/second_carousel_card.dart';
 import '../../model/cart_model.dart';
 import '../../model/product_model.dart';
-import '../chatbot/chat_page.dart';
 import '../checkout_screen.dart';
 
 class homepage extends StatefulWidget {
@@ -89,7 +89,7 @@ class _homepageState extends State<homepage> {
         backgroundColor: const Color(0xFFFFF8E6),
         onPressed: () {
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: ((context) => ChatPage())));
+              .push(MaterialPageRoute(builder: ((context) => ChatPage_())));
         },
         child: const Icon(
           Icons.message,
