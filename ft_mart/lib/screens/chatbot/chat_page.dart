@@ -323,7 +323,7 @@ class _ChatPage_State extends State<ChatPage_> {
                     }),
                     child: Container(
                       height: 50,
-                      width: 50,
+                      width: 45,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         color: const Color(0xff63131C),
@@ -349,9 +349,9 @@ class _ChatPage_State extends State<ChatPage_> {
             margin: const EdgeInsets.only(bottom: 10),
             decoration: BoxDecoration(
                 color: const Color(0xff801924),
-                borderRadius: BorderRadius.circular(20)),
+                borderRadius: BorderRadius.circular(15)),
             width: MediaQuery.of(context).size.width,
-            padding: const EdgeInsets.only(top: 10),
+            //padding: const EdgeInsets.only(top: 10),
             height: 250,
             child: Column(
               children: [
@@ -366,9 +366,6 @@ class _ChatPage_State extends State<ChatPage_> {
                           color: Colors.white,
                           size: 45,
                         ))),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
                     Image.asset(
                       "assets/Logo.png",
                       width: 70,
@@ -384,8 +381,6 @@ class _ChatPage_State extends State<ChatPage_> {
                           color: Colors.white,
                           fontWeight: FontWeight.bold),
                     ),
-                  ],
-                ),
                 const SizedBox(height: 10,),
                 const Text(
                   "Have any questions?",
@@ -395,7 +390,7 @@ class _ChatPage_State extends State<ChatPage_> {
                       fontWeight: FontWeight.w400),
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 10,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
