@@ -1,358 +1,75 @@
-import 'dart:convert';
-
-import 'package:animated_text_kit/animated_text_kit.dart';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:ftmithaimart/screens/chatgpt/models/chat.dart';
-import 'package:ftmithaimart/screens/chatgpt/models/model.dart';
-import 'package:ftmithaimart/screens/chatgpt/network/api_services.dart';
-import 'package:ftmithaimart/screens/chatgpt/utils/constants.dart';
-import 'package:get/get.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:ftmithaimart/components/message_text_field.dart';
+import 'package:ftmithaimart/components/reciever_message_container.dart';
+import 'package:ftmithaimart/components/search_data_tile.dart';
+import 'package:ftmithaimart/components/sender_message_container.dart';
+import 'package:ftmithaimart/model/cart_model.dart';
+import 'package:ftmithaimart/model/cart_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
+import 'package:kommunicate_flutter/kommunicate_flutter.dart';
 
-final stt.SpeechToText _speech = stt.SpeechToText();
-
-class ChatPage_ extends StatefulWidget {
-  const ChatPage_({super.key});
-
+class ChatPage extends StatefulWidget {
   @override
-  State<ChatPage_> createState() => _ChatPage_State();
+  State<ChatPage> createState() => _ChatPageState();
 }
 
-class _ChatPage_State extends State<ChatPage_> {
-  Color color = Colors.greenAccent;
-  final dark = false;
+class _ChatPageState extends State<ChatPage> {
+  final TextEditingController messageController = TextEditingController();
 
-  String messagePrompt = '';
-  int tokenValue = 500;
-  List<Chat> chatList = [];
-  List<Chat> chatToStore = [];
-  List<Model> modelsList = [];
-  late SharedPreferences prefs;
-  @override
-  void initState() {
-    super.initState();
-    getModels();
-    // getData();
-    //initPrefs();
+  List<String> senderMessages = [];
+  List<String> recieverMessages = [];
+
+
+
+
+  sendMessagetoAPI(String message) async {
+    print("send message function called");
+    print(message);
+    final apiUrl = Uri.parse(
+        "https://rldd7tf8-5000.asse.devtunnels.ms/query?prompt=$message");
+
+    try {
+      final response = await http.get(apiUrl, headers: {
+        "Accept": "application/json",
+        "Access-Control-Allow-Origin": "*"
+      });
+      if (response.statusCode == 200) {
+        final res = response.body;
+        print("response: $res");
+        setState(() {
+          senderMessages.add(res);
+          recieverMessages.add("Response");
+        });
+      } else {
+        print(response.statusCode);
+      }
+    } catch (e) {
+      print("Error: $e");
+    }
   }
-
-  void getModels() async {
-    modelsList = await submitGetModelsForm(context: context);
-  }
-
-  List<DropdownMenuItem<String>> get models {
-    List<DropdownMenuItem<String>> menuItems = List.generate(modelsList.length, (i) {
-      return DropdownMenuItem(
-        value: modelsList[i].id,
-        child: Text(modelsList[i].id),
-      );
-    });
-    return menuItems;
-  }
-
-  TextEditingController mesageController = TextEditingController();
-  bool isLoading = false;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: const Color(0xFFFFF8E6),
-      resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: Column(
-          children: [
-            pageHeader(),
-            Expanded(child: _bodyChat(dark)),
-            _formChat(dark),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void saveData(int value) {
-    prefs.setInt("token", value);
-  }
-
-  getData() async {
-    prefs = await SharedPreferences.getInstance();
-    String date = DateTime.now().toString().split(" ")[0];
-    String oldChat = prefs.getString("date: $date") ?? '';
-    print("OldChat: $oldChat");
-    if (oldChat != '') {
-      final List<dynamic> jsonList = json.decode(oldChat);
-      chatToStore = jsonList.map((json) => Chat.fromJson(json)).toList();
-      print("chatToStore: $chatToStore");
-      setState(() {});
+    void updateCart(String product, String price, double quantity) {
+      print("updatecart");
+      Provider.of<CartProvider>(context, listen: false).addToCart(
+          Cart(productName: product, price: price, quantity: quantity));
     }
-    //return prefs.getInt("token") ?? 1;
-  }
 
-  _topChat() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Scaffold(
+      backgroundColor: const Color(0xFFFFF8E6),
+      body: Column(
         children: [
-          Row(
-            children: [
-              GestureDetector(
-                  onTap: () => Navigator.of(context).pop(),
-                  child: Image.asset(
-                    "assets/Color PNG.png",
-                    height: 40,
-                    color: Colors.white,
-                  )),
-              const Text(
-                'Chat-Bot',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-              ),
-            ],
-          ),
-          const Spacer(),
-        ],
-      ),
-    );
-  }
-
-  Widget _bodyChat(bool dark) {
-    return ListView.builder(
-      physics: const BouncingScrollPhysics(),
-      shrinkWrap: true,
-      scrollDirection: Axis.vertical,
-      itemCount: chatList.length,
-      itemBuilder: (context, index) => _itemChat(
-        chat: chatList[index].chat,
-        message: chatList[index].msg,
-        dark: dark,
-      ),
-    );
-  }
-
-  _itemChat({required int chat, required String message, required dark}) {
-    return Row(
-      mainAxisAlignment: chat == 0 ? MainAxisAlignment.end : MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Flexible(
-          child: Container(
-            width: chat != 0 ? 300 : null,
-            margin: const EdgeInsets.only(
-              left: 10,
-              right: 10,
-              top: 10,
-            ),
-            padding: const EdgeInsets.symmetric(
-              vertical: 10,
-              horizontal: 10,
-            ),
+          Container(
             decoration: BoxDecoration(
-              color: chat == 0 ? const Color(0xffffC937) : const Color(0xff63131C),
-              borderRadius: chat == 0
-                  ? const BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
-                      bottomLeft: Radius.circular(30),
-                    )
-                  : const BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
-                      bottomRight: Radius.circular(30),
-                    ),
-              border: chat != 0
-                  ? Border.all(
-                      width: 1,
-                      color: const Color(0xff63131B),
-                    )
-                  : null,
-            ),
-            child: chatWidget(message, chat, dark),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget chatWidget(String text, int chat, dark) {
-    return IntrinsicWidth(
-      child: SizedBox(
-        // width: 250.0,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(text.replaceFirst('\n\n', ''), style:  TextStyle(color: chat == 0 ? Colors.black : Colors.white,
-                fontSize: 16,)),
-            const SizedBox(
-              height: 5,
-            ),
-            chat == 0
-                ? Container()
-                : Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Share.share(text);
-                        },
-                        child: const CircleAvatar(
-                          radius: 15,
-                          child: Icon(
-                            Icons.share,
-                            size: 14,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          // speak
-                          speak(text);
-                        },
-                        child: const CircleAvatar(
-                          radius: 15,
-                          child: Icon(
-                            Icons.volume_up,
-                            size: 14,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          Clipboard.setData(ClipboardData(text: text)).then((value) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Text Copied"),
-                              ),
-                            );
-                          });
-                        },
-                        child: const CircleAvatar(
-                          radius: 15,
-                          child: Icon(
-                            Icons.copy,
-                            size: 14,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  int count = 0;
-
-  Widget _formChat(dark) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Container(
-          width: MediaQuery.sizeOf(context).width,
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-          child: Row(
-            children: [
-              SizedBox(
-                width: MediaQuery.sizeOf(context).width * 0.8,
-                child: TextField(
-                  onChanged: (data) {
-                    // setState(() {});
-                  },
-                  controller: mesageController,
-                  style: TextStyle(color: dark ? Colors.white : Colors.black),
-                  cursorColor: const Color(0xff63131C),
-                  decoration: InputDecoration(
-                    hintText: 'Write To Send Message',
-                    filled: true,
-                    fillColor: dark ? Colors.black : const Color.fromARGB(255, 228, 224, 224),
-                    hintStyle: TextStyle(color: dark ? Colors.white : Colors.black),
-                    border: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Color(0xffffC937)),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color:Color(0xff63131C)),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    labelStyle: const TextStyle(fontSize: 12),
-                    contentPadding: const EdgeInsets.all(20),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              InkWell(
-                    onTap: (() async {
-                      isLoading = true;
-                      messagePrompt = mesageController.text.toString();
-                      setState(() {
-                        chatList.add(Chat(msg: messagePrompt, chat: 0));
-                        mesageController.clear();
-                      });
-                      // ignore: use_build_context_synchronously
-                      submitGetChatsForm(
-                        context: context,
-                        prompt: count == 0
-                            ? "say me Welcome message {hello , I am FT Mithai Mart Assistant. Ask me what you want to know? } "
-                            : "$custom_prompt $messagePrompt",
-                        tokenValue: tokenValue,
-                      ).then((value) async {
-                        count += 1;
-                        isLoading = false;
-                        chatList.addAll(value);
-                        setState(() {});
-                      });
-
-                      setState(() {});
-                    }),
-                    child: Container(
-                      height: 50,
-                      width: 45,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: const Color(0xff63131C),
-                      ),
-                      padding: const EdgeInsets.all(8),
-                      child: const Icon(
-                        Icons.send_outlined,
-                        color: Color(0xFFFFF8E6),
-                        size: 18,
-                      ),
-                    ),
-                  )
-            ],
-          ),
-        ),
-
-      ],
-    );
-  }
-
-  Widget pageHeader(){
-    return Container(
-            margin: const EdgeInsets.only(bottom: 10),
-            decoration: BoxDecoration(
-                color: const Color(0xff801924),
-                borderRadius: BorderRadius.circular(15)),
+                color: Color(0xff801924),
+                borderRadius: BorderRadius.circular(20)),
             width: MediaQuery.of(context).size.width,
-            //padding: const EdgeInsets.only(top: 10),
-            height: 250,
+            padding: const EdgeInsets.only(top: 50),
+            height: 350,
+            // color: const Color(0xFFFFF8E6),
+
             child: Column(
               children: [
                 Align(
@@ -361,27 +78,26 @@ class _ChatPage_State extends State<ChatPage_> {
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.arrow_left,
                           color: Colors.white,
                           size: 45,
                         ))),
-                    Image.asset(
-                      "assets/Logo.png",
-                      width: 70,
-                      height: 70,
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    const Text(
-                      "Customer Service",
-                      style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
-                const SizedBox(height: 10,),
+                Image.asset(
+                  "assets/Logo.png",
+                  width: 100,
+                  height: 100,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                const Text(
+                  "Customer Service",
+                  style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold),
+                ),
                 const Text(
                   "Have any questions?",
                   style: TextStyle(
@@ -390,7 +106,7 @@ class _ChatPage_State extends State<ChatPage_> {
                       fontWeight: FontWeight.w400),
                 ),
                 const SizedBox(
-                  height: 10,
+                  height: 20,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -404,7 +120,7 @@ class _ChatPage_State extends State<ChatPage_> {
                     const SizedBox(
                       width: 5,
                     ),
-                    const Text(
+                    Text(
                       "Online",
                       style: TextStyle(color: Colors.white),
                     ),
@@ -412,6 +128,94 @@ class _ChatPage_State extends State<ChatPage_> {
                 )
               ],
             ),
-          );
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: ListView.builder(
+                itemCount: senderMessages.length,
+                itemBuilder: (context, index) {
+                  if (index == 2) {
+                    return Column(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(left: 10),
+                          child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                "Recommended Products",
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 15),
+                              )),
+                        ),
+                        SearchDataField(
+                            name: "Gulab Jaman",
+                            category: "Classic Sweets",
+                            price: "1200",
+                            image:
+                                "https://i.postimg.cc/zXKhGcGw/Gulaab-Jaman.jpg",
+                            stock: 44,
+                            description:
+                                "Indulge in the sweet nostalgia of our traditional recipe for “Gulaab Jamun”, these golden brown dumplings are made up of pure khoya, fried to perfection and lovingly dipped in fragrant sugar syrup.",
+                            discount: 0,
+                            onPopupMenuButtonPressed: updateCart),
+                      ],
+                    );
+                  }
+                  if (index % 2 == 0) {
+                    return SenderMessageContainer(
+                      message: senderMessages[index],
+                      timestamp: "0:300",
+                    );
+                  } else {
+                    return ReceiverMessageContainer(
+                      message: "hello",
+                      timestamp: "3:00",
+                    );
+                  }
+                }),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                MessageTextField(controller: messageController),
+                const SizedBox(
+                  width: 10,
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    await sendMessagetoAPI(messageController.text);
+                    // setState(() {
+                    //   senderMessages.add(messageController.text);
+                    // });
+                    messageController.clear();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    backgroundColor: Color(0xFF63131C),
+                  ),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.085,
+                    height: MediaQuery.of(context).size.height * 0.049,
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Send',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

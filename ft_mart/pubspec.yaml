@@ -42,6 +42,7 @@ dependencies:
   velocity_x: ^4.1.1
   flutter_tts: ^3.8.5
   jazzcash_flutter: ^1.0.5
+  kommunicate_flutter: ^1.9.1
 
 
 

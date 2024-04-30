@@ -14,6 +14,7 @@ import 'package:ftmithaimart/dbHelper/mongodb.dart';
 import 'package:ftmithaimart/model/cart_provider.dart';
 import 'package:ftmithaimart/screens/chatbot/chat_page.dart';
 import 'package:intl/intl.dart';
+import 'package:kommunicate_flutter/kommunicate_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../components/drawer.dart';
@@ -87,9 +88,20 @@ class _homepageState extends State<homepage> {
       key: _scaffoldKey,
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFFFFF8E6),
-        onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: ((context) => ChatPage_())));
+        onPressed: () async {
+          // Navigator.of(context)
+          //     .push(MaterialPageRoute(builder: ((context) => ChatPage())));
+          try {
+            dynamic conversationObject = {
+              'appId':
+                  '1ab9cf22e8c3fd473afac209140745943'
+            };
+            dynamic result = await KommunicateFlutterPlugin.buildConversation(
+                conversationObject);
+            print("Conversation builder success : " + result.toString());
+          } on Exception catch (e) {
+            print("Conversation builder error occurred : " + e.toString());
+          }
         },
         child: const Icon(
           Icons.message,
