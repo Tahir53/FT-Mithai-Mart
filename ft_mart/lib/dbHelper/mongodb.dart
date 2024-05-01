@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:mongo_dart/mongo_dart.dart';
 import '../constant.dart';
+import '../model/box_model.dart';
 import '../model/complaints_model.dart';
 import '../model/customer_model.dart';
 import '../model/orders_model.dart';
@@ -287,4 +288,11 @@ class MongoDatabase {
           modify.unset('discount'),
         );
   }
+
+  static Future<List<CustomizationOption>> getCustomizationOptions() async {
+    final collection = db.collection('customization');
+    final List<Map<String, dynamic>> jsonOptions = await collection.find().toList();
+    return jsonOptions.map((json) => CustomizationOption.fromJson(json)).toList();
+  }
+
 }

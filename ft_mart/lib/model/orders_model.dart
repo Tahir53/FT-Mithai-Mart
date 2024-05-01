@@ -50,7 +50,7 @@ class Order {
       'payment': payment,
       'receiptImagePath': receiptImagePath,
       'deviceToken': deviceToken,
-      'status': status, // Serialize order status
+      'status': status, 
     };
   }
 

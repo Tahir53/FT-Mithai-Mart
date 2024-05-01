@@ -197,7 +197,7 @@ class _homepageState extends State<homepage> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          BoxCustomizationPage()));
+                                          BoxCustomizationPage(cartItems: cartProvider.items)));
                             },
                             icon: const Icon(
                               Icons.dashboard_customize_outlined,

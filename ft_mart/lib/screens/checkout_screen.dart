@@ -126,7 +126,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Padding(padding: EdgeInsets.only(top: 10, bottom: 30)),
+            Padding(padding: EdgeInsets.only(top: 10)),
             Text(
               "Checkout",
               style: TextStyle(
@@ -134,8 +134,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 fontSize: 24,
               ),
             ),
-            Padding(padding: EdgeInsets.only(top: 10)),
-            // Display Cart Items
+            SizedBox(height: 20),
             ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
