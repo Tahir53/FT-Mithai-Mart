@@ -49,7 +49,7 @@ void main() async {
       PushNotifications.showSimpleNotification(
         title: message.notification!.title!,
         body: message.notification!.body!,
-        payload: payloadData,
+        payload: payloadData
       );
     }
   });

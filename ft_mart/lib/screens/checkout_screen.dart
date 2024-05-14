@@ -1,10 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:ftmithaimart/jazz_cash/jazz_cash.dart';
 import 'package:ftmithaimart/otp/phone_number/enter_number.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:jazzcash_flutter/jazzcash_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../components/cart_item_tile.dart';
 import '../components/reciepts_screen.dart';
@@ -333,7 +331,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   items: <String>[
                                     'Cash on Delivery',
                                     'EasyPaisa',
-                                    'JazzCash'
                                   ].map<DropdownMenuItem<String>>(
                                       (String value) {
                                     return DropdownMenuItem<String>(
@@ -372,24 +369,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                     ),
                                   ),
                                 ],
-                              ],
-                            ),
-                          ),
-                        if (_paymentOption == 'JazzCash')
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => JazzCash()));
-                                  },
-                                  child: Text("Pay via Jazzcash"),
-                                ),
                               ],
                             ),
                           ),
@@ -549,6 +528,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       TimeOfDay? pickedTime = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.now(),
+        builder: (BuildContext context, Widget? child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+            child: child!,
+          );
+        },
       );
 
       if (pickedTime != null) {
@@ -560,10 +545,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           pickedTime.minute,
         );
 
-        if (combinedDateTime.isAfter(now) ||
-            (combinedDateTime.day == now.day &&
-                combinedDateTime.hour > now.hour &&
-                combinedDateTime.hour <= 20)) {
+        if (combinedDateTime.isAfter(now) &&
+            combinedDateTime.hour >= 12 &&
+            combinedDateTime.hour < 20) {
           setState(() {
             _pickupDateTime = combinedDateTime;
           });
@@ -571,7 +555,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Orders cannot be placed for previous timings or after 8 PM!',
+                'Orders cannot be placed for previous timings, before 12 PM, or after 8 PM!',
               ),
               backgroundColor: Color(0xff63131C),
             ),
@@ -580,6 +564,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       }
     }
   }
+
 
   String? _deliveryPickupGroupValue() {
     if (_forDelivery) {
@@ -629,78 +614,78 @@ double calculateTotal(List<Cart> items) {
   return total;
 }
 
-class JazzCash extends StatefulWidget {
-  const JazzCash({super.key});
-
-  @override
-  State<JazzCash> createState() => _JazzCashState();
-}
-
-class _JazzCashState extends State<JazzCash> {
-
-  String paymentStatus = "pending";
-  ProductModel productModel = ProductModel("Product 1", "100");
-  String integritySalt= "81uc45cu80";
-  String merchantID= "MC92142";
-  String merchantPassword = "yf2su410d5";
-  String transactionUrl= 'https://sandbox.jazzcash.com.pk/ApplicationAPI/API/Payment/DoTransaction';
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("JazzCash Flutter Example"),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("Product Name : ${productModel.productName}"),
-            Text("Product Price : ${productModel.productPrice}"),
-            ElevatedButton(onPressed: () {
-              _payViaJazzCash(productModel, context);
-            }, child: const Text("Purchase Now !"))
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> _payViaJazzCash(ProductModel product, BuildContext context) async {
-    try {
-      JazzCashFlutter jazzCashFlutter = JazzCashFlutter(
-        merchantId: merchantID,
-        merchantPassword: merchantPassword,
-        integritySalt: integritySalt,
-        isSandbox: true,
-      );
-
-      DateTime date = DateTime.now();
-
-      JazzCashPaymentDataModelV1 paymentDataModelV1 = JazzCashPaymentDataModelV1(
-        ppAmount: '${product.productPrice}',
-        ppBillReference: 'refbill${date.year}${date.month}${date.day}${date.hour}${date.millisecond}',
-        ppDescription: 'Product details ${product.productName} - ${product.productPrice}',
-        ppMerchantID: merchantID,
-        ppPassword: merchantPassword,
-        ppReturnURL: transactionUrl,
-      );
-
-      await jazzCashFlutter.startPayment(paymentDataModelV1: paymentDataModelV1, context: context);
-
-      setState(() {
-        paymentStatus = "success"; // Update payment status if payment is successful
-      });
-    } catch (err) {
-      print("Error in payment $err");
-      // Handle error here
-      setState(() {
-        paymentStatus = "failed"; // Update payment status if payment fails
-      });
-    }
-  }
-
-}
+// class JazzCash extends StatefulWidget {
+//   const JazzCash({super.key});
+//
+//   @override
+//   State<JazzCash> createState() => _JazzCashState();
+// }
+//
+// class _JazzCashState extends State<JazzCash> {
+//
+//   String paymentStatus = "pending";
+//   ProductModel productModel = ProductModel("Product 1", "100");
+//   String integritySalt= "81uc45cu80";
+//   String merchantID= "MC92142";
+//   String merchantPassword = "yf2su410d5";
+//   String transactionUrl= 'https://sandbox.jazzcash.com.pk/ApplicationAPI/API/Payment/DoTransaction';
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text("JazzCash Flutter Example"),
+//       ),
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             Text("Product Name : ${productModel.productName}"),
+//             Text("Product Price : ${productModel.productPrice}"),
+//             ElevatedButton(onPressed: () {
+//               _payViaJazzCash(productModel, context);
+//             }, child: const Text("Purchase Now !"))
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+//
+//   Future<void> _payViaJazzCash(ProductModel product, BuildContext context) async {
+//     try {
+//       JazzCashFlutter jazzCashFlutter = JazzCashFlutter(
+//         merchantId: merchantID,
+//         merchantPassword: merchantPassword,
+//         integritySalt: integritySalt,
+//         isSandbox: true,
+//       );
+//
+//       DateTime date = DateTime.now();
+//
+//       JazzCashPaymentDataModelV1 paymentDataModelV1 = JazzCashPaymentDataModelV1(
+//         ppAmount: '${product.productPrice}',
+//         ppBillReference: 'refbill${date.year}${date.month}${date.day}${date.hour}${date.millisecond}',
+//         ppDescription: 'Product details ${product.productName} - ${product.productPrice}',
+//         ppMerchantID: merchantID,
+//         ppPassword: merchantPassword,
+//         ppReturnURL: transactionUrl,
+//       );
+//
+//       await jazzCashFlutter.startPayment(paymentDataModelV1: paymentDataModelV1, context: context);
+//
+//       setState(() {
+//         paymentStatus = "success"; // Update payment status if payment is successful
+//       });
+//     } catch (err) {
+//       print("Error in payment $err");
+//       // Handle error here
+//       setState(() {
+//         paymentStatus = "failed"; // Update payment status if payment fails
+//       });
+//     }
+//   }
+//
+// }
 
 class ProductModel {
   String? productName;

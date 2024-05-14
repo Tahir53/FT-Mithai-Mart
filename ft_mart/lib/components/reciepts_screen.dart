@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ftmithaimart/components/order_tracking.dart';
 import 'package:ftmithaimart/model/cart_provider.dart';
-import 'package:ftmithaimart/screens/homepage/home_page.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -89,7 +89,7 @@ class _ReceiptScreenState extends State<ReceiptScreen>
                 : SlideTransition(
               position: _offsetAnimation!,
               child: const FittedBox(
-                fit: BoxFit.scaleDown, 
+                fit: BoxFit.scaleDown,
                 child: Text(
                   "Thank you for choosing F.T Mithai Mart",
                   style: TextStyle(
@@ -165,7 +165,7 @@ class _ReceiptScreenState extends State<ReceiptScreen>
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => homepage(name: widget.name),
+                            builder: (context) => OrderTracking(name: widget.name),
                           ),
                         );
                       },

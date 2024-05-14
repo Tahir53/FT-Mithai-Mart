@@ -12,7 +12,6 @@ import 'package:ftmithaimart/components/search_textfield.dart';
 import 'package:ftmithaimart/components/total_card.dart';
 import 'package:ftmithaimart/dbHelper/mongodb.dart';
 import 'package:ftmithaimart/model/cart_provider.dart';
-import 'package:ftmithaimart/screens/chatbot/chat_page.dart';
 import 'package:intl/intl.dart';
 import 'package:kommunicate_flutter/kommunicate_flutter.dart';
 import 'package:provider/provider.dart';
@@ -93,8 +92,8 @@ class _homepageState extends State<homepage> {
           //     .push(MaterialPageRoute(builder: ((context) => ChatPage())));
           try {
             dynamic conversationObject = {
-              'appId':
-                  '1ab9cf22e8c3fd473afac209140745943'
+              'appId': '11a65db28cf0b097c521704aba3748e24'
+                  //'1ab9cf22e8c3fd473afac209140745943'
             };
             dynamic result = await KommunicateFlutterPlugin.buildConversation(
                 conversationObject);

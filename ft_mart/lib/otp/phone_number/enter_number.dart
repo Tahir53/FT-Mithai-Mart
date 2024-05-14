@@ -19,11 +19,7 @@ class EnterNumber extends StatefulWidget {
 
 class _EnterNumberState extends State<EnterNumber> {
   final phoneController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  bool isSendingOTP = false;
 
   @override
   Widget build(BuildContext context) {
@@ -130,68 +126,90 @@ class _EnterNumberState extends State<EnterNumber> {
                       const SizedBox(
                         height: 8,
                       ),
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xff63131C),
-                        ),
-                        onPressed: () async {
-                          if (phoneController.text.isEmpty) {
-                            Fluttertoast.showToast(
-                              msg: "Please enter your phone number",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.BOTTOM,
-                            );
-                            return;
-                          }
+                      StatefulBuilder(
+                        builder: (BuildContext context, StateSetter setState) {
+                          return ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xff63131C),
+                            ),
+                            onPressed: () async {
+                              if (phoneController.text.isEmpty) {
+                                Fluttertoast.showToast(
+                                  msg: "Please enter your phone number",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                );
+                                return;
+                              }
 
-                          Random random = Random();
-                          int randomNumber = random.nextInt(90000) + 100000;
+                              setState(() {
+                                isSendingOTP = true;
+                              });
 
-                          final apiUrl = Uri.parse(
-                              'https://muhammadqsolutions.pythonanywhere.com/send-sms?message=$randomNumber&phone=92${phoneController.text}'); // API endpoint
+                              Random random = Random();
+                              int randomNumber = random.nextInt(90000) + 100000;
 
-                          try {
-                            var response = await http.get(
-                              apiUrl,
-                              headers: {
-                                'Content-Type': 'application/json',
-                                "Access-Control-Allow-Origin": "*"
-                              },
-                            );
+                              final apiUrl = Uri.parse(
+                                  'https://muhammadqsolutions.pythonanywhere.com/send-sms?message=$randomNumber&phone=92${phoneController.text}'); // API endpoint
 
-                            if (response.statusCode == 200) {
-                              print(
-                                  'Message SID: ${json.decode(response.body)['message_sid']}');
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => OtpScreen(
-                                            verificationId:
-                                                randomNumber.toString(),
-                                            function: () {
-                                              widget.function();
-                                            },
-                                            phoneNo: phoneController.text,
-                                          )));
-                            } else {
-                              Fluttertoast.showToast(
-                                msg: "Failed to send OTP",
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                              );
-                            }
-                          } catch (e) {
-                            print('Exception: $e');
-                          }
+                              try {
+                                var response = await http.get(
+                                  apiUrl,
+                                  headers: {
+                                    'Content-Type': 'application/json',
+                                    "Access-Control-Allow-Origin": "*"
+                                  },
+                                );
+
+                                if (response.statusCode == 200) {
+                                  print(
+                                      'Message SID: ${json.decode(response.body)['message_sid']}');
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => OtpScreen(
+                                                verificationId:
+                                                    randomNumber.toString(),
+                                                function: () {
+                                                  widget.function();
+                                                },
+                                                phoneNo: phoneController.text,
+                                              )));
+                                } else {
+                                  Fluttertoast.showToast(
+                                    msg: "Failed to send OTP",
+                                    toastLength: Toast.LENGTH_SHORT,
+                                    gravity: ToastGravity.BOTTOM,
+                                  );
+                                }
+                              } catch (e) {
+                                print('Exception: $e');
+                              }
+
+                              setState(() {
+                                isSendingOTP = false;
+                              });
+                            },
+                            icon: isSendingOTP
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.white),
+                                      strokeWidth: 3,
+                                    ),
+                                  )
+                                : const Icon(
+                                    Icons.verified,
+                                    color: Colors.white,
+                                  ),
+                            label: const Text(
+                              "Verify Phone Number",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          );
                         },
-                        icon: Icon(
-                          Icons.verified,
-                          color: Colors.white,
-                        ),
-                        label: Text(
-                          "Verify Phone Number",
-                          style: TextStyle(color: Colors.white),
-                        ),
                       ),
                     ],
                   ),

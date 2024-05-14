@@ -172,7 +172,7 @@ class _OrderTrackingState extends State<OrderTracking> {
                       ),
                       if (dateTime != null)
                         Text(
-                          'Order Date: ${DateFormat('yyyy-MM-dd – kk:mm').format(dateTime!)}',
+                          'Order Date: ${DateFormat(' E,d MMM y | hh:mm a').format(dateTime!)}',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,

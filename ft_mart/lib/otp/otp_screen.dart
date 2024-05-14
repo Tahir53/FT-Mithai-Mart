@@ -25,6 +25,7 @@ class _OtpScreenState extends State<OtpScreen> {
   String enteredOtp = "";
   late String smsOTP;
   final _otpPinFieldKey = GlobalKey<OtpPinFieldState>();
+  bool isVerifyingOTP = false;
 
   @override
   Widget build(BuildContext context) {
@@ -108,29 +109,52 @@ class _OtpScreenState extends State<OtpScreen> {
                         height: screenHeight * 0.04,
                       ),
                       ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xff63131C),
-                          ),
-                          onPressed: () async {
-                            if (enteredOtp == widget.verificationId)
-                              widget.function();
-                            else {
-                              Fluttertoast.showToast(
-                                  msg: ("Invalid OTP"),
-                                  toastLength: Toast.LENGTH_SHORT,
-                                  gravity: ToastGravity.BOTTOM);
-                            }
-                          },
-                          icon: Icon(
-                            Icons.verified_outlined,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xff63131C),
+                        ),
+                        onPressed: isVerifyingOTP
+                            ? null
+                            : () async {
+                                setState(() {
+                                  isVerifyingOTP = true;
+                                });
+
+                                await Future.delayed(Duration(seconds: 2));
+
+                                if (enteredOtp == widget.verificationId)
+                                  widget.function();
+                                else {
+                                  Fluttertoast.showToast(
+                                      msg: ("Invalid OTP"),
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM);
+                                }
+
+                                setState(() {
+                                  isVerifyingOTP = false;
+                                });
+                              },
+                        icon: isVerifyingOTP
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
+                                  strokeWidth: 3,
+                                ),
+                              )
+                            : const Icon(
+                                Icons.verified_outlined,
+                                color: Colors.white,
+                              ),
+                        label: Text(
+                          "Verify OTP",
+                          style: TextStyle(
                             color: Colors.white,
                           ),
-                          label: Text(
-                            "Verify OTP",
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          )),
+                        ),
+                      ),
                     ],
                   ),
                 ),
