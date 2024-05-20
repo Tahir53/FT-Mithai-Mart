@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ftmithaimart/components/complaint_box.dart';
 import 'package:ftmithaimart/components/order_tracking.dart';
+import 'package:ftmithaimart/screens/chatbot/chat_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/authentication/login_page.dart';
 import 'about_us.dart';
@@ -123,6 +124,29 @@ class _CustomDrawerState extends State<CustomDrawer> {
                     MaterialPageRoute(
                         builder: (context) =>
                             OrderTracking(name: widget.name)));
+              },
+            ),
+          ),
+          const SizedBox(height: 10,),
+          Ink(
+            child: ListTile(
+              textColor: const Color(0xff801924),
+              contentPadding: const EdgeInsets.all(5),
+              leading: const Icon(
+                Icons.chat_bubble,
+                color: Color(0xff801924),
+              ),
+              title: const Text('Customer Service',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  )),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            ChatPage()));
               },
             ),
           ),

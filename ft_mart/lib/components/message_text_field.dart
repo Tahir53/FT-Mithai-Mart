@@ -8,7 +8,7 @@ class MessageTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.6, //304.0,
+      width: MediaQuery.of(context).size.width * 0.73, //304.0,
       height: MediaQuery.of(context).size.height * 0.049, //46.0,
       decoration: BoxDecoration(
         color: Colors.white,

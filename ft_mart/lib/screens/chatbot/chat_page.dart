@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ftmithaimart/components/message_text_field.dart';
 import 'package:ftmithaimart/components/reciever_message_container.dart';
-import 'package:ftmithaimart/components/search_data_tile.dart';
 import 'package:ftmithaimart/components/sender_message_container.dart';
-import 'package:ftmithaimart/model/cart_model.dart';
-import 'package:ftmithaimart/model/cart_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
-import 'package:kommunicate_flutter/kommunicate_flutter.dart';
 
 class ChatPage extends StatefulWidget {
   @override
@@ -17,17 +12,16 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   final TextEditingController messageController = TextEditingController();
 
-  List<String> senderMessages = [];
-  List<String> recieverMessages = [];
+  List<Map<String, String>> messages = [];
 
 
 
 
   sendMessagetoAPI(String message) async {
     print("send message function called");
-    print(message);
+    print("Message send to API: $message");
     final apiUrl = Uri.parse(
-        "https://rldd7tf8-5000.asse.devtunnels.ms/query?prompt=$message");
+        "https://b1c7-2400-adc1-11d-a700-ad98-c596-a4a6-352.ngrok-free.app/query?prompt=$message");
 
     try {
       final response = await http.get(apiUrl, headers: {
@@ -37,12 +31,18 @@ class _ChatPageState extends State<ChatPage> {
       if (response.statusCode == 200) {
         final res = response.body;
         print("response: $res");
-        setState(() {
-          senderMessages.add(res);
-          recieverMessages.add("Response");
-        });
+
+          var messageMap = {"sender" : message, "reciever" : res};
+          messages.add(messageMap);
+          print(messages);
+
+          setState(() {
+            
+          });
+
+
       } else {
-        print(response.statusCode);
+       print(response.statusCode);
       }
     } catch (e) {
       print("Error: $e");
@@ -51,12 +51,6 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    void updateCart(String product, String price, double quantity) {
-      print("updatecart");
-      Provider.of<CartProvider>(context, listen: false).addToCart(
-          Cart(productName: product, price: price, quantity: quantity));
-    }
-
     return Scaffold(
       backgroundColor: const Color(0xFFFFF8E6),
       body: Column(
@@ -134,46 +128,16 @@ class _ChatPageState extends State<ChatPage> {
           ),
           Expanded(
             child: ListView.builder(
-                itemCount: senderMessages.length,
+                itemCount: messages.length,
                 itemBuilder: (context, index) {
-                  if (index == 2) {
-                    return Column(
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.only(left: 10),
-                          child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                "Recommended Products",
-                                style: TextStyle(
-                                    color: Colors.black, fontSize: 15),
-                              )),
-                        ),
-                        SearchDataField(
-                            name: "Gulab Jaman",
-                            category: "Classic Sweets",
-                            price: "1200",
-                            image:
-                                "https://i.postimg.cc/zXKhGcGw/Gulaab-Jaman.jpg",
-                            stock: 44,
-                            description:
-                                "Indulge in the sweet nostalgia of our traditional recipe for “Gulaab Jamun”, these golden brown dumplings are made up of pure khoya, fried to perfection and lovingly dipped in fragrant sugar syrup.",
-                            discount: 0,
-                            onPopupMenuButtonPressed: updateCart),
-                      ],
-                    );
-                  }
-                  if (index % 2 == 0) {
-                    return SenderMessageContainer(
-                      message: senderMessages[index],
-                      timestamp: "0:300",
-                    );
-                  } else {
-                    return ReceiverMessageContainer(
-                      message: "hello",
-                      timestamp: "3:00",
-                    );
-                  }
+                  return Column(
+                    children: [
+                      SenderMessageContainer(message: messages[index]["sender"]!, timestamp: "00:00"),
+                      const SizedBox(height: 10,),
+                      ReceiverMessageContainer(message: messages[index]["reciever"]!, timestamp: "00:00")
+                    ],
+                  );
+                
                 }),
           ),
           Padding(
