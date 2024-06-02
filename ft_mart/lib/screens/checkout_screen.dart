@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:ftmithaimart/otp/phone_number/enter_number.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../components/cart_item_tile.dart';
+import '../components/map_screen.dart';
 import '../components/reciepts_screen.dart';
 import '../components/total_card.dart';
 import '../dbHelper/mongodb.dart';
@@ -43,8 +45,26 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   File? _receiptImage;
   String? _uploadedImageUrl;
   String? _paymentOption;
+  LatLng? _selectedLocation; // Add this line
 
-  Map payload = {};
+  void _openMapScreen() async {
+    final selectedLocation = await Navigator.push<LatLng>(
+      context,
+      MaterialPageRoute(builder: (context) => MapScreen(onLocationSelected: (LatLng location) {
+        setState(() {
+          _selectedLocation = location;
+        });
+      })),
+    );
+
+    if (selectedLocation != null) {
+      setState(() {
+        _selectedLocation = selectedLocation;
+        _addressController.text = 'Lat: ${selectedLocation.latitude}, Lng: ${selectedLocation.longitude}';
+      });
+    }
+  }
+
 
   void _checkout() async {
     List<String> productNames = [];
@@ -218,6 +238,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: TextField(
                             controller: _addressController,
+                            readOnly: true,
                             onChanged: (value) {
                               setState(() {
                                 _addressController.text = value;
@@ -236,6 +257,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
+                            onTap: _openMapScreen,
                           ),
                         ),
                         ListTile(

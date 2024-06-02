@@ -58,18 +58,45 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
     return filteredOptions.map((option) {
       return DropdownMenuItem<String>(
         value: option.name,
-        child: Row(
-          children: [
-            for (var imageUrl in option.imageUrls)
-              Image.network(
-                imageUrl,
-                width: 100,
-                height: 100,
-              ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(option.name),
+              for (var imageUrl in option.imageUrls)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Image.network(
+                    imageUrl,
+                    width: 100,
+                    height: 100,
+                  ),
+                ),
+            ],
+          ),
         ),
       );
     }).toList();
+  }
+
+  Widget _buildSelectedItem(String? selectedItem, String optionType) {
+    if (selectedItem == null) {
+      return Text('Select');
+    }
+
+    final selectedOption = _customizationOptions.firstWhere((option) => option.name == optionType && option.name == selectedItem);
+    return Row(
+      children: [
+        if (selectedOption.imageUrls.isNotEmpty)
+          Image.network(
+            selectedOption.imageUrls.first,
+            width: 50,
+            height: 50,
+          ),
+        SizedBox(width: 10),
+        Text(selectedItem),
+      ],
+    );
   }
 
   @override
@@ -98,11 +125,14 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Text("Box Customization",style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 24,
-            ),),
-            SizedBox(height: 20,),
+            Text(
+              "Box Customization",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              ),
+            ),
+            SizedBox(height: 20),
             // Display cart items with quantity and customization options
             ListView.builder(
               shrinkWrap: true,
@@ -126,7 +156,11 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
                           });
                         },
                         items: _buildDropdownItems('Box Design'),
-
+                        selectedItemBuilder: (BuildContext context) {
+                          return _selectedBoxDesigns.map<Widget>((String? item) {
+                            return _buildSelectedItem(item, 'Box Design');
+                          }).toList();
+                        },
                       ),
                     ),
                     ListTile(
@@ -139,6 +173,11 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
                           });
                         },
                         items: _buildDropdownItems('Wrapping Paper'),
+                        selectedItemBuilder: (BuildContext context) {
+                          return _selectedWrappingPapers.map<Widget>((String? item) {
+                            return _buildSelectedItem(item, 'Wrapping Paper');
+                          }).toList();
+                        },
                       ),
                     ),
                     ListTile(
@@ -151,6 +190,11 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
                           });
                         },
                         items: _buildDropdownItems('Ribbon'),
+                        selectedItemBuilder: (BuildContext context) {
+                          return _selectedRibbons.map<Widget>((String? item) {
+                            return _buildSelectedItem(item, 'Ribbon');
+                          }).toList();
+                        },
                       ),
                     ),
                     Divider(),
