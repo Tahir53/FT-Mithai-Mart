@@ -186,11 +186,12 @@ class _homepageState extends State<homepage> {
                   ] else if (cartProvider.items.isNotEmpty) ...[
                     displayCartSubTitles(),
                     displayCartItems(cartProvider),
+                    cartProvider.isCustomized ? Text("Your order is customized") : SizedBox.shrink(),
                     const Padding(padding: EdgeInsets.only(top: 40)),
                     SizedBox(
                       child: Column(
                         children: [
-                          ElevatedButton.icon(
+                          !cartProvider.isCustomized ? ElevatedButton.icon(
                             onPressed: () {
                               Navigator.push(
                                   context,
@@ -218,7 +219,7 @@ class _homepageState extends State<homepage> {
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                          ),
+                          ) : SizedBox.shrink(),
                           const Padding(padding: EdgeInsets.only(top: 20)),
                           ElevatedButton.icon(
                             onPressed: () {

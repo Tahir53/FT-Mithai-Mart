@@ -67,8 +67,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
 
   void _checkout() async {
+    print('in checkout');
     List<String> productNames = [];
     List<String> quantities = [];
+    print(widget.cartItems);
+
+    
+
     for (var item in widget.cartItems) {
       productNames.add(item.productName);
       quantities.add(item.formattedQuantity);
@@ -238,7 +243,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: TextField(
                             controller: _addressController,
-                            readOnly: true,
+                            // readOnly: true,
                             onChanged: (value) {
                               setState(() {
                                 _addressController.text = value;
@@ -257,7 +262,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                            onTap: _openMapScreen,
+                            // onTap: _openMapScreen,
                           ),
                         ),
                         ListTile(

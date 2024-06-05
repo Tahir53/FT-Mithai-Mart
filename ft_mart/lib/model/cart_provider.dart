@@ -5,8 +5,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class CartProvider extends ChangeNotifier {
   List<Cart> _items = [];
+  bool _isCustomized = false;
+  List _customizationOptions = [];
 
+  bool get isCustomized => _isCustomized;
   List<Cart> get items => _items;
+  List get customizationOptions => _customizationOptions;
+
+  void updateCustomize(){
+    _isCustomized = true;
+    notifyListeners();
+  }
+
+  void updateCustomizationOptions(List options){
+    _customizationOptions = options;
+    notifyListeners();
+  }
 
   void addToCart(Cart item) {
     print("add to cart called");
