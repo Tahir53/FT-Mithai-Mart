@@ -38,35 +38,40 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
     List<CustomizationOption> filteredOptions = [];
     if (optionType == 'Box') {
       filteredOptions = [
-        CustomizationOption(name: 'None', imageUrls: ['']),
+        CustomizationOption(name: 'None', value: 'None', imageUrls: ['']),
         CustomizationOption(
             name: 'Box Design 1',
+            value: 'bd1',
             imageUrls: ['https://i.ibb.co/LYqBTzf/box-1.jpg']),
         CustomizationOption(
             name: 'Box Design 2',
+            value: 'bd2',
             imageUrls: ['https://i.ibb.co/HrZpgKZ/box-2-removebg-preview.png']),
         CustomizationOption(
             name: 'Box Design 3',
+            value: 'bd3',
             imageUrls: ['https://i.ibb.co/VJByMNb/box-3.png'])
       ];
     } else if (optionType == 'Ribbon') {
       filteredOptions = [
-        CustomizationOption(name: 'None', imageUrls: ['']),
+        CustomizationOption(name: 'None',  value: 'None', imageUrls: ['']),
         CustomizationOption(
             name: 'Ribbon Design 1',
+            value: 'rb1',
             imageUrls: ['https://i.ibb.co/Smb4G4W/ribbon-1.png']),
       ];
     } else {
       filteredOptions = [
-        CustomizationOption(name: 'None', imageUrls: ['']),
+        CustomizationOption(name: 'None',value: 'None', imageUrls: ['']),
         CustomizationOption(
             name: 'Wrapping Design 1',
+            value: 'wd1',
             imageUrls: ['https://i.ibb.co/k3qbGg9/empty-cart.png']),
       ];
     }
     return filteredOptions.map((option) {
       return DropdownMenuItem<String>(
-        value: option.name,
+        value: option.value,
         child: Row(
           children: [
             Text(option.name),
@@ -98,7 +103,6 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
       customizationOptions.add({
         'productName': productName,
         designType: designID,
-        'cartItemID': index
       });
     }
 
@@ -140,6 +144,7 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
             ),
             const SizedBox(height: 20),
             ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: widget.cartItems.length,
               itemBuilder: (context, index) {

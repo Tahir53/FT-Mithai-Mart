@@ -1,24 +1,29 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:ftmithaimart/model/cart_model.dart';
+import 'package:ftmithaimart/model/order_design_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CartProvider extends ChangeNotifier {
   List<Cart> _items = [];
   bool _isCustomized = false;
-  List _customizationOptions = [];
+  List <OrderDesignModel> _customizationOptions= [];
 
   bool get isCustomized => _isCustomized;
   List<Cart> get items => _items;
-  List get customizationOptions => _customizationOptions;
+  List<OrderDesignModel> get customizationOptions => _customizationOptions;
 
   void updateCustomize(){
     _isCustomized = true;
     notifyListeners();
   }
-
+  
+  void resetCustomize(){
+    _isCustomized = false;
+    notifyListeners();
+  }
   void updateCustomizationOptions(List options){
-    _customizationOptions = options;
+    _customizationOptions = options.map((option) => OrderDesignModel.fromJson(option)).toList();
     notifyListeners();
   }
 

@@ -1,9 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:ftmithaimart/model/cart_provider.dart';
+import 'package:ftmithaimart/model/order_design_model.dart';
 import 'package:ftmithaimart/otp/phone_number/enter_number.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../components/cart_item_tile.dart';
 import '../components/map_screen.dart';
@@ -70,14 +73,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     print('in checkout');
     List<String> productNames = [];
     List<String> quantities = [];
-    print(widget.cartItems);
-
-    
+    // print(widget.cartItems);
 
     for (var item in widget.cartItems) {
       productNames.add(item.productName);
       quantities.add(item.formattedQuantity);
     }
+
+    List<OrderDesignModel> designs = Provider.of<CartProvider>(context, listen: false).customizationOptions;
+    bool isCustomized = designs.isNotEmpty ? true: false;
+    print(designs);
 
     Order order = Order(
       orderId: Order.generateOrderId(),
@@ -92,8 +97,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       quantities: quantities,
       payment: _paymentOption ?? "Cash on Delivery",
       receiptImagePath: _receiptImage != null ? _receiptImage!.path : null,
-      deviceToken: await PushNotifications.returnToken(),
+      // deviceToken: await PushNotifications.returnToken(),
+      deviceToken: "",
       status: 'In Process',
+      isVerified: true,
+      orderDesign: designs
+
     );
 
     await saveOrderToDatabase(order);
@@ -108,6 +117,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             cartItems: List<Cart>.from(widget.cartItems),
             orderDateTime: order.orderDateTime,
             totalAmount: widget.totalAmount,
+            isCustomized: isCustomized,
           ),
         ),
         (route) => false,
@@ -120,8 +130,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     MongoDatabase.saveOrder(order);
   }
 
-  @override
-  @override
   @override
   Widget build(BuildContext context) {
     final isNotLoggedIn = !widget.loggedIn;
