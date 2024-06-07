@@ -12,6 +12,7 @@ class ReceiptScreen extends StatefulWidget {
   final DateTime orderDateTime;
   final String name;
   final double totalAmount;
+  final bool isCustomized;
 
   const ReceiptScreen({
     Key? key,
@@ -20,6 +21,7 @@ class ReceiptScreen extends StatefulWidget {
     required this.orderDateTime,
     required this.name,
     required this.totalAmount,
+    required this.isCustomized
   }) : super(key: key);
 
   @override
@@ -155,11 +157,15 @@ class _ReceiptScreenState extends State<ReceiptScreen>
                       title: Text(
                           'Total Amount: Rs. ${widget.totalAmount.toStringAsFixed(2)}'),
                     ),
+                    const SizedBox(height: 10,),
+                    if (widget.isCustomized) const Text('Your order is customized', style: TextStyle(fontSize: 22, color: Colors.red),),
+                    const SizedBox(height: 10,),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xff63131C),
                       ),
                       onPressed: () {
+                         Provider.of<CartProvider>(context, listen: false).resetCustomize();
                         Provider.of<CartProvider>(context, listen: false)
                             .clearCart();
                         Navigator.pushReplacement(

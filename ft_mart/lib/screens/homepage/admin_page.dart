@@ -202,7 +202,7 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
   }
 
   Future<List<Order>> fetchCurrentOrders() async {
-    final List<Order> ? fetchedOrders = await MongoDatabase.getOrders();
+    final List<Order>? fetchedOrders = await MongoDatabase.getOrders();
     if (fetchedOrders != null) {
       return fetchedOrders
           .where((order) => order.status != 'Delivered')
@@ -426,6 +426,25 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
                       );
                     }),
                     SizedBox(height: 10),
+                    if (order.orderDesign!.isNotEmpty) ...[
+                      const Text('Order Designs:',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
+                      ...order.orderDesign!.map((design) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(design.productName!,
+                                style: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                            Text('Box Design: ${design.boxDesignID}'),
+                            Text('Ribbon Design: ${design.ribbonDesignID}'),
+                            Text('Wrapping Design: ${design.wrappingDesignID}'),
+                            const SizedBox(height: 10),
+                          ],
+                        );
+                      }).toList(),
+                    ],
                     ElevatedButton.icon(
                       onPressed: () {
                         MongoDatabase.deleteOrder(order.orderId);
@@ -467,7 +486,8 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
                 children: [
                   Text('${order.name}'),
                   Text(
-                    DateFormat(' E,d MMM y | hh:mm a').format(order.orderDateTime),
+                    DateFormat(' E,d MMM y | hh:mm a')
+                        .format(order.orderDateTime),
                   ),
                 ],
               ),

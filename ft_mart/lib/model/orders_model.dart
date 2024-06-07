@@ -1,3 +1,4 @@
+import 'package:ftmithaimart/model/order_design_model.dart';
 import 'package:intl/intl.dart';
 import 'dart:math';
 import 'cart_model.dart';
@@ -17,6 +18,8 @@ class Order {
   final String? receiptImagePath;
   final String deviceToken;
   late String status;
+  final bool? isVerified;
+  List<OrderDesignModel>? orderDesign;
 
   Order({
     required this.orderId,
@@ -33,6 +36,9 @@ class Order {
     required this.receiptImagePath,
     required this.deviceToken,
     required this.status,
+    this.isVerified,
+    this.orderDesign
+
   });
 
   Map<String, dynamic> toJson() {
@@ -51,10 +57,14 @@ class Order {
       'receiptImagePath': receiptImagePath,
       'deviceToken': deviceToken,
       'status': status, 
+      'isVerified': isVerified,
+      'orderDesign': (orderDesign != null) ? orderDesign?.map((design) => design.toJson()).toList() : null
     };
   }
 
   factory Order.fromJson(Map<String, dynamic> json) {
+    List orderDesigns = json['orderDesign'] ?? [];
+    List<OrderDesignModel> orderDesigns_ = orderDesigns.map((design) => OrderDesignModel.fromJson(design)).toList();
     return Order(
       orderId: json['orderId'],
       name: json['name'],
@@ -70,6 +80,8 @@ class Order {
       receiptImagePath: json['receiptImagePath'],
       deviceToken: json['deviceToken'],
       status: json['status'],
+      isVerified: json['isVerified'] ?? false,
+      orderDesign: orderDesigns_
     );
   }
 

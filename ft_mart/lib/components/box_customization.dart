@@ -1,102 +1,112 @@
-import 'package:flutter/material.dart';
-import 'package:ftmithaimart/model/cart_model.dart';
-import 'package:ftmithaimart/dbHelper/mongodb.dart';
+// ignore_for_file: prefer_const_constructors
 
+import 'package:flutter/material.dart';
+import 'package:ftmithaimart/components/box_dropdown.dart';
+import 'package:ftmithaimart/model/cart_model.dart';
+import 'package:ftmithaimart/model/cart_provider.dart';
+import 'package:provider/provider.dart';
 import '../model/box_model.dart';
 
 class BoxCustomizationPage extends StatefulWidget {
   final List<Cart> cartItems;
 
-  const BoxCustomizationPage({Key? key, required this.cartItems}) : super(key: key);
+  const BoxCustomizationPage({Key? key, required this.cartItems})
+      : super(key: key);
 
   @override
   _BoxCustomizationPageState createState() => _BoxCustomizationPageState();
 }
 
 class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
-  List<String?> _selectedBoxDesigns = [];
-  List<String?> _selectedWrappingPapers = [];
-  List<String?> _selectedRibbons = [];
-  List<CustomizationOption> _customizationOptions = [];
-  late Map<String, List<String>> _optionImages;
+  List<String> _selectedBoxDesigns = [];
+  List<String> selectedRibbonDesigns = [];
+  List<String> selectedWrappingDesign = [];
+  List customizationOptions = [];
 
   @override
   void initState() {
     super.initState();
-    if (widget.cartItems.isNotEmpty) {
-      _selectedBoxDesigns = List.generate(widget.cartItems.length, (index) => null);
-      _selectedWrappingPapers = List.generate(widget.cartItems.length, (index) => null);
-      _selectedRibbons = List.generate(widget.cartItems.length, (index) => null);
-    } else {
-      // Handle the case where cartItems is empty
-      print("Cart items is empty");
-    }
-    _fetchCustomizationOptions();
-  }
-
-  Future<void> _fetchCustomizationOptions() async {
-    try {
-      List<CustomizationOption> options = await MongoDatabase.getCustomizationOptions();
-      Map<String, List<String>> optionImages = {};
-
-      options.forEach((option) {
-        optionImages[option.name] = option.imageUrls;
-      });
-
-      setState(() {
-        _customizationOptions = options;
-        _optionImages = optionImages;
-      });
-    } catch (e) {
-      print("Error fetching customization options: $e");
-    }
+    _selectedBoxDesigns =
+        List.generate(widget.cartItems.length, (index) => 'None');
+    selectedRibbonDesigns =
+        List.generate(widget.cartItems.length, (index) => 'None');
+    selectedWrappingDesign =
+        List.generate(widget.cartItems.length, (index) => 'None');
   }
 
   List<DropdownMenuItem<String>> _buildDropdownItems(String optionType) {
-    List<CustomizationOption> filteredOptions = _customizationOptions.where((option) => option.name == optionType).toList();
-
+    List<CustomizationOption> filteredOptions = [];
+    if (optionType == 'Box') {
+      filteredOptions = [
+        CustomizationOption(name: 'None', value: 'None', imageUrls: ['']),
+        CustomizationOption(
+            name: 'Box Design 1',
+            value: 'bd1',
+            imageUrls: ['https://i.ibb.co/LYqBTzf/box-1.jpg']),
+        CustomizationOption(
+            name: 'Box Design 2',
+            value: 'bd2',
+            imageUrls: ['https://i.ibb.co/HrZpgKZ/box-2-removebg-preview.png']),
+        CustomizationOption(
+            name: 'Box Design 3',
+            value: 'bd3',
+            imageUrls: ['https://i.ibb.co/VJByMNb/box-3.png'])
+      ];
+    } else if (optionType == 'Ribbon') {
+      filteredOptions = [
+        CustomizationOption(name: 'None',  value: 'None', imageUrls: ['']),
+        CustomizationOption(
+            name: 'Ribbon Design 1',
+            value: 'rb1',
+            imageUrls: ['https://i.ibb.co/Smb4G4W/ribbon-1.png']),
+      ];
+    } else {
+      filteredOptions = [
+        CustomizationOption(name: 'None',value: 'None', imageUrls: ['']),
+        CustomizationOption(
+            name: 'Wrapping Design 1',
+            value: 'wd1',
+            imageUrls: ['https://i.ibb.co/k3qbGg9/empty-cart.png']),
+      ];
+    }
     return filteredOptions.map((option) {
       return DropdownMenuItem<String>(
-        value: option.name,
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(option.name),
-              for (var imageUrl in option.imageUrls)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Image.network(
-                    imageUrl,
-                    width: 70,
-                    height: 50,
-                  ),
-                ),
-            ],
-          ),
+        value: option.value,
+        child: Row(
+          children: [
+            Text(option.name),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: option.imageUrls[0] != ""
+                  ? Image.network(
+                      option.imageUrls[0],
+                      width: 50,
+                      height: 50,
+                    )
+                  : null,
+            ),
+          ],
         ),
       );
     }).toList();
   }
 
-  Widget _buildSelectedItem(String? selectedItem, String optionType) {
-    if (selectedItem == null) {
-      return Text('Select');
+  void updateCustomizationOption(
+      String productName, String designType, String designID, int index) {
+    int existingIndex = customizationOptions
+        .indexWhere((element) => element['productName'] == productName);
+
+    if (existingIndex != -1) {
+      customizationOptions[existingIndex][designType] = designID;
+    } else {
+      // Add a new entry if no existing entry found
+      customizationOptions.add({
+        'productName': productName,
+        designType: designID,
+      });
     }
 
-    final selectedOption = _customizationOptions.firstWhere((option) => option.name == optionType && option.name == selectedItem);
-    return Row(
-      children: [
-        if (selectedOption.imageUrls.isNotEmpty)
-          Image.network(
-            selectedOption.imageUrls.first,
-            width: 50,
-            height: 50,
-          ),
-        SizedBox(width: 10),
-        Text(selectedItem),
-      ],
-    );
+    print(customizationOptions);
   }
 
   @override
@@ -125,16 +135,16 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Text(
+            const Text(
               "Box Customization",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 24,
               ),
             ),
-            SizedBox(height: 20),
-            // Display cart items with quantity and customization options
+            const SizedBox(height: 20),
             ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: widget.cartItems.length,
               itemBuilder: (context, index) {
@@ -143,74 +153,49 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
                   children: [
                     ListTile(
                       title: Text(widget.cartItems[index].productName),
-                      subtitle: Text('Quantity: ${widget.cartItems[index].quantity}'),
+                      subtitle:
+                          Text('Quantity: ${widget.cartItems[index].quantity}'),
                     ),
-                    // Customization options for each item
-                    ListTile(
-                      title: Text('Box Design'),
-                      trailing: DropdownButton<String>(
-                        value: _selectedBoxDesigns[index],
-                        onChanged: (newValue) {
+                    BoxDropdown(
+                        title: 'Box Design',
+                        selectedValue: _selectedBoxDesigns[index],
+                        items: _buildDropdownItems('Box'),
+                        onChanged: (value) {
+                          updateCustomizationOption(widget.cartItems[index].productName, 'boxDesignID', value!, index);
                           setState(() {
-                            _selectedBoxDesigns[index] = newValue;
+                            _selectedBoxDesigns[index] = value!;
                           });
-                        },
-                        items: _buildDropdownItems('Box Design'),
-                        selectedItemBuilder: (BuildContext context) {
-                          return _selectedBoxDesigns.map<Widget>((String? item) {
-                            return _buildSelectedItem(item, 'Box Design');
-                          }).toList();
-                        },
-                      ),
-                    ),
-                    ListTile(
-                      title: Text('Wrapping Paper'),
-                      trailing: DropdownButton<String>(
-                        value: _selectedWrappingPapers[index],
-                        onChanged: (newValue) {
-                          setState(() {
-                            _selectedWrappingPapers[index] = newValue;
-                          });
-                        },
-                        items: _buildDropdownItems('Wrapping Paper'),
-                        selectedItemBuilder: (BuildContext context) {
-                          return _selectedWrappingPapers.map<Widget>((String? item) {
-                            return _buildSelectedItem(item, 'Wrapping Paper');
-                          }).toList();
-                        },
-                      ),
-                    ),
-                    ListTile(
-                      title: Text('Ribbon'),
-                      trailing: DropdownButton<String>(
-                        value: _selectedRibbons[index],
-                        onChanged: (newValue) {
-                          setState(() {
-                            _selectedRibbons[index] = newValue;
-                          });
-                        },
+                        }),
+                    BoxDropdown(
+                        title: 'Ribbon Design',
+                        selectedValue: selectedRibbonDesigns[index],
                         items: _buildDropdownItems('Ribbon'),
-                        selectedItemBuilder: (BuildContext context) {
-                          return _selectedRibbons.map<Widget>((String? item) {
-                            return _buildSelectedItem(item, 'Ribbon');
-                          }).toList();
-                        },
-                      ),
-                    ),
-                    Divider(),
+                        onChanged: (value) {
+                          updateCustomizationOption(widget.cartItems[index].productName, 'ribbonDesignID', value!, index);
+                          setState(() {
+                            selectedRibbonDesigns[index] = value!;
+                          });
+                        }),
+                    BoxDropdown(
+                        title: 'Wrapping Design',
+                        selectedValue: selectedWrappingDesign[index],
+                        items: _buildDropdownItems('Wrapping'),
+                        onChanged: (value) {
+                          updateCustomizationOption(widget.cartItems[index].productName, 'wrappingDesignID', value!, index);
+                          setState(() {
+                            selectedWrappingDesign[index] = value!;
+                          });
+                        }),
+                    const Divider(),
                   ],
                 );
               },
             ),
             ElevatedButton(
               onPressed: () {
-                // Proceed with customization
-                for (int i = 0; i < widget.cartItems.length; i++) {
-                  print('Item ${widget.cartItems[i].productName}: '
-                      'Box Design: ${_selectedBoxDesigns[i]}, '
-                      'Wrapping Paper: ${_selectedWrappingPapers[i]}, '
-                      'Ribbon: ${_selectedRibbons[i]}');
-                }
+                Navigator.of(context).pop();
+                Provider.of<CartProvider>(context, listen: false).updateCustomize();
+                Provider.of<CartProvider>(context, listen: false).updateCustomizationOptions(customizationOptions);
               },
               child: Text('Proceed with Customization'),
             ),
