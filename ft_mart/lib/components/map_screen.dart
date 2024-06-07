@@ -13,10 +13,10 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
-  Location _locationController = new Location();
+  Location _locationController = Location();
 
   final Completer<GoogleMapController> _mapController =
-  Completer<GoogleMapController>();
+      Completer<GoogleMapController>();
 
   static const LatLng _pGooglePlex = LatLng(37.4223, -122.0848);
   static const LatLng _pApplePark = LatLng(37.3346, -122.0090);
@@ -28,10 +28,10 @@ class _MapPageState extends State<MapPage> {
   void initState() {
     super.initState();
     getLocationUpdates().then(
-          (_) => {
+      (_) => {
         getPolylinePoints().then((coordinates) => {
-          generatePolyLineFromPoints(coordinates),
-        }),
+              generatePolyLineFromPoints(coordinates),
+            }),
       },
     );
   }
@@ -41,80 +41,94 @@ class _MapPageState extends State<MapPage> {
     return Scaffold(
       body: _currentP == null
           ? const Center(
-        child: Text("Loading..."),
-      )
+              child: Text("Loading..."),
+            )
           : GoogleMap(
-        onMapCreated: ((GoogleMapController controller) =>
-            _mapController.complete(controller)),
-        initialCameraPosition: CameraPosition(
-          target: _pGooglePlex,
-          zoom: 13,
-        ),
-        markers: {
-          Marker(
-            markerId: MarkerId("_currentLocation"),
-            icon: BitmapDescriptor.defaultMarker,
-            position: _currentP!,
-          ),
-          Marker(
-              markerId: MarkerId("_sourceLocation"),
-              icon: BitmapDescriptor.defaultMarker,
-              position: _pGooglePlex),
-          Marker(
-              markerId: MarkerId("_destionationLocation"),
-              icon: BitmapDescriptor.defaultMarker,
-              position: _pApplePark)
-        },
-        polylines: Set<Polyline>.of(polylines.values),
-      ),
+              onMapCreated: ((GoogleMapController controller) =>
+                  _mapController.complete(controller)),
+              initialCameraPosition: const CameraPosition(
+                target: _pGooglePlex,
+                zoom: 13,
+              ),
+              markers: {
+                Marker(
+                  markerId: const MarkerId("_currentLocation"),
+                  icon: BitmapDescriptor.defaultMarker,
+                  position: _currentP!,
+                ),
+                const Marker(
+                    markerId: MarkerId("_sourceLocation"),
+                    icon: BitmapDescriptor.defaultMarker,
+                    position: _pGooglePlex),
+                const Marker(
+                    markerId: MarkerId("_destionationLocation"),
+                    icon: BitmapDescriptor.defaultMarker,
+                    position: _pApplePark)
+              },
+              polylines: Set<Polyline>.of(polylines.values),
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (_currentP != null) {
             Navigator.pop(context, _currentP); // Pass coordinates back
           }
         },
-        child: Icon(Icons.check),
+        child: const Icon(Icons.check),
       ),
     );
   }
 
   Future<void> _cameraToPosition(LatLng pos) async {
     final GoogleMapController controller = await _mapController.future;
-    CameraPosition _newCameraPosition = CameraPosition(
+    CameraPosition newCameraPosition = CameraPosition(
       target: pos,
       zoom: 13,
     );
     await controller.animateCamera(
-      CameraUpdate.newCameraPosition(_newCameraPosition),
+      CameraUpdate.newCameraPosition(newCameraPosition),
     );
   }
 
+  // Future<void> getLocationUpdates() async {
+  //   bool serviceEnabled;
+  //   PermissionStatus permissionGranted;
+  //
+  //   serviceEnabled = await _locationController.serviceEnabled();
+  //   if (serviceEnabled) {
+  //     serviceEnabled = await _locationController.requestService();
+  //   } else {
+  //     return;
+  //   }
+  //
+  //   permissionGranted = await _locationController.hasPermission();
+  //   if (permissionGranted == PermissionStatus.denied) {
+  //     permissionGranted = await _locationController.requestPermission();
+  //     if (permissionGranted != PermissionStatus.granted) {
+  //       return;
+  //     }
+  //   }
+  //
+  //   _locationController.onLocationChanged
+  //       .listen((LocationData currentLocation) {
+  //     if (currentLocation.latitude != null &&
+  //         currentLocation.longitude != null) {
+  //       setState(() {
+  //         _currentP =
+  //             LatLng(currentLocation.latitude!, currentLocation.longitude!);
+  //         _cameraToPosition(_currentP!);
+  //       });
+  //     }
+  //   });
+  // }
+
   Future<void> getLocationUpdates() async {
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
-
-    _serviceEnabled = await _locationController.serviceEnabled();
-    if (_serviceEnabled) {
-      _serviceEnabled = await _locationController.requestService();
-    } else {
-      return;
-    }
-
-    _permissionGranted = await _locationController.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await _locationController.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
-        return;
-      }
-    }
-
-    _locationController.onLocationChanged
-        .listen((LocationData currentLocation) {
-      if (currentLocation.latitude != null &&
-          currentLocation.longitude != null) {
+    // Fetch rider's location updates instead of user's location updates
+    _locationController.onLocationChanged.listen((LocationData riderLocation) {
+      if (riderLocation.latitude != null && riderLocation.longitude != null) {
         setState(() {
-          _currentP =
-              LatLng(currentLocation.latitude!, currentLocation.longitude!);
+          _currentP = LatLng(riderLocation.latitude!, riderLocation.longitude!);
+          // Update the marker for the rider's location
+          // Optionally, you can center the map camera on the rider's location here
           _cameraToPosition(_currentP!);
         });
       }
@@ -131,17 +145,15 @@ class _MapPageState extends State<MapPage> {
       travelMode: TravelMode.driving,
     );
     if (result.points.isNotEmpty) {
-      result.points.forEach((PointLatLng point) {
+      for (var point in result.points) {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-      });
-    } else {
-      print(result.errorMessage);
-    }
+      }
+    } else {}
     return polylineCoordinates;
   }
 
   void generatePolyLineFromPoints(List<LatLng> polylineCoordinates) async {
-    PolylineId id = PolylineId("poly");
+    PolylineId id = const PolylineId("poly");
     Polyline polyline = Polyline(
         polylineId: id,
         color: Colors.black,

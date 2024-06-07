@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:ftmithaimart/components/map_screen.dart';
 import 'package:ftmithaimart/dbHelper/mongodb.dart';
 import 'package:intl/intl.dart';
 import '../model/orders_model.dart';
@@ -144,7 +145,6 @@ class _OrderTrackingState extends State<OrderTracking> {
               ),
             ),
             SizedBox(height: 16),
-
             if (orderId.isNotEmpty && orderedItems.isNotEmpty)
               Card(
                 elevation: 5,
@@ -194,7 +194,7 @@ class _OrderTrackingState extends State<OrderTracking> {
                         ),
                       ),
                       ...orderedItems.map(
-                            (item) => Padding(
+                        (item) => Padding(
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Text(item),
                         ),
@@ -230,6 +230,7 @@ class _OrderTrackingState extends State<OrderTracking> {
                           height: 200,
                           alignment: Alignment.center,
                         ),
+                      SizedBox(height: 10),
                       if (status == 'Delivered')
                         Image.network(
                           'https://i.ibb.co/VN46xt2/delivered.gif',

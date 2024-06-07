@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ftmithaimart/model/cart_provider.dart';
 import 'package:ftmithaimart/model/order_design_model.dart';
 import 'package:ftmithaimart/otp/phone_number/enter_number.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -54,7 +55,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void _openMapScreen() async {
     final LatLng? result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => MapPage()),
+      MaterialPageRoute(builder: (context) => const MapPage()),
     );
 
     if (result != null) {
@@ -63,11 +64,27 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         _latitude = result.latitude;
         _longitude = result.longitude;
       });
+
+      // Convert coordinates to a human-readable address
+      try {
+        List<Placemark> placemarks =
+            await placemarkFromCoordinates(result.latitude, result.longitude);
+        if (placemarks.isNotEmpty) {
+          Placemark place = placemarks[0];
+          String address =
+              "${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
+
+          setState(() {
+            _addressController.text = address;
+          });
+        }
+      } catch (e) {
+        // Handle any errors that occur during geocoding
+      }
     }
   }
 
   void _checkout() async {
-    print('in checkout');
     List<String> productNames = [];
     List<String> quantities = [];
     // print(widget.cartItems);
@@ -80,7 +97,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     List<OrderDesignModel> designs =
         Provider.of<CartProvider>(context, listen: false).customizationOptions;
     bool isCustomized = designs.isNotEmpty ? true : false;
-    print(designs);
 
     Order order = Order(
         orderId: Order.generateOrderId(),
@@ -94,7 +110,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         productNames: productNames,
         quantities: quantities,
         payment: _paymentOption ?? "Cash on Delivery",
-        receiptImagePath: _receiptImage != null ? _receiptImage!.path : null,
+        receiptImagePath: _receiptImage?.path,
         deviceToken: await PushNotifications.returnToken(),
         status: 'In Process',
         isVerified: true,
@@ -132,7 +148,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final isNotLoggedIn = !widget.loggedIn;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF63131C),
+        backgroundColor: const Color(0xFF63131C),
         iconTheme: const IconThemeData(color: Colors.white),
         toolbarHeight: 100,
         shape: const RoundedRectangleBorder(
@@ -154,15 +170,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Padding(padding: EdgeInsets.only(top: 10)),
-            Text(
+            const Padding(padding: EdgeInsets.only(top: 10)),
+            const Text(
               "Checkout",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 24,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
@@ -185,7 +201,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 radioTheme: RadioThemeData(
                   fillColor: MaterialStateColor.resolveWith((states) {
                     if (states.contains(MaterialState.selected)) {
-                      return Color(0xff63131C);
+                      return const Color(0xff63131C);
                     }
                     return Colors.grey;
                   }),
@@ -194,7 +210,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               child: Column(
                 children: [
                   ListTile(
-                    title: Text('Delivery'),
+                    title: const Text('Delivery'),
                     leading: Radio(
                       value: 'delivery',
                       groupValue: _deliveryPickupGroupValue(),
@@ -229,12 +245,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 });
                               },
                               decoration: InputDecoration(
-                                focusedBorder: OutlineInputBorder(
+                                focusedBorder: const OutlineInputBorder(
                                   borderSide: BorderSide(
                                       width: 2, color: Color(0xff63131C)),
                                 ),
                                 labelText: "Enter Your Name",
-                                labelStyle: TextStyle(
+                                labelStyle: const TextStyle(
                                   color: Color(0xff63131C),
                                 ),
                                 border: OutlineInputBorder(
@@ -243,44 +259,63 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               ),
                             ),
                           ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 20),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: TextField(
-                            controller: _addressController,
-                            // readOnly: true,
-                            onChanged: (value) {
-                              setState(() {
-                                _addressController.text = value;
-                              });
-                            },
-                            decoration: InputDecoration(
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 2, color: Color(0xff63131C)),
+                          child: Column(
+                            children: [
+                              TextField(
+                                readOnly: true,
+                                controller: _addressController,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _addressController.text = value;
+                                  });
+                                },
+                                decoration: InputDecoration(
+                                  focusedBorder: const OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        width: 2, color: Color(0xff63131C)),
+                                  ),
+                                  labelText: "Address For Delivery",
+                                  labelStyle: const TextStyle(
+                                    color: Color(0xff63131C),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
                               ),
-                              labelText: "Enter Address For Delivery",
-                              labelStyle: TextStyle(
-                                color: Color(0xff63131C),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  TextButton(
+                                    onPressed: _openMapScreen,
+                                    child: const Text(
+                                      "Get Location",
+                                      style: TextStyle(
+                                        color: Color(0xff63131C),
+                                        fontWeight: FontWeight.bold,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            onTap: _openMapScreen,
+                            ],
                           ),
                         ),
                         ListTile(
-                          leading: Icon(Icons.calendar_today),
+                          leading: const Icon(Icons.calendar_today),
                           // Custom leading icon
-                          title: Text(
+                          title: const Text(
                             'Select Delivery Date and Time',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
                           ),
-                          trailing: Icon(Icons.arrow_forward),
+                          trailing: const Icon(Icons.arrow_forward),
                           // Custom trailing icon
                           onTap: () {
                             _showDateTimePicker();
@@ -294,46 +329,46 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 color: Colors.grey[200],
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              padding: EdgeInsets.all(16),
+                              padding: const EdgeInsets.all(16),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
+                                  const Text(
                                     'Delivery Details:',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  SizedBox(height: 10),
+                                  const SizedBox(height: 10),
                                   Text(
                                     'Delivery Date and Time: ${DateFormat(' E, d MMM y hh:mm a').format(_pickupDateTime!)}',
-                                    style: TextStyle(fontSize: 16),
+                                    style: const TextStyle(fontSize: 16),
                                   ),
-                                  SizedBox(height: 10),
+                                  const SizedBox(height: 10),
                                   Text(
                                     'Name: ${isNotLoggedIn ? _nameController.text : widget.name}',
-                                    style: TextStyle(fontSize: 16),
+                                    style: const TextStyle(fontSize: 16),
                                   ),
-                                  SizedBox(height: 10),
+                                  const SizedBox(height: 10),
                                   Text(
                                     'Delivery Address: ${_addressController.text}',
-                                    style: TextStyle(fontSize: 16),
+                                    style: const TextStyle(fontSize: 16),
                                   ),
-                                  SizedBox(height: 10),
+                                  const SizedBox(height: 10),
                                   if (_paymentOption != null)
                                     Text(
-                                      'Payment Mode: ${_paymentOption}',
-                                      style: TextStyle(fontSize: 16),
+                                      'Payment Mode: $_paymentOption',
+                                      style: const TextStyle(fontSize: 16),
                                     ),
-                                  SizedBox(height: 10),
+                                  const SizedBox(height: 10),
                                   if (_paymentOption == 'EasyPaisa' &&
                                       _uploadedImageUrl != null)
                                     GestureDetector(
                                       onTap: () {
                                         launchUrl(_uploadedImageUrl! as Uri);
                                       },
-                                      child: Text(
+                                      child: const Text(
                                         'Uploaded Receipt',
                                         style: TextStyle(
                                           color: Color(0xff63131C),
@@ -352,7 +387,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             padding: const EdgeInsets.all(16.0),
                             child: Row(
                               children: [
-                                Text('Payment Method: '),
+                                const Text('Payment Method: '),
                                 DropdownButton<String>(
                                   value: _paymentOption,
                                   onChanged: (String? value) {
@@ -381,19 +416,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Transfer Money to: 03152630887'),
+                                const Text('Transfer Money to: 03152630887'),
                                 ElevatedButton(
                                   onPressed: () {
                                     _uploadReceiptImage();
                                   },
-                                  child: Text('Upload Receipt Image'),
+                                  child: const Text('Upload Receipt Image'),
                                 ),
                                 if (_uploadedImageUrl != null) ...[
                                   GestureDetector(
                                     onTap: () {
                                       launchUrl(_uploadedImageUrl! as Uri);
                                     },
-                                    child: Text(
+                                    child: const Text(
                                       'Uploaded Receipt',
                                       style: TextStyle(
                                           color: Color(0xff63131C),
@@ -408,7 +443,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ),
                   ),
                   ListTile(
-                    title: Text('Pickup'),
+                    title: const Text('Pickup'),
                     leading: Radio(
                       value: 'pickup',
                       groupValue: _deliveryPickupGroupValue(),
@@ -433,7 +468,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       padding: const EdgeInsets.all(16.0),
                       child: Text(
                         'Pickup Details: ${DateFormat(' E,d MMM y hh:mm a').format(_pickupDateTime!)}',
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -448,12 +483,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           });
                         },
                         decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
+                          focusedBorder: const OutlineInputBorder(
                             borderSide:
                                 BorderSide(width: 2, color: Color(0xff63131C)),
                           ),
                           labelText: "Enter Your Name",
-                          labelStyle: TextStyle(
+                          labelStyle: const TextStyle(
                             color: Color(0xff63131C),
                           ),
                           border: OutlineInputBorder(
@@ -462,18 +497,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         ),
                       ),
                     ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xff63131C),
+                      backgroundColor: const Color(0xff63131C),
                       fixedSize: const Size(200, 40),
                     ),
                     onPressed: () {
                       if (!_forDelivery && !_forPickup) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
+                          const SnackBar(
                             content: Text(
                                 'Please select either "Delivery" or "Pickup" option.'),
                             backgroundColor: Color(0xff63131C),
@@ -496,7 +531,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       }
                       if (_forPickup && _pickupDateTime == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
+                          const SnackBar(
                             content:
                                 Text('Please select pickup date and time.'),
                             backgroundColor: Color(0xff63131C),
@@ -506,7 +541,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       }
                       if (_forDelivery && _paymentOption == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
+                          const SnackBar(
                             content: Text('Please select a payment method.'),
                             backgroundColor: Color(0xff63131C),
                           ),
@@ -523,11 +558,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             ),
                           ));
                     },
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.delivery_dining,
                       color: Colors.white,
                     ),
-                    label: Text(
+                    label: const Text(
                       'Place Order',
                       style: TextStyle(
                         color: Colors.white,
@@ -585,7 +620,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           });
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Text(
                 'Orders cannot be placed for previous timings, before 12 PM, or after 8 PM!',
               ),
@@ -623,7 +658,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   Future<void> _sendInAppNotification(String orderId) async {
     await PushNotifications.returnToken();
-    final notificationTitle = 'Order Placed';
+    const notificationTitle = 'Order Placed';
     final notificationBody =
         'Your order with ID $orderId has been successfully placed.';
 
