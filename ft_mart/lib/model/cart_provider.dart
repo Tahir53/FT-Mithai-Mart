@@ -13,8 +13,8 @@ class CartProvider extends ChangeNotifier {
   List<Cart> get items => _items;
   List<OrderDesignModel> get customizationOptions => _customizationOptions;
 
-  void updateCustomize(){
-    _isCustomized = true;
+  void updateCustomize(bool isCustomized) {
+    _isCustomized = isCustomized;
     notifyListeners();
   }
   
@@ -63,4 +63,6 @@ class CartProvider extends ChangeNotifier {
     _items.clear();
     notifyListeners();
   }
+
+
 }

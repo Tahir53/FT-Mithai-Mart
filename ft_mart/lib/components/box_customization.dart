@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:flutter/material.dart';
 import 'package:ftmithaimart/components/box_dropdown.dart';
 import 'package:ftmithaimart/model/cart_model.dart';
@@ -39,34 +37,44 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
     if (optionType == 'Box') {
       filteredOptions = [
         CustomizationOption(name: 'None', value: 'None', imageUrls: ['']),
-        CustomizationOption(
-            name: 'Box Design 1',
-            value: 'bd1',
-            imageUrls: ['https://i.ibb.co/LYqBTzf/box-1.jpg']),
-        CustomizationOption(
-            name: 'Box Design 2',
-            value: 'bd2',
-            imageUrls: ['https://i.ibb.co/HrZpgKZ/box-2-removebg-preview.png']),
-        CustomizationOption(
-            name: 'Box Design 3',
-            value: 'bd3',
-            imageUrls: ['https://i.ibb.co/VJByMNb/box-3.png'])
+        CustomizationOption(name: 'Box Design 1', value: 'B001', imageUrls: [
+          'https://i.ibb.co/L6MG7t8/images-3-removebg-preview.png'
+        ]),
+        CustomizationOption(name: 'Box Design 2', value: 'B002', imageUrls: [
+          'https://i.ibb.co/GVC1Mqx/images-2-removebg-preview.png'
+        ]),
+        CustomizationOption(name: 'Box Design 3', value: 'B003', imageUrls: [
+          'https://i.ibb.co/RgT040t/images-removebg-preview-1.png'
+        ])
       ];
-    } else if (optionType == 'Ribbon') {
+    } else if (optionType == 'Wrapping') {
       filteredOptions = [
-        CustomizationOption(name: 'None',  value: 'None', imageUrls: ['']),
+        CustomizationOption(name: 'None', value: 'None', imageUrls: ['']),
         CustomizationOption(
-            name: 'Ribbon Design 1',
-            value: 'rb1',
-            imageUrls: ['https://i.ibb.co/Smb4G4W/ribbon-1.png']),
+            name: 'Wrapping Design 1',
+            value: 'W001',
+            imageUrls: [
+              'https://i.ibb.co/55NqNq1/360-F-398328530-52-Lds-Nr-Qa-K6-Lntac64t-TQzoo-Sai7-Pqj-K-removebg-preview.png'
+            ]),
+        CustomizationOption(
+            name: 'Wrapping Design 2',
+            value: 'W002',
+            imageUrls: [
+              'https://i.ibb.co/k2CsmFw/images-1-removebg-preview.png'
+            ]),
       ];
     } else {
       filteredOptions = [
-        CustomizationOption(name: 'None',value: 'None', imageUrls: ['']),
-        CustomizationOption(
-            name: 'Wrapping Design 1',
-            value: 'wd1',
-            imageUrls: ['https://i.ibb.co/k3qbGg9/empty-cart.png']),
+        CustomizationOption(name: 'None', value: 'None', imageUrls: ['']),
+        CustomizationOption(name: 'Ribbon Design 1', value: 'R001', imageUrls: [
+          'https://i.ibb.co/JcFcGyD/free-grosgrain-ribbon-mockup-psd-template-removebg-preview.png'
+        ]),
+        CustomizationOption(name: 'Ribbon Design 2', value: 'R002', imageUrls: [
+          'https://i.ibb.co/5kFf8cm/cfe670eec012b437c7025ed43c3b3fc8-removebg-preview.png'
+        ]),
+        CustomizationOption(name: 'Ribbon Design 3', value: 'R003', imageUrls: [
+          'https://i.ibb.co/fCjdHKK/images-removebg-preview.png'
+        ]),
       ];
     }
     return filteredOptions.map((option) {
@@ -80,8 +88,8 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
               child: option.imageUrls[0] != ""
                   ? Image.network(
                       option.imageUrls[0],
-                      width: 50,
-                      height: 50,
+                      width: 40,
+                      height: 70,
                     )
                   : null,
             ),
@@ -154,50 +162,75 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
                     ListTile(
                       title: Text(widget.cartItems[index].productName),
                       subtitle:
-                          Text('Quantity: ${widget.cartItems[index].quantity}'),
+                          Text('Quantity: ${widget.cartItems[index].quantity} kgs'),
                     ),
                     BoxDropdown(
                         title: 'Box Design',
                         selectedValue: _selectedBoxDesigns[index],
                         items: _buildDropdownItems('Box'),
                         onChanged: (value) {
-                          updateCustomizationOption(widget.cartItems[index].productName, 'boxDesignID', value!, index);
+                          updateCustomizationOption(
+                              widget.cartItems[index].productName,
+                              'boxDesignID',
+                              value!,
+                              index);
                           setState(() {
                             _selectedBoxDesigns[index] = value!;
                           });
                         }),
-                    BoxDropdown(
-                        title: 'Ribbon Design',
-                        selectedValue: selectedRibbonDesigns[index],
-                        items: _buildDropdownItems('Ribbon'),
-                        onChanged: (value) {
-                          updateCustomizationOption(widget.cartItems[index].productName, 'ribbonDesignID', value!, index);
-                          setState(() {
-                            selectedRibbonDesigns[index] = value!;
-                          });
-                        }),
+
                     BoxDropdown(
                         title: 'Wrapping Design',
                         selectedValue: selectedWrappingDesign[index],
                         items: _buildDropdownItems('Wrapping'),
                         onChanged: (value) {
-                          updateCustomizationOption(widget.cartItems[index].productName, 'wrappingDesignID', value!, index);
+                          updateCustomizationOption(
+                              widget.cartItems[index].productName,
+                              'wrappingDesignID',
+                              value!,
+                              index);
                           setState(() {
                             selectedWrappingDesign[index] = value!;
                           });
                         }),
+
+                    BoxDropdown(
+                        title: 'Ribbon Design',
+                        selectedValue: selectedRibbonDesigns[index],
+                        items: _buildDropdownItems('Ribbon'),
+                        onChanged: (value) {
+                          updateCustomizationOption(
+                              widget.cartItems[index].productName,
+                              'ribbonDesignID',
+                              value!,
+                              index);
+                          setState(() {
+                            selectedRibbonDesigns[index] = value!;
+                          });
+                        }),
+
                     const Divider(),
                   ],
                 );
               },
             ),
-            ElevatedButton(
+            ElevatedButton.icon(
               onPressed: () {
                 Navigator.of(context).pop();
-                Provider.of<CartProvider>(context, listen: false).updateCustomize();
-                Provider.of<CartProvider>(context, listen: false).updateCustomizationOptions(customizationOptions);
+                Provider.of<CartProvider>(context, listen: false).updateCustomize(true);
+                Provider.of<CartProvider>(context, listen: false)
+                    .updateCustomizationOptions(customizationOptions);
               },
-              child: Text('Proceed with Customization'),
+              icon: Icon(
+                Icons.logout_outlined,
+                color: Color(0xFF63131C),
+              ),
+              label: Text(
+                'Proceed with Customization',
+                style: TextStyle(
+                  color: Color(0xFF63131C),
+                ),
+              ),
             ),
           ],
         ),

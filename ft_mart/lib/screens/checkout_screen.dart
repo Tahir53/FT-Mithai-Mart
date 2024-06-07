@@ -48,26 +48,23 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   File? _receiptImage;
   String? _uploadedImageUrl;
   String? _paymentOption;
-  LatLng? _selectedLocation; // Add this line
+  double? _latitude;
+  double? _longitude;
 
   void _openMapScreen() async {
-    final selectedLocation = await Navigator.push<LatLng>(
+    final LatLng? result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => MapScreen(onLocationSelected: (LatLng location) {
-        setState(() {
-          _selectedLocation = location;
-        });
-      })),
+      MaterialPageRoute(builder: (context) => MapPage()),
     );
 
-    if (selectedLocation != null) {
+    if (result != null) {
+      // Store latitude and longitude in separate variables
       setState(() {
-        _selectedLocation = selectedLocation;
-        _addressController.text = 'Lat: ${selectedLocation.latitude}, Lng: ${selectedLocation.longitude}';
+        _latitude = result.latitude;
+        _longitude = result.longitude;
       });
     }
   }
-
 
   void _checkout() async {
     print('in checkout');
@@ -80,30 +77,30 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       quantities.add(item.formattedQuantity);
     }
 
-    List<OrderDesignModel> designs = Provider.of<CartProvider>(context, listen: false).customizationOptions;
-    bool isCustomized = designs.isNotEmpty ? true: false;
+    List<OrderDesignModel> designs =
+        Provider.of<CartProvider>(context, listen: false).customizationOptions;
+    bool isCustomized = designs.isNotEmpty ? true : false;
     print(designs);
 
     Order order = Order(
-      orderId: Order.generateOrderId(),
-      cartItems: widget.cartItems,
-      totalAmount: widget.totalAmount,
-      orderDateTime: _pickupDateTime ?? DateTime.now(),
-      deliveryAddress: _forDelivery ? _addressController.text : "Pickup",
-      name: widget.loggedIn ? widget.name ?? "user" : _nameController.text,
-      email: widget.email ?? "no email",
-      contact: widget.contact ?? "no contact",
-      productNames: productNames,
-      quantities: quantities,
-      payment: _paymentOption ?? "Cash on Delivery",
-      receiptImagePath: _receiptImage != null ? _receiptImage!.path : null,
-      // deviceToken: await PushNotifications.returnToken(),
-      deviceToken: "",
-      status: 'In Process',
-      isVerified: true,
-      orderDesign: designs
-
-    );
+        orderId: Order.generateOrderId(),
+        cartItems: widget.cartItems,
+        totalAmount: widget.totalAmount,
+        orderDateTime: _pickupDateTime ?? DateTime.now(),
+        deliveryAddress: _forDelivery ? _addressController.text : "Pickup",
+        name: widget.loggedIn ? widget.name ?? "user" : _nameController.text,
+        email: widget.email ?? "no email",
+        contact: widget.contact ?? "no contact",
+        productNames: productNames,
+        quantities: quantities,
+        payment: _paymentOption ?? "Cash on Delivery",
+        receiptImagePath: _receiptImage != null ? _receiptImage!.path : null,
+        deviceToken: await PushNotifications.returnToken(),
+        status: 'In Process',
+        isVerified: true,
+        orderDesign: designs,
+        lat: _latitude,
+        long: _longitude);
 
     await saveOrderToDatabase(order);
 
@@ -270,7 +267,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                            // onTap: _openMapScreen,
+                            onTap: _openMapScreen,
                           ),
                         ),
                         ListTile(
@@ -384,7 +381,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Transfer Money to: 0300XXXXXXX'),
+                                Text('Transfer Money to: 03152630887'),
                                 ElevatedButton(
                                   onPressed: () {
                                     _uploadReceiptImage();
@@ -600,7 +597,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     }
   }
 
-
   String? _deliveryPickupGroupValue() {
     if (_forDelivery) {
       return 'delivery';
@@ -648,79 +644,6 @@ double calculateTotal(List<Cart> items) {
   }
   return total;
 }
-
-// class JazzCash extends StatefulWidget {
-//   const JazzCash({super.key});
-//
-//   @override
-//   State<JazzCash> createState() => _JazzCashState();
-// }
-//
-// class _JazzCashState extends State<JazzCash> {
-//
-//   String paymentStatus = "pending";
-//   ProductModel productModel = ProductModel("Product 1", "100");
-//   String integritySalt= "81uc45cu80";
-//   String merchantID= "MC92142";
-//   String merchantPassword = "yf2su410d5";
-//   String transactionUrl= 'https://sandbox.jazzcash.com.pk/ApplicationAPI/API/Payment/DoTransaction';
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text("JazzCash Flutter Example"),
-//       ),
-//       body: Center(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             Text("Product Name : ${productModel.productName}"),
-//             Text("Product Price : ${productModel.productPrice}"),
-//             ElevatedButton(onPressed: () {
-//               _payViaJazzCash(productModel, context);
-//             }, child: const Text("Purchase Now !"))
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-//
-//   Future<void> _payViaJazzCash(ProductModel product, BuildContext context) async {
-//     try {
-//       JazzCashFlutter jazzCashFlutter = JazzCashFlutter(
-//         merchantId: merchantID,
-//         merchantPassword: merchantPassword,
-//         integritySalt: integritySalt,
-//         isSandbox: true,
-//       );
-//
-//       DateTime date = DateTime.now();
-//
-//       JazzCashPaymentDataModelV1 paymentDataModelV1 = JazzCashPaymentDataModelV1(
-//         ppAmount: '${product.productPrice}',
-//         ppBillReference: 'refbill${date.year}${date.month}${date.day}${date.hour}${date.millisecond}',
-//         ppDescription: 'Product details ${product.productName} - ${product.productPrice}',
-//         ppMerchantID: merchantID,
-//         ppPassword: merchantPassword,
-//         ppReturnURL: transactionUrl,
-//       );
-//
-//       await jazzCashFlutter.startPayment(paymentDataModelV1: paymentDataModelV1, context: context);
-//
-//       setState(() {
-//         paymentStatus = "success"; // Update payment status if payment is successful
-//       });
-//     } catch (err) {
-//       print("Error in payment $err");
-//       // Handle error here
-//       setState(() {
-//         paymentStatus = "failed"; // Update payment status if payment fails
-//       });
-//     }
-//   }
-//
-// }
 
 class ProductModel {
   String? productName;

@@ -21,7 +21,7 @@ class ReceiptScreen extends StatefulWidget {
     required this.orderDateTime,
     required this.name,
     required this.totalAmount,
-    required this.isCustomized
+    required this.isCustomized,
   }) : super(key: key);
 
   @override
@@ -154,24 +154,39 @@ class _ReceiptScreenState extends State<ReceiptScreen>
                       },
                     ),
                     ListTile(
-                      title: Text(
-                          'Total Amount: Rs. ${widget.totalAmount.toStringAsFixed(2)}'),
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Total Amount: Rs. ${widget.totalAmount.toStringAsFixed(2)}',
+                          ),
+                          if (widget.isCustomized)
+                            Text(
+                              'Free Customization Availed!',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 10,),
-                    if (widget.isCustomized) const Text('Your order is customized', style: TextStyle(fontSize: 22, color: Colors.red),),
-                    const SizedBox(height: 10,),
+                    const SizedBox(height: 10),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xff63131C),
                       ),
                       onPressed: () {
-                         Provider.of<CartProvider>(context, listen: false).resetCustomize();
+                        Provider.of<CartProvider>(context, listen: false)
+                            .resetCustomize();
                         Provider.of<CartProvider>(context, listen: false)
                             .clearCart();
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => OrderTracking(name: widget.name),
+                            builder: (context) =>
+                                OrderTracking(name: widget.name),
                           ),
                         );
                       },

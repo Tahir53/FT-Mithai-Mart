@@ -20,6 +20,8 @@ class Order {
   late String status;
   final bool? isVerified;
   List<OrderDesignModel>? orderDesign;
+  final double? long;
+  final double? lat;
 
   Order({
     required this.orderId,
@@ -37,7 +39,9 @@ class Order {
     required this.deviceToken,
     required this.status,
     this.isVerified,
-    this.orderDesign
+    this.orderDesign,
+    required this.long,
+    required this.lat,
 
   });
 
@@ -58,7 +62,9 @@ class Order {
       'deviceToken': deviceToken,
       'status': status, 
       'isVerified': isVerified,
-      'orderDesign': (orderDesign != null) ? orderDesign?.map((design) => design.toJson()).toList() : null
+      'orderDesign': (orderDesign != null) ? orderDesign?.map((design) => design.toJson()).toList() : null,
+      'long': long,
+      'lat': lat
     };
   }
 
@@ -81,7 +87,9 @@ class Order {
       deviceToken: json['deviceToken'],
       status: json['status'],
       isVerified: json['isVerified'] ?? false,
-      orderDesign: orderDesigns_
+      orderDesign: orderDesigns_,
+      long: json['long'],
+      lat: json['lat']
     );
   }
 

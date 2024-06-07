@@ -93,7 +93,7 @@ class _homepageState extends State<homepage> {
           try {
             dynamic conversationObject = {
               'appId': '11a65db28cf0b097c521704aba3748e24'
-                  //'1ab9cf22e8c3fd473afac209140745943'
+              //'1ab9cf22e8c3fd473afac209140745943'
             };
             dynamic result = await KommunicateFlutterPlugin.buildConversation(
                 conversationObject);
@@ -158,115 +158,120 @@ class _homepageState extends State<homepage> {
       drawer: CustomDrawer(
           name: widget.name, email: widget.email, contact: widget.contact),
       endDrawer: Drawer(
-          backgroundColor: const Color(0xFFFFF8E6),
-          child:
-              Consumer<CartProvider>(builder: (context, cartProvider, child) {
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  const DrawerHeader(
-                    child: Text(
-                      'CART',
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.underline,
-                        decorationColor: Colors.black87,
-                      ),
+        backgroundColor: const Color(0xFFFFF8E6),
+        child: Consumer<CartProvider>(builder: (context, cartProvider, child) {
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                const DrawerHeader(
+                  child: Text(
+                    'CART',
+                    style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.underline,
+                      decorationColor: Colors.black87,
                     ),
                   ),
-                  if (cartProvider.items.isEmpty) ...[
-                    Image.network(
-                      "https://i.ibb.co/k3qbGg9/empty-cart.png",
-                      height: 100,
-                      width: 50,
-                    ),
-                    const Text("Your Cart is Empty!"),
-                  ] else if (cartProvider.items.isNotEmpty) ...[
-                    displayCartSubTitles(),
-                    displayCartItems(cartProvider),
-                    cartProvider.isCustomized ? Text("Your order is customized") : SizedBox.shrink(),
-                    const Padding(padding: EdgeInsets.only(top: 40)),
-                    SizedBox(
-                      child: Column(
-                        children: [
-                          !cartProvider.isCustomized ? ElevatedButton.icon(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          BoxCustomizationPage(cartItems: cartProvider.items)));
-                            },
-                            icon: const Icon(
-                              Icons.dashboard_customize_outlined,
-                              size: 24.0,
-                              color: Colors.black,
-                            ),
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xffffC937),
-                                fixedSize: const Size(270, 55),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                )),
-                            label: const Text(
-                              "Customize Your Boxes",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ) : SizedBox.shrink(),
-                          const Padding(padding: EdgeInsets.only(top: 20)),
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => CheckoutScreen(
-                                    cartItems: cartProvider.items,
-                                    totalAmount:
-                                        _calculateTotal(cartProvider.items),
-                                    name: widget.name,
-                                    email: widget.email,
-                                    contact: widget.contact,
-                                    loggedIn: widget.email != null,
-                                  ),
-                                ),
-                              );
-                            },
-                            icon: const Icon(
-                              Icons.shopping_cart_checkout,
-                              size: 24.0,
-                              color: Colors.black,
-                            ),
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xffffC937),
-                                fixedSize: const Size(270, 55),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                )),
-                            label: const Text(
-                              "Proceed To Checkout",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
+                ),
+                if (cartProvider.items.isEmpty) ...[
+                  Image.network(
+                    "https://i.ibb.co/k3qbGg9/empty-cart.png",
+                    height: 100,
+                    width: 50,
+                  ),
+                  const Text("Your Cart is Empty!"),
+                ] else if (cartProvider.items.isNotEmpty) ...[
+                  displayCartSubTitles(),
+                  displayCartItems(cartProvider),
+                  cartProvider.isCustomized
+                      ? Text("Your order is customized")
+                      : SizedBox.shrink(),
+                  const Padding(padding: EdgeInsets.only(top: 40)),
+                  SizedBox(
+                    child: Column(
+                      children: [
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => BoxCustomizationPage(
+                                      cartItems: cartProvider.items)),
+                            );
+                          },
+                          icon: const Icon(
+                            Icons.dashboard_customize_outlined,
+                            size: 24.0,
+                            color: Colors.black,
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xffffC937),
+                            fixedSize: const Size(270, 55),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                        ],
-                      ),
-                    )
-                  ],
+                          label: const Text(
+                            "Customize Your Boxes",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        const Padding(padding: EdgeInsets.only(top: 20)),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CheckoutScreen(
+                                  cartItems: cartProvider.items,
+                                  totalAmount:
+                                      _calculateTotal(cartProvider.items),
+                                  name: widget.name,
+                                  email: widget.email,
+                                  contact: widget.contact,
+                                  loggedIn: widget.email != null,
+                                ),
+                              ),
+                            );
+                          },
+                          icon: const Icon(
+                            Icons.shopping_cart_checkout,
+                            size: 24.0,
+                            color: Colors.black,
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xffffC937),
+                            fixedSize: const Size(270, 55),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          label: const Text(
+                            "Proceed To Checkout",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
                 ],
-              ),
-            );
-          })),
+              ],
+            ),
+          );
+        }),
+      ),
       body: ListView(
         controller: _scrollController,
         children: [

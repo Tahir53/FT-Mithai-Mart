@@ -71,6 +71,13 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
             'Order Ready For Delivery',
             'Your order with ID $orderId is ready for delivery!\nRider on the Way! Track now.');
       }
+      else if (newStatus == 'Delivered') {
+        await PushNotifications.sendNotification(
+            orderId,
+            order.deviceToken,
+            'Delivered!',
+            'Your order with ID $orderId is Delivered!\nEnjoy!');
+      }
     }
   }
 
@@ -238,9 +245,9 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
     }).toList();
 
     final Map<String, double> totalSalesPerDay =
-        calculateTotalSalesPerDay(selectedWeekOrders);
+    calculateTotalSalesPerDay(selectedWeekOrders);
     final Map<String, int> totalOrdersPerDay =
-        calculateTotalOrdersPerDay(selectedWeekOrders);
+    calculateTotalOrdersPerDay(selectedWeekOrders);
 
     final List<Color> fixedColors = [
       Colors.red,
@@ -253,7 +260,7 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
     ];
 
     final List<PieChartSectionData> pieChartSections =
-        List.generate(7, (index) {
+    List.generate(7, (index) {
       if (index < selectedWeekOrders.length) {
         final day = DateFormat('yyyy-MM-dd')
             .format(selectedWeekOrders[index].orderDateTime);
@@ -275,6 +282,10 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
         );
       }
     });
+
+    final DateTime firstDayOfWeek = DateTime(selectedYear, 1, 1)
+        .add(Duration(days: (selectedWeek - 1) * 7));
+    final String monthName = DateFormat('MMMM').format(firstDayOfWeek);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -302,7 +313,7 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
               },
             ),
             const SizedBox(
-              width: 130,
+              width: 100,
             ),
             DropdownButton<int>(
               icon: const Icon(
@@ -311,11 +322,24 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
               ),
               value: selectedWeek,
               items: List.generate(52, (index) {
+                final weekNumber = index + 1;
+                final DateTime firstDayOfWeek = DateTime(selectedYear, 1, 1)
+                    .add(Duration(days: (weekNumber - 1) * 7));
+                final String monthName = DateFormat('MMMM').format(firstDayOfWeek);
                 return DropdownMenuItem<int>(
-                  value: index + 1,
-                  child: Text(
-                    'Week ${index + 1}',
-                    style: const TextStyle(color: Color(0xff63131C)),
+                  value: weekNumber,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Week $weekNumber',
+                        style: const TextStyle(color: Color(0xff63131C)),
+                      ),
+                      Text(
+                        '($monthName)',
+                        style: const TextStyle(color: Color(0xff63131C)),
+                      ),
+                    ],
                   ),
                 );
               }),
@@ -324,7 +348,7 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
                   selectedWeek = value!;
                 });
               },
-            ),
+            )
           ],
         ),
         SizedBox(
@@ -346,24 +370,41 @@ class _adminState extends State<admin> with SingleTickerProviderStateMixin {
                 DataColumn(label: Text('Date')),
                 DataColumn(label: Text('Total Sales')),
               ],
-              rows: List.generate(7, (index) {
-                final day = DateFormat('yyyy-MM-dd').format(
-                    DateTime(selectedYear, 1, 1)
-                        .add(Duration(days: (selectedWeek - 1) * 7 + index)));
-                final sales = totalSalesPerDay[day] ?? 0.0;
-                return DataRow(
+              rows: [
+                ...List.generate(7, (index) {
+                  final day = DateFormat('yyyy-MM-dd').format(
+                      DateTime(selectedYear, 1, 1)
+                          .add(Duration(days: (selectedWeek - 1) * 7 + index)));
+                  final sales = totalSalesPerDay[day] ?? 0.0;
+                  return DataRow(
+                    cells: [
+                      DataCell(Text(day)),
+                      DataCell(Text('Rs.${sales.toStringAsFixed(2)}')),
+                    ],
+                  );
+                }),
+                DataRow(
                   cells: [
-                    DataCell(Text(day)),
-                    DataCell(Text('Rs.${sales.toStringAsFixed(2)}')),
+                    DataCell(Text('Total Sales')),
+                    DataCell(Text(
+                        'Rs.${List.generate(7, (index) {
+                          final day = DateFormat('yyyy-MM-dd').format(
+                              DateTime(selectedYear, 1, 1)
+                                  .add(Duration(days: (selectedWeek - 1) * 7 + index)));
+                          return totalSalesPerDay[day] ?? 0.0;
+                        }).reduce((a, b) => a + b).toStringAsFixed(2)}'
+                    )),
                   ],
-                );
-              }),
+                ),
+              ],
             ),
           ),
-        ),
+        )
+
       ],
     );
   }
+
 
   int getIsoWeekNumber(DateTime date) {
     // Calculate ISO week number
