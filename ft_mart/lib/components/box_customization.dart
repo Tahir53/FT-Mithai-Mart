@@ -68,8 +68,8 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                   child: Image.network(
                     imageUrl,
-                    width: 100,
-                    height: 100,
+                    width: 70,
+                    height: 50,
                   ),
                 ),
             ],
