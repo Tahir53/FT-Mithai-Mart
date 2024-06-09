@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class MessageTile extends StatelessWidget {
-
   AlignmentGeometry alignment;
-  MessageTile({this.alignment = Alignment.topLeft});
+
+  MessageTile({super.key, this.alignment = Alignment.topLeft});
+
   @override
   Widget build(BuildContext context) {
     return Align(

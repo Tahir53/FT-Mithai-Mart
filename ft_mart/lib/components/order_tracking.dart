@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:ftmithaimart/components/map_screen.dart';
+import 'package:ftmithaimart/components/rider_map.dart';
 import 'package:ftmithaimart/dbHelper/mongodb.dart';
 import 'package:intl/intl.dart';
 import '../model/orders_model.dart';
@@ -54,7 +54,7 @@ class _OrderTrackingState extends State<OrderTracking> {
                   order.deliveryAddress!.toLowerCase() != "pickup")
               ? "Delivery"
               : "Pickup";
-          dateTime = order.orderDateTime!;
+          dateTime = order.orderDateTime;
         });
         isValidOrder = true;
         break;
@@ -82,8 +82,8 @@ class _OrderTrackingState extends State<OrderTracking> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
-        backgroundColor: Color(0xFF63131C),
+        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: const Color(0xFF63131C),
         toolbarHeight: 100,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -112,7 +112,7 @@ class _OrderTrackingState extends State<OrderTracking> {
             TextField(
               decoration: InputDecoration(
                 labelText: 'Enter Order ID',
-                labelStyle: TextStyle(color: Color(0xff63131C)),
+                labelStyle: const TextStyle(color: Color(0xff63131C)),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -128,15 +128,15 @@ class _OrderTrackingState extends State<OrderTracking> {
                 });
               },
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Center(
               child: ElevatedButton.icon(
                 onPressed: _trackOrder,
-                icon: Icon(
+                icon: const Icon(
                   Icons.track_changes_rounded,
                   color: Color(0xFF63131C),
                 ),
-                label: Text(
+                label: const Text(
                   "Track Order",
                   style: TextStyle(
                     color: Color(0xFF63131C),
@@ -144,7 +144,7 @@ class _OrderTrackingState extends State<OrderTracking> {
                 ),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             if (orderId.isNotEmpty && orderedItems.isNotEmpty)
               Card(
                 elevation: 5,
@@ -156,16 +156,16 @@ class _OrderTrackingState extends State<OrderTracking> {
                     children: [
                       Text(
                         'Order ID: $orderId',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Divider(color: Color(0xFF63131C)),
-                      SizedBox(height: 10),
+                      const Divider(color: Color(0xFF63131C)),
+                      const SizedBox(height: 10),
                       Text(
-                        'Name: ${name}' ?? widget.name,
-                        style: TextStyle(
+                        'Name: ${name}',
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -173,20 +173,20 @@ class _OrderTrackingState extends State<OrderTracking> {
                       if (dateTime != null)
                         Text(
                           'Order Date: ${DateFormat(' E,d MMM y | hh:mm a').format(dateTime!)}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       Text(
                         'Order Type: $orderType',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 10),
-                      Text(
+                      const SizedBox(height: 10),
+                      const Text(
                         'Ordered Items:',
                         style: TextStyle(
                           fontSize: 16,
@@ -199,16 +199,15 @@ class _OrderTrackingState extends State<OrderTracking> {
                           child: Text(item),
                         ),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Text(
                         'Total Amount: Rs.${totalAmount.toStringAsFixed(2)}',
-                        // Display total amount
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       if (status == 'In Process')
                         Image.network(
                           'https://i.ibb.co/grjzWpj/confirmed.gif',
@@ -224,13 +223,43 @@ class _OrderTrackingState extends State<OrderTracking> {
                           alignment: Alignment.center,
                         ),
                       if (status == 'Ready for Delivery')
-                        Image.network(
-                          'https://i.ibb.co/51gcgkg/delivery.gif',
-                          width: 200,
-                          height: 200,
-                          alignment: Alignment.center,
+                        Column(
+                          children: [
+                            Image.network(
+                              'https://i.ibb.co/51gcgkg/delivery.gif',
+                              width: 200,
+                              height: 200,
+                              alignment: Alignment.center,
+                            ),
+                            const SizedBox(height: 10),
+                            Center(
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const RiderMap(),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(
+                                  Icons.location_on,
+                                  color: Colors.white,
+                                ),
+                                label: const Text(
+                                  "Track Rider",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF63131C),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       if (status == 'Delivered')
                         Image.network(
                           'https://i.ibb.co/VN46xt2/delivered.gif',
@@ -238,10 +267,10 @@ class _OrderTrackingState extends State<OrderTracking> {
                           height: 200,
                           alignment: Alignment.center,
                         ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Text(
                         'Status: $status',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),

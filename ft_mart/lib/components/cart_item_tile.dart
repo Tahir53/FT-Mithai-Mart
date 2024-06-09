@@ -19,7 +19,7 @@ class CartItemTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Color(0xff801924),
+      color: const Color(0xff801924),
       elevation: 5,
       margin: const EdgeInsets.all(8.0),
       child: Padding(
@@ -30,27 +30,27 @@ class CartItemTile extends StatelessWidget {
             Expanded(
               child: Text(
                 productName,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                 ),
               ),
             ),
-            SizedBox(width: 40),
+            const SizedBox(width: 40),
             Expanded(
               child: Text(
                 '$formattedQuantity kgs',
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white),
               ),
             ),
             Text(
               'Rs.$price',
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             if (showDeleteIcon) // Conditionally show delete icon
               GestureDetector(
                 onTap: () => onTapDelete(),
-                child: Icon(
+                child: const Icon(
                   Icons.remove_circle_outline_rounded,
                   color: Colors.white,
                 ),

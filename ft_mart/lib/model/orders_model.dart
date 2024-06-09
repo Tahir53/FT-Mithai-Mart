@@ -42,7 +42,6 @@ class Order {
     this.orderDesign,
     required this.long,
     required this.lat,
-
   });
 
   Map<String, dynamic> toJson() {
@@ -60,9 +59,11 @@ class Order {
       'payment': payment,
       'receiptImagePath': receiptImagePath,
       'deviceToken': deviceToken,
-      'status': status, 
+      'status': status,
       'isVerified': isVerified,
-      'orderDesign': (orderDesign != null) ? orderDesign?.map((design) => design.toJson()).toList() : null,
+      'orderDesign': (orderDesign != null)
+          ? orderDesign?.map((design) => design.toJson()).toList()
+          : null,
       'long': long,
       'lat': lat
     };
@@ -70,30 +71,35 @@ class Order {
 
   factory Order.fromJson(Map<String, dynamic> json) {
     List orderDesigns = json['orderDesign'] ?? [];
-    List<OrderDesignModel> orderDesigns_ = orderDesigns.map((design) => OrderDesignModel.fromJson(design)).toList();
+    List<OrderDesignModel> orderDesigns_ = orderDesigns
+        .map((design) => OrderDesignModel.fromJson(design))
+        .toList();
     return Order(
-      orderId: json['orderId'],
-      name: json['name'],
-      email: json['email'],
-      contact: json['contact'],
-      cartItems: (json['cartItems'] as List<dynamic>).map((item) => Cart.fromJson(item)).toList(),
-      totalAmount: json['totalAmount'],
-      orderDateTime: DateFormat('yyyy-MM-dd HH:mm:ss').parse(json['orderDateTime']),
-      deliveryAddress: json['deliveryAddress'],
-      payment: json['payment'],
-      productNames: (json['productNames'] as List<dynamic>).cast<String>(),
-      quantities: (json['quantities'] as List<dynamic>).cast<String>(),
-      receiptImagePath: json['receiptImagePath'],
-      deviceToken: json['deviceToken'],
-      status: json['status'],
-      isVerified: json['isVerified'] ?? false,
-      orderDesign: orderDesigns_,
-      long: json['long'],
-      lat: json['lat']
-    );
+        orderId: json['orderId'],
+        name: json['name'],
+        email: json['email'],
+        contact: json['contact'],
+        cartItems: (json['cartItems'] as List<dynamic>)
+            .map((item) => Cart.fromJson(item))
+            .toList(),
+        totalAmount: json['totalAmount'],
+        orderDateTime:
+            DateFormat('yyyy-MM-dd HH:mm:ss').parse(json['orderDateTime']),
+        deliveryAddress: json['deliveryAddress'],
+        payment: json['payment'],
+        productNames: (json['productNames'] as List<dynamic>).cast<String>(),
+        quantities: (json['quantities'] as List<dynamic>).cast<String>(),
+        receiptImagePath: json['receiptImagePath'],
+        deviceToken: json['deviceToken'],
+        status: json['status'],
+        isVerified: json['isVerified'] ?? false,
+        orderDesign: orderDesigns_,
+        long: json['long'],
+        lat: json['lat']);
   }
 
-  static Set<String> generatedOrderIds = Set<String>();
+  static Set<String> generatedOrderIds = <String>{};
+
   static String generateOrderId() {
     Random random = Random();
     String orderId;

@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ftmithaimart/otp/phone_number/enter_number.dart';
 import 'package:otp_pin_field/otp_pin_field.dart';
@@ -10,7 +8,7 @@ class OtpScreen extends StatefulWidget {
   final Function() function;
   final String phoneNo;
 
-  OtpScreen({
+  const OtpScreen({
     Key? key,
     required this.verificationId,
     required this.function,
@@ -76,8 +74,8 @@ class _OtpScreenState extends State<OtpScreen> {
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
                       color: Colors.white,
-                      boxShadow: [
-                        const BoxShadow(
+                      boxShadow: const [
+                        BoxShadow(
                           color: Colors.grey,
                           offset: Offset(0.0, 1.0), //(x,y)
                           blurRadius: 6.0,
@@ -92,8 +90,8 @@ class _OtpScreenState extends State<OtpScreen> {
                         margin: EdgeInsets.only(left: screenWidth * 0.025),
                         child: OtpPinField(
                           key: _otpPinFieldKey,
-                          keyboardType:
-                              TextInputType.numberWithOptions(decimal: false),
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: false),
                           textInputAction: TextInputAction.done,
                           maxLength: 6,
                           fieldWidth: 30,
@@ -110,7 +108,7 @@ class _OtpScreenState extends State<OtpScreen> {
                       ),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xff63131C),
+                          backgroundColor: const Color(0xff63131C),
                         ),
                         onPressed: isVerifyingOTP
                             ? null
@@ -119,11 +117,12 @@ class _OtpScreenState extends State<OtpScreen> {
                                   isVerifyingOTP = true;
                                 });
 
-                                await Future.delayed(Duration(seconds: 2));
+                                await Future.delayed(
+                                    const Duration(seconds: 2));
 
-                                if (enteredOtp == widget.verificationId)
+                                if (enteredOtp == widget.verificationId) {
                                   widget.function();
-                                else {
+                                } else {
                                   Fluttertoast.showToast(
                                       msg: ("Invalid OTP"),
                                       toastLength: Toast.LENGTH_SHORT,
@@ -148,7 +147,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                 Icons.verified_outlined,
                                 color: Colors.white,
                               ),
-                        label: Text(
+                        label: const Text(
                           "Verify OTP",
                           style: TextStyle(
                             color: Colors.white,
@@ -158,7 +157,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     ],
                   ),
                 ),
-                Padding(padding: EdgeInsets.only(top: 10)),
+                const Padding(padding: EdgeInsets.only(top: 10)),
                 TextButton(
                   onPressed: () {
                     Navigator.pushReplacement(

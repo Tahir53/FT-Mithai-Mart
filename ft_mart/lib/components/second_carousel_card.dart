@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 class SecondCarouselCard extends StatelessWidget {
   final ScrollController? scrollController;
 
-  SecondCarouselCard({this.scrollController});
+  const SecondCarouselCard({super.key, this.scrollController});
 
   @override
   Widget build(BuildContext context) {

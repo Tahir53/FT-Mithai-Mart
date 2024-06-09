@@ -54,7 +54,7 @@ class _MessageState extends State<Message> {
               'assets/Logo.png',
               height: 200,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             const Text(
               'Limited Time Offer!',
               style: TextStyle(
@@ -74,7 +74,7 @@ class _MessageState extends State<Message> {
             const SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xff801924),
+                  backgroundColor: const Color(0xff801924),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   )),

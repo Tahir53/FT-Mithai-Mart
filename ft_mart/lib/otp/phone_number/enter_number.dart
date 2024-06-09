@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -73,8 +71,8 @@ class _EnterNumberState extends State<EnterNumber> {
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
                       color: Colors.white,
-                      boxShadow: [
-                        const BoxShadow(
+                      boxShadow: const [
+                        BoxShadow(
                           color: Colors.grey,
                           offset: Offset(0.0, 1.0), //(x,y)
                           blurRadius: 6.0,
@@ -96,11 +94,11 @@ class _EnterNumberState extends State<EnterNumber> {
                               child: TextField(
                                 decoration: InputDecoration(
                                   prefixText: '92',
-                                  prefixStyle: TextStyle(
+                                  prefixStyle: const TextStyle(
                                       color: Colors.black87, fontSize: 16),
                                   labelText: 'Contact Number',
                                   labelStyle:
-                                      TextStyle(color: Color(0xff63131C)),
+                                      const TextStyle(color: Color(0xff63131C)),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
@@ -108,7 +106,7 @@ class _EnterNumberState extends State<EnterNumber> {
                                     borderSide: BorderSide(
                                         width: 2, color: Color(0xff63131C)),
                                   ),
-                                  prefixIcon: Icon(
+                                  prefixIcon: const Icon(
                                     Icons.phone,
                                     color: Color(0xff63131C),
                                   ),
@@ -130,7 +128,7 @@ class _EnterNumberState extends State<EnterNumber> {
                         builder: (BuildContext context, StateSetter setState) {
                           return ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xff63131C),
+                              backgroundColor: const Color(0xff63131C),
                             ),
                             onPressed: () async {
                               if (phoneController.text.isEmpty) {
@@ -162,8 +160,6 @@ class _EnterNumberState extends State<EnterNumber> {
                                 );
 
                                 if (response.statusCode == 200) {
-                                  print(
-                                      'Message SID: ${json.decode(response.body)['message_sid']}');
                                   Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
@@ -182,9 +178,7 @@ class _EnterNumberState extends State<EnterNumber> {
                                     gravity: ToastGravity.BOTTOM,
                                   );
                                 }
-                              } catch (e) {
-                                print('Exception: $e');
-                              }
+                              } catch (e) {}
 
                               setState(() {
                                 isSendingOTP = false;
@@ -216,14 +210,13 @@ class _EnterNumberState extends State<EnterNumber> {
                 ),
                 TextButton(
                     onPressed: () {
-                      print('here');
                       widget.function();
                       // Navigator.push(
                       //     context,
                       //     MaterialPageRoute(
                       //         builder: (context) => widget.function()));
                     },
-                    child: Text("Skip"))
+                    child: const Text("Skip"))
               ],
             ),
           ),

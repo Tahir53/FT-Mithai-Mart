@@ -25,6 +25,7 @@ class CheckoutScreen extends StatefulWidget {
   final String? email;
   final String? contact;
   final bool loggedIn;
+  final bool? iscustomized;
 
   const CheckoutScreen({
     Key? key,
@@ -34,6 +35,7 @@ class CheckoutScreen extends StatefulWidget {
     required this.email,
     required this.contact,
     required this.loggedIn,
+    this.iscustomized
   }) : super(key: key);
 
   @override
@@ -59,13 +61,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
 
     if (result != null) {
-      // Store latitude and longitude in separate variables
       setState(() {
         _latitude = result.latitude;
         _longitude = result.longitude;
       });
 
-      // Convert coordinates to a human-readable address
       try {
         List<Placemark> placemarks =
             await placemarkFromCoordinates(result.latitude, result.longitude);
@@ -79,7 +79,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           });
         }
       } catch (e) {
-        // Handle any errors that occur during geocoding
       }
     }
   }
@@ -87,7 +86,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void _checkout() async {
     List<String> productNames = [];
     List<String> quantities = [];
-    // print(widget.cartItems);
 
     for (var item in widget.cartItems) {
       productNames.add(item.productName);
@@ -192,6 +190,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   onTapDelete: () {},
                 );
               },
+            ),
+            Visibility(
+              visible: widget.iscustomized ?? false,
+              child: Text(
+                'Customized',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Color(0xff63131C),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
             // Display Total Amount
             TotalCard(formattedTotal: widget.totalAmount.toString()),
@@ -529,7 +538,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         );
                         return;
                       }
-                      if (_forPickup && _pickupDateTime == null) {
+                      if (_forPickup ==null){//&& _pickupDateTime == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content:
@@ -629,8 +638,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           );
         }
       }
+    } else {
+      // Display toast for Sunday
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Apologies, we don\'t take orders on Sundays.',
+          ),
+          backgroundColor: Color(0xff63131C),
+        ),
+      );
     }
   }
+
 
   String? _deliveryPickupGroupValue() {
     if (_forDelivery) {

@@ -35,7 +35,6 @@ class MongoDatabase {
 
       return result != null;
     } catch (e) {
-      print("Error in validateSecurityAnswer: $e");
       return false;
     }
   }
@@ -53,15 +52,12 @@ class MongoDatabase {
       } else {
         return "Something wrong while adding data";
       }
-    } catch (e) {
-      print(e.toString());
-    }
+    } catch (e) {}
     return "";
   }
 
   static Future<Map<String, dynamic>> getData(
       String email, String password) async {
-    print("getdata() called in mongodb");
     final arrData = await userCollection.findOne({"email": email});
     // print(arrData);
     if (arrData != null) {
@@ -103,26 +99,19 @@ class MongoDatabase {
   }
 
   static Future<void> deleteComplaint(String complaintid) async {
-    print('Deleting complaint with ID: $complaintid');
     await db
         .collection('complaints')
         .remove(where.id(ObjectId.parse(complaintid)));
-    print('Complaint deleted successfully.');
   }
 
   static Future<void> updateComplaint(
       ObjectId complaintId, bool notified) async {
-    final collection = db.collection('complaints');
-    final selector = where.id(complaintId);
-    final modifier = {
-      r'$set': {'notified': notified}
-    };
-    final result = await collection.update(selector, modifier);
-    print('Complaint updated: ${result["nModified"]} document(s) modified');
+    db.collection('complaints');
+    where.id(complaintId);
   }
 
   static Future<List<Product>> getProducts() async {
-    final int maxRetries = 3;
+    const int maxRetries = 3;
     int retryCount = 0;
     List<Product> products = [];
 
@@ -133,7 +122,6 @@ class MongoDatabase {
         products = productsData.map((data) => Product.fromJson(data)).toList();
         break;
       } catch (error) {
-        print("Error fetching products: $error");
         products = [];
         retryCount++;
         await Future.delayed(const Duration(seconds: 2));
@@ -159,9 +147,7 @@ class MongoDatabase {
   static Future<void> insertProduct(Product product) async {
     try {
       await productsCollection.insertOne(product.toJson());
-    } catch (e) {
-      print('Error inserting product: $e');
-    }
+    } catch (e) {}
   }
 
   static Future<void> deleteProduct(String productId) async {
@@ -183,15 +169,13 @@ class MongoDatabase {
     try {
       var cartCollection = db.collection('cart');
       await cartCollection.insert(product.toJson());
-    } catch (e) {
-      print('Error adding to cart: $e');
-    }
+    } catch (e) {}
   }
 
   static Future<List<Map<String, Object?>>> searchProducts(String query) async {
     final DbCollection products = db.collection('products');
     final cursor =
-        await products.find(where.match('name', query, caseInsensitive: true));
+        products.find(where.match('name', query, caseInsensitive: true));
 
     final List<Map<String, Object?>> results = await cursor.toList();
 
@@ -207,7 +191,6 @@ class MongoDatabase {
         await ordersCollection.find().toList();
     final List<Order> orders =
         ordersJson.map((json) => Order.fromJson(json)).toList();
-    print('Fetched orders: $orders');
     return orders;
   }
 
@@ -223,15 +206,12 @@ class MongoDatabase {
   }
 
   static decreaseStock(String productName) async {
-    print("stock depleted in mongodb");
     try {
       await productsCollection.update(
         where.eq('name', productName),
         modify.inc('stock', -1),
       );
-    } catch (e) {
-      print("Error in decreaseStock: $e");
-    }
+    } catch (e) {}
   }
 
   static getStock(String productName) async {
@@ -239,22 +219,17 @@ class MongoDatabase {
       final product =
           await productsCollection.findOne(where.eq('name', productName));
       return product['stock'];
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
     return 0;
   }
 
   static addStock(String productName) {
-    print("stock added in mongodb");
     try {
       productsCollection.update(
         where.eq('name', productName),
         modify.inc('stock', 1),
       );
-    } catch (e) {
-      print("Error in addStock: $e");
-    }
+    } catch (e) {}
   }
 
   // Add a discount for a product
@@ -291,8 +266,10 @@ class MongoDatabase {
 
   static Future<List<CustomizationOption>> getCustomizationOptions() async {
     final collection = db.collection('customization');
-    final List<Map<String, dynamic>> jsonOptions = await collection.find().toList();
-    return jsonOptions.map((json) => CustomizationOption.fromJson(json)).toList();
+    final List<Map<String, dynamic>> jsonOptions =
+        await collection.find().toList();
+    return jsonOptions
+        .map((json) => CustomizationOption.fromJson(json))
+        .toList();
   }
-
 }

@@ -1,19 +1,18 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:ftmithaimart/dbHelper/mongodb.dart';
-import 'package:ftmithaimart/model/customer_model.dart';
 import 'package:ftmithaimart/push_notifications.dart';
 import "package:mongo_dart/mongo_dart.dart" as M;
 import 'login_page.dart';
 
 class signup extends StatefulWidget {
+  const signup({super.key});
+
   @override
   State<signup> createState() => _signupState();
 }
 
 class _signupState extends State<signup> {
+  @override
   void initState() {
     super.initState();
     emailController.addListener(validateEmail);
@@ -75,7 +74,7 @@ class _signupState extends State<signup> {
             ),
             child: Column(
               children: [
-                Padding(padding: EdgeInsets.only(top: 25)),
+                const Padding(padding: EdgeInsets.only(top: 25)),
                 const Row(
                   children: [
                     Text(
@@ -104,6 +103,7 @@ class _signupState extends State<signup> {
                     if (value == null || value.isEmpty) {
                       return "Please enter your First Name";
                     }
+                    return null;
                   },
                 ),
                 const Padding(padding: EdgeInsets.only(top: 15)),
@@ -135,6 +135,7 @@ class _signupState extends State<signup> {
                     if (value == null || value.isEmpty) {
                       return "Please enter your Last Name";
                     }
+                    return null;
                   },
                 ),
                 const Padding(padding: EdgeInsets.only(top: 15)),
@@ -215,6 +216,7 @@ class _signupState extends State<signup> {
                     if (value == null || value.isEmpty) {
                       return "Please type your Password";
                     }
+                    return null;
                   },
                 ),
                 const Padding(padding: EdgeInsets.only(top: 15)),
@@ -277,25 +279,16 @@ class _signupState extends State<signup> {
                         var id = M.ObjectId();
                         PushNotifications.init();
                         PushNotifications.localNotiInit();
-                        final String? token = await PushNotifications.returnToken() ?? " ";
-                        final data = CustomerModel(
-                          name:
-                              "${firstNameController.text} ${lastNameController.text}",
-                          email: emailController.text,
-                          password: passwordController.text,
-                          contact: contactController.text,
-                          deviceToken: token.toString(),
-                        );
 
-                        
-                        var result = await MongoDatabase.insert(data);
                         showSuccessMessage();
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => login()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const login()));
                       } else {
                         Fluttertoast.showToast(
                             msg: "Please fill the required fields",
-                            backgroundColor: Color(0xff63131C),
+                            backgroundColor: const Color(0xff63131C),
                             textColor: Colors.white,
                             gravity: ToastGravity.BOTTOM,
                             toastLength: Toast.LENGTH_LONG);
@@ -310,7 +303,7 @@ class _signupState extends State<signup> {
                       color: Colors.white,
                     ),
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xff801924),
+                        backgroundColor: const Color(0xff801924),
                         fixedSize: const Size(360, 55),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -369,7 +362,7 @@ class _signupState extends State<signup> {
   void showSuccessMessage() {
     Fluttertoast.showToast(
         msg: "Registration Successful",
-        backgroundColor: Color(0xff63131C),
+        backgroundColor: const Color(0xff63131C),
         textColor: Colors.white,
         gravity: ToastGravity.BOTTOM,
         toastLength: Toast.LENGTH_LONG);

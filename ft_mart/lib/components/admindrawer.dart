@@ -5,7 +5,7 @@ import '../complaints/show_complaints.dart';
 import '../screens/homepage/admin_page.dart';
 
 class AdminDrawer extends StatelessWidget {
-  AdminDrawer({super.key, required this.name, this.email, this.contact});
+  const AdminDrawer({super.key, required this.name, this.email, this.contact});
 
   final String name;
   final String? email;
@@ -24,81 +24,75 @@ class AdminDrawer extends StatelessWidget {
             child: Image.asset("assets/Logo.png", scale: 7),
           ),
           const Padding(padding: EdgeInsets.only(top: 10)),
-          Container(
-            child: ListTile(
-              tileColor: Color(0xffE8BBBF),
-              iconColor: Color(0xff801924),
-              textColor: Color(0xff801924),
-              contentPadding: EdgeInsets.all(5),
-              leading: Icon(
-                Icons.format_list_bulleted_outlined,
-              ),
-              title: const Text('All Orders',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  )),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => admin(
-                              name: name,
-                              email: email,
-                              contact: contact,
-                            )));
-              },
+          ListTile(
+            tileColor: const Color(0xffE8BBBF),
+            iconColor: const Color(0xff801924),
+            textColor: const Color(0xff801924),
+            contentPadding: const EdgeInsets.all(5),
+            leading: const Icon(
+              Icons.format_list_bulleted_outlined,
             ),
-          ),
-          const Padding(padding: EdgeInsets.only(top: 10)),
-          Container(
-            child: ListTile(
-              iconColor: Color(0xff801924),
-              textColor: Color(0xff801924),
-              contentPadding: EdgeInsets.all(5),
-              leading: Icon(
-                Icons.inventory_2_outlined,
-              ),
-              title: const Text('Inventory',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  )),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => inventory(
-                              name: 'admin',
-                            )));
-              },
-            ),
-          ),
-          const Padding(padding: EdgeInsets.only(top: 10)),
-          Container(
-            child: ListTile(
-              iconColor: Color(0xff801924),
-              textColor: Color(0xff801924),
-              contentPadding: EdgeInsets.all(5),
-              leading: Icon(
-                Icons.people_outline,
-              ),
-              title: const Text('Staff',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  )),
-              onTap: () {
-               Navigator.of(context).pop();
-              },
-            ),
+            title: const Text('All Orders',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                )),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => admin(
+                            name: name,
+                            email: email,
+                            contact: contact,
+                          )));
+            },
           ),
           const Padding(padding: EdgeInsets.only(top: 10)),
           ListTile(
-            iconColor: Color(0xff801924),
-            textColor: Color(0xff801924),
-            contentPadding: EdgeInsets.all(5),
-            leading: Icon(
+            iconColor: const Color(0xff801924),
+            textColor: const Color(0xff801924),
+            contentPadding: const EdgeInsets.all(5),
+            leading: const Icon(
+              Icons.inventory_2_outlined,
+            ),
+            title: const Text('Inventory',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                )),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const inventory(
+                            name: 'admin',
+                          )));
+            },
+          ),
+          const Padding(padding: EdgeInsets.only(top: 10)),
+          ListTile(
+            iconColor: const Color(0xff801924),
+            textColor: const Color(0xff801924),
+            contentPadding: const EdgeInsets.all(5),
+            leading: const Icon(
+              Icons.people_outline,
+            ),
+            title: const Text('Staff',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                )),
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          const Padding(padding: EdgeInsets.only(top: 10)),
+          ListTile(
+            iconColor: const Color(0xff801924),
+            textColor: const Color(0xff801924),
+            contentPadding: const EdgeInsets.all(5),
+            leading: const Icon(
               Icons.comment_sharp,
             ),
             title: const Text('Complaints',
@@ -107,16 +101,16 @@ class AdminDrawer extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 )),
             onTap: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => ShowComplain()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const ShowComplain()));
             },
           ),
           const Padding(padding: EdgeInsets.only(top: 10)),
           ListTile(
-            iconColor: Color(0xff801924),
-            textColor: Color(0xff801924),
-            contentPadding: EdgeInsets.all(5),
-            leading: Icon(
+            iconColor: const Color(0xff801924),
+            textColor: const Color(0xff801924),
+            contentPadding: const EdgeInsets.all(5),
+            leading: const Icon(
               Icons.logout,
             ),
             title: const Text('Logout',
@@ -125,8 +119,8 @@ class AdminDrawer extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 )),
             onTap: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => login()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const login()));
             },
           ),
         ],

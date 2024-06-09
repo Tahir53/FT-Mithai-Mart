@@ -7,44 +7,38 @@ import 'package:shared_preferences/shared_preferences.dart';
 class CartProvider extends ChangeNotifier {
   List<Cart> _items = [];
   bool _isCustomized = false;
-  List <OrderDesignModel> _customizationOptions= [];
+  List<OrderDesignModel> _customizationOptions = [];
 
   bool get isCustomized => _isCustomized;
+
   List<Cart> get items => _items;
+
   List<OrderDesignModel> get customizationOptions => _customizationOptions;
 
   void updateCustomize(bool isCustomized) {
     _isCustomized = isCustomized;
     notifyListeners();
   }
-  
-  void resetCustomize(){
+
+  void resetCustomize() {
     _isCustomized = false;
     notifyListeners();
   }
-  void updateCustomizationOptions(List options){
-    _customizationOptions = options.map((option) => OrderDesignModel.fromJson(option)).toList();
+
+  void updateCustomizationOptions(List options) {
+    _customizationOptions =
+        options.map((option) => OrderDesignModel.fromJson(option)).toList();
     notifyListeners();
   }
 
   void addToCart(Cart item) {
-    print("add to cart called");
     _items.add(item);
-    print("Items in add to cart: $_items");
     notifyListeners();
   }
 
   void removeFromCart(Cart item) {
-    print("remove from cart called");
     _items.remove(item);
-    print("items in remove to cart: $_items");
     notifyListeners();
-  }
-
-  Future<void> _saveCart() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> cartData = _items.map((item) => item.toString()).toList();
-    prefs.setString('cart', jsonEncode(cartData));
   }
 
   Future<void> loadCart() async {
@@ -59,10 +53,8 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  clearCart(){
+  clearCart() {
     _items.clear();
     notifyListeners();
   }
-
-
 }

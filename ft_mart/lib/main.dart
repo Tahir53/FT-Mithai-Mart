@@ -17,9 +17,7 @@ import 'firebase_options.dart';
 final navigatorKey = GlobalKey<NavigatorState>();
 
 Future _firebaseBackgroundMessage(RemoteMessage message) async {
-  if (message.notification != null) {
-    print("Some notification Received");
-  }
+  if (message.notification != null) {}
 }
 
 void main() async {
@@ -31,7 +29,6 @@ void main() async {
 
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
     if (message.notification != null) {
-      print("Background Notification Tapped");
       navigatorKey.currentState!.pushNamed("/message", arguments: message);
     }
   });
@@ -44,13 +41,11 @@ void main() async {
   //to handle foreground notifications
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     String payloadData = jsonEncode(message.data);
-    print("Got a message in foreground");
     if (message.notification != null) {
       PushNotifications.showSimpleNotification(
-        title: message.notification!.title!,
-        body: message.notification!.body!,
-        payload: payloadData
-      );
+          title: message.notification!.title!,
+          body: message.notification!.body!,
+          payload: payloadData);
     }
   });
 
@@ -58,8 +53,7 @@ void main() async {
       await FirebaseMessaging.instance.getInitialMessage();
 
   if (message != null) {
-    print("Launched from terminated state");
-    Future.delayed(Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 1), () {
       navigatorKey.currentState!
           .pushNamed("/order_tracking", arguments: message);
     });
@@ -72,9 +66,7 @@ class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
   Future<void> _initializeApp() async {
-    await MongoDatabase.connect().catchError((error) {
-      print('Failed to connect to the database: $error');
-    });
+    await MongoDatabase.connect().catchError((error) {});
   }
 
   @override

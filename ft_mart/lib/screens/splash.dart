@@ -27,16 +27,16 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (isLoggedIn != null) {
       if (isLoggedIn == true) {
-        Navigator.pushReplacement(context, MaterialPageRoute(
-            builder: (context) =>
-                homepage(name: name, contact: contact, email: email)));
-      }
-      else {
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    homepage(name: name, contact: contact, email: email)));
+      } else {
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => const login()));
       }
-    }
-    else {
+    } else {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => const login()));
     }
@@ -61,7 +61,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 width: 200,
                 height: 200,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // Adding some space between the image and text
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -71,8 +71,9 @@ class _SplashScreenState extends State<SplashScreen> {
                     width: 24, // Adjust the width as needed
                     height: 24, // Adjust the height as needed
                   ),
-                  SizedBox(width: 5), // Adding some space between the icon and text
-                  Text(
+                  const SizedBox(width: 5),
+                  // Adding some space between the icon and text
+                  const Text(
                     'GEAR UP FOR SWEETNESS GALORE',
                     style: TextStyle(
                       fontWeight: FontWeight.w600,

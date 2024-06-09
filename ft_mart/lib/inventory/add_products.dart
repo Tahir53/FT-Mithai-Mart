@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../dbHelper/mongodb.dart';
@@ -7,7 +6,7 @@ import '../model/product_model.dart';
 class AdminAddProductScreen extends StatefulWidget {
   final VoidCallback onProductAdded;
 
-  AdminAddProductScreen({required this.onProductAdded});
+  const AdminAddProductScreen({super.key, required this.onProductAdded});
 
   @override
   _AdminAddProductScreenState createState() => _AdminAddProductScreenState();
@@ -53,21 +52,21 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
             children: [
               TextField(
                 controller: nameController,
-                decoration: InputDecoration(labelText: 'Product Name'),
+                decoration: const InputDecoration(labelText: 'Product Name'),
               ),
               TextField(
                 controller: priceController,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(labelText: 'Price'),
+                decoration: const InputDecoration(labelText: 'Price'),
               ),
               TextField(
                 controller: stockController,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(labelText: 'Stock'),
+                decoration: const InputDecoration(labelText: 'Stock'),
               ),
               TextField(
                 controller: descriptionController,
-                decoration: InputDecoration(labelText: 'Description'),
+                decoration: const InputDecoration(labelText: 'Description'),
               ),
               DropdownButtonFormField<String>(
                 value: dropdownValue,
@@ -77,7 +76,7 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
                     value: value,
                     child: Text(
                       value,
-                      style: TextStyle(fontSize: 15),
+                      style: const TextStyle(fontSize: 15),
                     ),
                   );
                 }).toList(),
@@ -86,28 +85,28 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
                     dropdownValue = newValue!;
                   });
                 },
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Category',
                 ),
               ),
               TextField(
                 controller: discountController,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Discount',
                 ),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               ElevatedButton.icon(
                 onPressed: () {
                   check();
                   widget.onProductAdded();
                 },
-                icon: Icon(
+                icon: const Icon(
                   Icons.inventory_outlined,
                   color: Color(0xFF63131C),
                 ),
-                label: Text(
+                label: const Text(
                   "Add Product",
                   style: TextStyle(
                     color: Color(0xFF63131C),
@@ -170,7 +169,7 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
   void errormsg() {
     Fluttertoast.showToast(
       msg: "Please fill all fields",
-      backgroundColor: Color(0xff63131C),
+      backgroundColor: const Color(0xff63131C),
       textColor: Colors.white,
       gravity: ToastGravity.BOTTOM,
       toastLength: Toast.LENGTH_LONG,
@@ -180,7 +179,7 @@ class _AdminAddProductScreenState extends State<AdminAddProductScreen> {
   void showSuccessMessage() {
     Fluttertoast.showToast(
       msg: "Product Successfully Added",
-      backgroundColor: Color(0xff63131C),
+      backgroundColor: const Color(0xff63131C),
       textColor: Colors.white,
       gravity: ToastGravity.BOTTOM,
       toastLength: Toast.LENGTH_LONG,

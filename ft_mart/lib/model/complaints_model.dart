@@ -51,7 +51,8 @@ class Complaint {
     };
   }
 
-  static Set<String> generatedComplaintIds = Set<String>();
+  static Set<String> generatedComplaintIds = <String>{};
+
   static String generateComplaintId() {
     Random random = Random();
     String orderId;

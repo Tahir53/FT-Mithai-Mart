@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../dbHelper/mongodb.dart';
@@ -11,7 +10,7 @@ class ProductDialogs {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Product Actions'),
+          title: const Text('Product Actions'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -19,14 +18,14 @@ class ProductDialogs {
                 onPressed: () {
                   _showUpdateDialog(context, product, setStateCallback);
                 },
-                child: Text('Update'),
+                child: const Text('Update'),
               ),
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                   _showDeleteDialog(context, product, setStateCallback);
                 },
-                child: Text('Delete'),
+                child: const Text('Delete'),
               ),
             ],
           ),
@@ -60,32 +59,32 @@ class ProductDialogs {
       builder: (BuildContext context) {
         return SingleChildScrollView(
           child: AlertDialog(
-            title: Text('Update Product'),
+            title: const Text('Update Product'),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: nameController,
-                  decoration: InputDecoration(labelText: 'Name'),
+                  decoration: const InputDecoration(labelText: 'Name'),
                 ),
                 TextField(
                   controller: priceController,
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: 'Price'),
+                  decoration: const InputDecoration(labelText: 'Price'),
                 ),
                 TextField(
                   controller: stockController,
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: 'Stock'),
+                  decoration: const InputDecoration(labelText: 'Stock'),
                 ),
                 TextField(
                   controller: descriptionController,
-                  decoration: InputDecoration(labelText: 'Description'),
+                  decoration: const InputDecoration(labelText: 'Description'),
                 ),
                 TextField(
                   controller: discountController,
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: 'Discount %'),
+                  decoration: const InputDecoration(labelText: 'Discount %'),
                 ),
                 DropdownButtonFormField<String>(
                   value: dropdownValue,
@@ -95,7 +94,7 @@ class ProductDialogs {
                       value: value,
                       child: Text(
                         value,
-                        style: TextStyle(fontSize: 15),
+                        style: const TextStyle(fontSize: 15),
                       ),
                     );
                   }).toList(),
@@ -120,7 +119,7 @@ class ProductDialogs {
                       dropdownValue,
                     );
                   },
-                  child: Text('Update'),
+                  child: const Text('Update'),
                 ),
               ],
             ),
@@ -136,14 +135,14 @@ class ProductDialogs {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Delete Product'),
+          title: const Text('Delete Product'),
           content: Text('Are you sure you want to delete ${product.name}?'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -166,7 +165,7 @@ class ProductDialogs {
   static void _showUpdateMessage() {
     Fluttertoast.showToast(
       msg: 'Successfully Updated',
-      backgroundColor: Color(0xff63131C),
+      backgroundColor: const Color(0xff63131C),
       textColor: Colors.white,
       gravity: ToastGravity.BOTTOM,
       toastLength: Toast.LENGTH_LONG,
@@ -176,7 +175,7 @@ class ProductDialogs {
   static void _showDeletedMessage() {
     Fluttertoast.showToast(
       msg: 'Successfully Deleted',
-      backgroundColor: Color(0xff63131C),
+      backgroundColor: const Color(0xff63131C),
       textColor: Colors.white,
       gravity: ToastGravity.BOTTOM,
       toastLength: Toast.LENGTH_LONG,

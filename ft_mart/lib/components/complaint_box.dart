@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ftmithaimart/components/drawer.dart';
 import '../dbHelper/mongodb.dart';
@@ -11,7 +10,8 @@ class complaintbox extends StatefulWidget {
   final String? email;
   final String? contact;
 
-  complaintbox({this.id, this.email, this.contact, required this.name});
+  const complaintbox(
+      {super.key, this.id, this.email, this.contact, required this.name});
 
   @override
   State<complaintbox> createState() => _complaintboxState();
@@ -21,10 +21,11 @@ class _complaintboxState extends State<complaintbox> {
   final TextEditingController _complaintController = TextEditingController();
   bool complainLoading = false;
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         toolbarHeight: 100,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -57,11 +58,11 @@ class _complaintboxState extends State<complaintbox> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextField(
                 controller: _complaintController,
                 maxLines: 7,
-                cursorColor: Color(0xff63131C),
+                cursorColor: const Color(0xff63131C),
                 decoration: InputDecoration(
                   hintText: "Type your complaint here...",
                   border: OutlineInputBorder(
@@ -72,7 +73,7 @@ class _complaintboxState extends State<complaintbox> {
                   ),
                 ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               ElevatedButton.icon(
                 onPressed: () async {
                   setState(() {
@@ -80,7 +81,7 @@ class _complaintboxState extends State<complaintbox> {
                   });
                   final complaint = Complaint(
                     complaintId: Complaint.generateComplaintId(),
-                    name: widget.name ?? "user",
+                    name: widget.name,
                     email: widget.email ?? "no email",
                     contact: widget.contact ?? "no contact",
                     description: _complaintController.text,
@@ -93,10 +94,10 @@ class _complaintboxState extends State<complaintbox> {
                     submitComplaint(context, complaint.complaintId);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        backgroundColor: Color(0xff63131C),
+                        backgroundColor: const Color(0xff63131C),
                         content: Text(
                           result,
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         )));
                   }
                   setState(() {
@@ -109,27 +110,27 @@ class _complaintboxState extends State<complaintbox> {
                   color: Colors.white,
                 ),
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xff801924),
-                    fixedSize: Size(250, 55),
+                    backgroundColor: const Color(0xff801924),
+                    fixedSize: const Size(250, 55),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     )),
                 label: complainLoading
                     ? const SizedBox(
-                    width: 10,
-                    height: 10,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                    ))
+                        width: 10,
+                        height: 10,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                        ))
                     : const Text(
-                  "Submit",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                        "Submit",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
               ),
             ],
           ),
@@ -146,7 +147,7 @@ class _complaintboxState extends State<complaintbox> {
         return AlertDialog(
           title: Text(
             "Your complain with ID $complaintId has been submitted successfully! You will be notified further!",
-            style: TextStyle(
+            style: const TextStyle(
               color: Color(0xff63131C),
             ),
           ),

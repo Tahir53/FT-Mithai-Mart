@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class FirstCarouselCard extends StatefulWidget {
   final ScrollController? scrollController;
 
-  const FirstCarouselCard({this.scrollController});
+  const FirstCarouselCard({super.key, this.scrollController});
 
   @override
   State<FirstCarouselCard> createState() => _FirstCarouselCardState();
@@ -50,24 +50,20 @@ class _FirstCarouselCardState extends State<FirstCarouselCard> {
             const Padding(padding: EdgeInsets.only(top: 10)),
             Row(
               children: [
-                Container(
-                  child: TextButton(
-                    onPressed: () {
-                      print("Button Pressed");
-                      print("ScrollController: ${widget.scrollController}");
-                      widget.scrollController?.animateTo(
-                        widget.scrollController?.position.maxScrollExtent ?? 0,
-                        duration: Duration(seconds: 1),
-                        curve: Curves.easeOutSine,
-                      );
-                    },
-                    child: const Text(
-                      'Get started',
-                      style: TextStyle(
-                          fontSize: 13.0,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.black),
-                    ),
+                TextButton(
+                  onPressed: () {
+                    widget.scrollController?.animateTo(
+                      widget.scrollController?.position.maxScrollExtent ?? 0,
+                      duration: const Duration(seconds: 1),
+                      curve: Curves.easeOutSine,
+                    );
+                  },
+                  child: const Text(
+                    'Get started',
+                    style: TextStyle(
+                        fontSize: 13.0,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.black),
                   ),
                 ),
                 const Icon(Icons.arrow_forward_sharp)

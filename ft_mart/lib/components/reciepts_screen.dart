@@ -38,10 +38,10 @@ class _ReceiptScreenState extends State<ReceiptScreen>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 2),
+      duration: const Duration(seconds: 2),
     );
     _offsetAnimation = Tween<Offset>(
-      begin: Offset(0, -1.5),
+      begin: const Offset(0, -1.5),
       end: Offset.zero,
     ).animate(
       CurvedAnimation(
@@ -54,15 +54,11 @@ class _ReceiptScreenState extends State<ReceiptScreen>
 
   @override
   Widget build(BuildContext context) {
-    print('Cart Items Length: ${widget.cartItems.length}');
-    widget.cartItems.forEach((item) {
-      print(
-          'Product Name: ${item.productName}, Quantity: ${item.formattedQuantity}');
-    });
+    for (var item in widget.cartItems) {}
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF63131C),
+        backgroundColor: const Color(0xFF63131C),
         iconTheme: const IconThemeData(color: Colors.white),
         toolbarHeight: 100,
         shape: const RoundedRectangleBorder(
@@ -89,25 +85,25 @@ class _ReceiptScreenState extends State<ReceiptScreen>
             _offsetAnimation == null
                 ? Container()
                 : SlideTransition(
-              position: _offsetAnimation!,
-              child: const FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  "Thank you for choosing F.T Mithai Mart",
-                  style: TextStyle(
-                    color: Color(0xFF63131C),
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                    position: _offsetAnimation!,
+                    child: const FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        "Thank you for choosing F.T Mithai Mart",
+                        style: TextStyle(
+                          color: Color(0xFF63131C),
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                   ),
-                  maxLines: 1,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Container(
               width: MediaQuery.of(context).size.width * 0.8,
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 color: Colors.white,
@@ -116,7 +112,7 @@ class _ReceiptScreenState extends State<ReceiptScreen>
                     color: Colors.grey.withOpacity(0.5),
                     spreadRadius: 5,
                     blurRadius: 7,
-                    offset: Offset(0, 3),
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
@@ -125,7 +121,7 @@ class _ReceiptScreenState extends State<ReceiptScreen>
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Padding(padding: EdgeInsets.only(top: 10)),
+                    const Padding(padding: EdgeInsets.only(top: 10)),
                     const Text(
                       "INVOICE",
                       style: TextStyle(
@@ -133,7 +129,7 @@ class _ReceiptScreenState extends State<ReceiptScreen>
                         fontSize: 24,
                       ),
                     ),
-                    Padding(padding: EdgeInsets.only(top: 10)),
+                    const Padding(padding: EdgeInsets.only(top: 10)),
                     ListTile(
                       title: Text('Order ID: ${widget.orderId}'),
                     ),
@@ -161,7 +157,7 @@ class _ReceiptScreenState extends State<ReceiptScreen>
                             'Total Amount: Rs. ${widget.totalAmount.toStringAsFixed(2)}',
                           ),
                           if (widget.isCustomized)
-                            Text(
+                            const Text(
                               'Free Customization Availed!',
                               style: TextStyle(
                                 fontSize: 12,
@@ -175,7 +171,7 @@ class _ReceiptScreenState extends State<ReceiptScreen>
                     const SizedBox(height: 10),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xff63131C),
+                        backgroundColor: const Color(0xff63131C),
                       ),
                       onPressed: () {
                         Provider.of<CartProvider>(context, listen: false)
@@ -190,11 +186,11 @@ class _ReceiptScreenState extends State<ReceiptScreen>
                           ),
                         );
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.track_changes,
                         color: Colors.white,
                       ),
-                      label: Text(
+                      label: const Text(
                         "Track Order",
                         style: TextStyle(color: Colors.white),
                       ),

@@ -7,6 +7,8 @@ import '../model/complaints_model.dart';
 import '../push_notifications.dart';
 
 class ShowComplain extends StatefulWidget {
+  const ShowComplain({super.key});
+
   @override
   State<ShowComplain> createState() => _ShowComplainState();
 }
@@ -18,12 +20,10 @@ class _ShowComplainState extends State<ShowComplain> {
   void getComplain() async {
     List<Complaint> updatedComplaints = await MongoDatabase.getComplaints();
     setState(() {
-      ongoingComplaints = updatedComplaints
-          .where((complaint) => !complaint.notified)
-          .toList();
-      completedComplaints = updatedComplaints
-          .where((complaint) => complaint.notified)
-          .toList();
+      ongoingComplaints =
+          updatedComplaints.where((complaint) => !complaint.notified).toList();
+      completedComplaints =
+          updatedComplaints.where((complaint) => complaint.notified).toList();
     });
   }
 
@@ -39,7 +39,7 @@ class _ShowComplainState extends State<ShowComplain> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          iconTheme: IconThemeData(color: Colors.white),
+          iconTheme: const IconThemeData(color: Colors.white),
           toolbarHeight: 100,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
@@ -70,8 +70,11 @@ class _ShowComplainState extends State<ShowComplain> {
         drawer: AdminDrawer(name: "user"),
         body: TabBarView(
           children: [
-            ComplaintList(complaints: ongoingComplaints, refreshComplaints: getComplain),
-            ComplaintList(complaints: completedComplaints, refreshComplaints: getComplain),
+            ComplaintList(
+                complaints: ongoingComplaints, refreshComplaints: getComplain),
+            ComplaintList(
+                complaints: completedComplaints,
+                refreshComplaints: getComplain),
           ],
         ),
       ),
@@ -83,7 +86,8 @@ class ComplaintList extends StatefulWidget {
   final List<Complaint> complaints;
   final Function refreshComplaints;
 
-  const ComplaintList({required this.complaints, required this.refreshComplaints});
+  const ComplaintList(
+      {super.key, required this.complaints, required this.refreshComplaints});
 
   @override
   State<ComplaintList> createState() => _ComplaintListState();
@@ -98,7 +102,7 @@ class _ComplaintListState extends State<ComplaintList> {
         Complaint complaint = widget.complaints[index];
         return Card(
           elevation: 8,
-          margin: EdgeInsets.all(8),
+          margin: const EdgeInsets.all(8),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -109,7 +113,7 @@ class _ComplaintListState extends State<ComplaintList> {
                   _showOptionsDialog(context, index);
                 },
                 child: Container(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -126,8 +130,8 @@ class _ComplaintListState extends State<ComplaintList> {
                 bottom: 0,
                 right: 0,
                 child: Text(
-                  "${DateFormat('E, d MMM y | hh:mm a').format(complaint.dateTime)}",
-                  style: TextStyle(
+                  DateFormat('E, d MMM y | hh:mm a').format(complaint.dateTime),
+                  style: const TextStyle(
                     fontSize: 12,
                   ),
                 ),
@@ -157,16 +161,17 @@ class _ComplaintListState extends State<ComplaintList> {
       builder: (BuildContext context) {
         Complaint complaint = widget.complaints[index];
         return AlertDialog(
-          title: Text("Complaint Options"),
+          title: const Text("Complaint Options"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: Icon(Icons.delete),
-                title: Text('Delete'),
+                leading: const Icon(Icons.delete),
+                title: const Text('Delete'),
                 onTap: () async {
                   if (complaint.id != null) {
-                    await MongoDatabase.deleteComplaint(complaint.id!.toHexString());
+                    await MongoDatabase.deleteComplaint(
+                        complaint.id!.toHexString());
                     Navigator.of(context).pop();
                     _showDeletedMessage();
                     setState(() {});
@@ -176,8 +181,8 @@ class _ComplaintListState extends State<ComplaintList> {
               ),
               if (!complaint.notified)
                 ListTile(
-                  leading: Icon(Icons.notifications),
-                  title: Text('Notify'),
+                  leading: const Icon(Icons.notifications),
+                  title: const Text('Notify'),
                   onTap: () async {
                     if (complaint.id != null) {
                       await PushNotifications.sendComplaintNotification(
@@ -206,12 +211,12 @@ class _ComplaintListState extends State<ComplaintList> {
 
   Widget _buildNotifiedTab() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       decoration: BoxDecoration(
         color: Colors.green,
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Text(
+      child: const Text(
         "Notified",
         style: TextStyle(color: Colors.white),
       ),
@@ -220,12 +225,12 @@ class _ComplaintListState extends State<ComplaintList> {
 
   Widget _buildWaitingTab() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       decoration: BoxDecoration(
         color: Colors.orange,
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Text(
+      child: const Text(
         "Waiting",
         style: TextStyle(color: Colors.white),
       ),
@@ -235,7 +240,7 @@ class _ComplaintListState extends State<ComplaintList> {
   static void _showDeletedMessage() {
     Fluttertoast.showToast(
       msg: 'Successfully Deleted',
-      backgroundColor: Color(0xff63131C),
+      backgroundColor: const Color(0xff63131C),
       textColor: Colors.white,
       gravity: ToastGravity.BOTTOM,
       toastLength: Toast.LENGTH_LONG,
@@ -245,7 +250,7 @@ class _ComplaintListState extends State<ComplaintList> {
   static void _showSuccessMessage() {
     Fluttertoast.showToast(
       msg: 'Successfully Notified',
-      backgroundColor: Color(0xff63131C),
+      backgroundColor: const Color(0xff63131C),
       textColor: Colors.white,
       gravity: ToastGravity.BOTTOM,
       toastLength: Toast.LENGTH_LONG,

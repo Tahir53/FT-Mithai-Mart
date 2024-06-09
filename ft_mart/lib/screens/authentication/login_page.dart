@@ -1,9 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter/src/material/icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../components/forgot_password.dart';
 import '../../dbHelper/mongodb.dart';
@@ -29,10 +27,10 @@ class _loginState extends State<login> {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   Future<Map<String, dynamic>> data(String email, String password) async {
-    print("data() called in login_page");
     return await MongoDatabase.getData(email, password);
   }
 
+  @override
   Widget build(BuildContext context) {
     return Form(
       key: _loginkey,
@@ -72,12 +70,12 @@ class _loginState extends State<login> {
                       TextFormField(
                         controller: EmailController,
                         decoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
+                          focusedBorder: const OutlineInputBorder(
                             borderSide:
                                 BorderSide(width: 2, color: Color(0xff63131C)),
                           ),
                           labelText: "Username/Email",
-                          labelStyle: TextStyle(
+                          labelStyle: const TextStyle(
                             color: Color(0xff63131C),
                           ),
                           hintText: " someone@example.com",
@@ -85,7 +83,7 @@ class _loginState extends State<login> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           prefixIcon: IconButton(
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.person,
                               color: Color(0xff63131C),
                             ),
@@ -124,10 +122,10 @@ class _loginState extends State<login> {
                         obscuringCharacter: '*',
                         decoration: InputDecoration(
                           labelText: "Password",
-                          labelStyle: TextStyle(
+                          labelStyle: const TextStyle(
                             color: Color(0xff63131C),
                           ),
-                          focusedBorder: OutlineInputBorder(
+                          focusedBorder: const OutlineInputBorder(
                             borderSide:
                                 BorderSide(width: 2, color: Color(0xff63131C)),
                           ),
@@ -140,10 +138,10 @@ class _loginState extends State<login> {
                                 hidePassword = !hidePassword;
                               });
                             },
-                            color: Color(0xff63131C),
+                            color: const Color(0xff63131C),
                           ),
                           prefixIcon: IconButton(
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.lock,
                               color: Color(0xff63131C),
                             ),
@@ -217,7 +215,7 @@ class _loginState extends State<login> {
                                   });
                                   Fluttertoast.showToast(
                                       msg: "Invalid username or password",
-                                      backgroundColor: Color(0xff63131C),
+                                      backgroundColor: const Color(0xff63131C),
                                       textColor: Colors.white,
                                       gravity: ToastGravity.BOTTOM,
                                       toastLength: Toast.LENGTH_LONG);
@@ -225,8 +223,8 @@ class _loginState extends State<login> {
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xff801924),
-                                fixedSize: Size(360, 55),
+                                backgroundColor: const Color(0xff801924),
+                                fixedSize: const Size(360, 55),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 )),
@@ -241,11 +239,11 @@ class _loginState extends State<login> {
                                       fontWeight: FontWeight.w500,
                                     ),
                                   )
-                                : CircularProgressIndicator(
+                                : const CircularProgressIndicator(
                                     color: Colors.white,
                                   ),
                           ),
-                          Padding(padding: EdgeInsets.all(10)),
+                          const Padding(padding: EdgeInsets.all(10)),
                           TextButton(
                             onPressed: () async {
                               await ForgotPassword.showForgotPasswordDialog(
@@ -282,8 +280,8 @@ class _loginState extends State<login> {
                                 width: 30,
                               ),
                               style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xffD9D9D9),
-                                  fixedSize: Size(360, 55),
+                                  backgroundColor: const Color(0xffD9D9D9),
+                                  fixedSize: const Size(360, 55),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   )),
@@ -304,7 +302,7 @@ class _loginState extends State<login> {
                               Navigator.push(context, MaterialPageRoute(
                                 builder: (context) {
                                   // return HomeScreen();
-                                  return homepage(
+                                  return const homepage(
                                     name: "User",
                                   );
                                 },
@@ -316,8 +314,8 @@ class _loginState extends State<login> {
                               color: Colors.black,
                             ),
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xffffC937),
-                                fixedSize: Size(360, 55),
+                                backgroundColor: const Color(0xffffC937),
+                                fixedSize: const Size(360, 55),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 )),
@@ -347,8 +345,8 @@ class _loginState extends State<login> {
                               size: 24.0,
                             ),
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xff801924),
-                                fixedSize: Size(360, 55),
+                                backgroundColor: const Color(0xff801924),
+                                fixedSize: const Size(360, 55),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 )),
@@ -400,13 +398,12 @@ class _loginState extends State<login> {
       final UserCredential authResult =
           await auth.signInWithCredential(credential);
       final User? user = authResult.user;
-      print("User signed in with google: $user");
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => homepage(name: "user")));
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const homepage(name: "user")));
       // print("Signed in with google succesfully");
-    } catch (error) {
-      print("Google Sign-In Error: $error");
-    }
+    } catch (error) {}
   }
 
   void validateEmail() {

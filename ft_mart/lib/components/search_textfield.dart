@@ -5,21 +5,17 @@ class SearchTextField extends StatefulWidget {
   final Function(List)? onChanged;
   final TextEditingController controller;
 
-  SearchTextField({this.onChanged, required this.controller});
+  const SearchTextField({super.key, this.onChanged, required this.controller});
 
   @override
   _SearchTextFieldState createState() => _SearchTextFieldState();
 }
 
 class _SearchTextFieldState extends State<SearchTextField> {
-  List<Map<String, Object?>> _searchResults = [];
-
   Future<List> _searchProducts(String query) async {
     final List<Map<String, Object?>> results =
         await MongoDatabase.searchProducts(query);
-    setState(() {
-      _searchResults = results;
-    });
+    setState(() {});
     return results;
   }
 
@@ -33,7 +29,7 @@ class _SearchTextFieldState extends State<SearchTextField> {
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 15),
+          padding: const EdgeInsets.symmetric(horizontal: 15),
           child: TextField(
             controller: widget.controller,
             onChanged: (query) async {
@@ -49,14 +45,14 @@ class _SearchTextFieldState extends State<SearchTextField> {
               hintStyle: const TextStyle(
                 color: Color(0xFF6B4F02),
               ),
-              suffixIcon: widget.controller!.text.isEmpty
+              suffixIcon: widget.controller.text.isEmpty
                   ? const Icon(
                       Icons.search,
                       color: Color(0xFF6B4F02),
                     )
                   : GestureDetector(
                       onTap: () {
-                        widget.controller!.text = "";
+                        widget.controller.text = "";
                         widget.onChanged != null
                             ? widget.onChanged!([])
                             : _searchProducts("");

@@ -3,7 +3,8 @@ class CustomizationOption {
   final String value;
   final List<String> imageUrls;
 
-  CustomizationOption({required this.name, required this.imageUrls, required this.value});
+  CustomizationOption(
+      {required this.name, required this.imageUrls, required this.value});
 
   factory CustomizationOption.fromJson(Map<String, dynamic> json) {
     return CustomizationOption(

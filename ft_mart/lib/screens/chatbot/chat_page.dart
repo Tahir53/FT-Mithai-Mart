@@ -5,6 +5,8 @@ import 'package:ftmithaimart/components/sender_message_container.dart';
 import 'package:http/http.dart' as http;
 
 class ChatPage extends StatefulWidget {
+  const ChatPage({super.key});
+
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
@@ -14,14 +16,10 @@ class _ChatPageState extends State<ChatPage> {
 
   List<Map<String, String>> messages = [];
 
-
-
-
   sendMessagetoAPI(String message) async {
-    print("send message function called");
-    print("Message send to API: $message");
+    print('send message to the api called');
     final apiUrl = Uri.parse(
-        "https://b1c7-2400-adc1-11d-a700-ad98-c596-a4a6-352.ngrok-free.app/query?prompt=$message");
+        "https://7ddc-2400-adc1-421-bf00-188b-4b36-8f82-986a.ngrok-free.app/query?prompt=$message");
 
     try {
       final response = await http.get(apiUrl, headers: {
@@ -30,22 +28,17 @@ class _ChatPageState extends State<ChatPage> {
       });
       if (response.statusCode == 200) {
         final res = response.body;
-        print("response: $res");
+        print(res);
 
-          var messageMap = {"sender" : message, "reciever" : res};
-          messages.add(messageMap);
-          print(messages);
+        var messageMap = {"sender": message, "reciever": res};
+        messages.add(messageMap);
 
-          setState(() {
-            
-          });
-
-
+        setState(() {});
       } else {
-       print(response.statusCode);
+        print('error in chat api: ${response}');
       }
     } catch (e) {
-      print("Error: $e");
+      print('error in chat api: $e');
     }
   }
 
@@ -57,7 +50,7 @@ class _ChatPageState extends State<ChatPage> {
         children: [
           Container(
             decoration: BoxDecoration(
-                color: Color(0xff801924),
+                color: const Color(0xff801924),
                 borderRadius: BorderRadius.circular(20)),
             width: MediaQuery.of(context).size.width,
             padding: const EdgeInsets.only(top: 50),
@@ -72,7 +65,7 @@ class _ChatPageState extends State<ChatPage> {
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.arrow_left,
                           color: Colors.white,
                           size: 45,
@@ -114,7 +107,7 @@ class _ChatPageState extends State<ChatPage> {
                     const SizedBox(
                       width: 5,
                     ),
-                    Text(
+                    const Text(
                       "Online",
                       style: TextStyle(color: Colors.white),
                     ),
@@ -132,12 +125,17 @@ class _ChatPageState extends State<ChatPage> {
                 itemBuilder: (context, index) {
                   return Column(
                     children: [
-                      SenderMessageContainer(message: messages[index]["sender"]!, timestamp: "00:00"),
-                      const SizedBox(height: 10,),
-                      ReceiverMessageContainer(message: messages[index]["reciever"]!, timestamp: "00:00")
+                      ReceiverMessageContainer(
+                          message: messages[index]["sender"]!,
+                          timestamp: "00:00"),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      SenderMessageContainer(
+                          message: messages[index]["reciever"]!,
+                          timestamp: "00:00")
                     ],
                   );
-                
                 }),
           ),
           Padding(
@@ -151,22 +149,19 @@ class _ChatPageState extends State<ChatPage> {
                 ElevatedButton(
                   onPressed: () async {
                     await sendMessagetoAPI(messageController.text);
-                    // setState(() {
-                    //   senderMessages.add(messageController.text);
-                    // });
                     messageController.clear();
                   },
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    backgroundColor: Color(0xFF63131C),
+                    backgroundColor: const Color(0xFF63131C),
                   ),
                   child: Container(
                     width: MediaQuery.of(context).size.width * 0.085,
                     height: MediaQuery.of(context).size.height * 0.049,
                     alignment: Alignment.center,
-                    child: Text(
+                    child: const Text(
                       'Send',
                       style: TextStyle(
                         fontSize: 13,

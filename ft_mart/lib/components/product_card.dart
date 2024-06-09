@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ftmithaimart/dbHelper/mongodb.dart';
 
 class ProductCard extends StatefulWidget {
   ProductCard({
@@ -89,11 +88,11 @@ class _ProductCardState extends State<ProductCard> {
                             text: 'Rs. ${widget.price.toString()}/kg',
                             style: TextStyle(
                               fontSize: 14.0,
-                              color: Color(0xFF212121),
+                              color: const Color(0xFF212121),
                               decoration: widget.discount > 0
                                   ? TextDecoration.lineThrough
                                   : null,
-                              decorationColor: Color(0xFF63131C),
+                              decorationColor: const Color(0xFF63131C),
                             ),
                           ),
                         ],
@@ -112,7 +111,7 @@ class _ProductCardState extends State<ProductCard> {
                           ),
                           Text(
                             '${widget.discount.toString()}% off',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 12.0,
                               fontWeight: FontWeight.bold,
                               color: Color(0xFF63131C),
@@ -132,7 +131,7 @@ class _ProductCardState extends State<ProductCard> {
 
   Widget buildPopupMenuButton() {
     return PopupMenuButton<double>(
-      color: Color(0xFFFFF8E6),
+      color: const Color(0xFFFFF8E6),
       onSelected: (value) {
         setState(() {
           selectedWeight = value;
@@ -152,14 +151,14 @@ class _ProductCardState extends State<ProductCard> {
       itemBuilder: (BuildContext context) {
         return [1.0, 0.5].map((double choice) {
           num calculatedPrice =
-          choice == 0.5 ? widget.price * 0.5 : widget.price;
+              choice == 0.5 ? widget.price * 0.5 : widget.price;
           double discountedPrice =
               calculatedPrice * (1 - widget.discount / 100);
 
           return PopupMenuItem<double>(
             value: choice,
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
                     color: Color(0xFF63131C),
@@ -181,7 +180,7 @@ class _ProductCardState extends State<ProductCard> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(
+                      const Text(
                         'Original: ',
                         style: TextStyle(
                           color: Color(0xFF63131C),
@@ -194,7 +193,7 @@ class _ProductCardState extends State<ProductCard> {
                           decoration: widget.discount > 0
                               ? TextDecoration.lineThrough
                               : null,
-                          color: Color(0xFF63131C),
+                          color: const Color(0xFF63131C),
                           fontSize: 15,
                         ),
                       ),

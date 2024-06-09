@@ -4,11 +4,20 @@ import 'package:ftmithaimart/model/cart_model.dart';
 import 'package:ftmithaimart/model/cart_provider.dart';
 import 'package:provider/provider.dart';
 import '../model/box_model.dart';
+import '../screens/checkout_screen.dart';
 
 class BoxCustomizationPage extends StatefulWidget {
   final List<Cart> cartItems;
+  final String name;
+  final String? email;
+  final String? contact;
 
-  const BoxCustomizationPage({Key? key, required this.cartItems})
+  const BoxCustomizationPage(
+      {Key? key,
+      required this.cartItems,
+      required this.name,
+      this.email,
+      this.contact})
       : super(key: key);
 
   @override
@@ -113,15 +122,13 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
         designType: designID,
       });
     }
-
-    print(customizationOptions);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF63131C),
+        backgroundColor: const Color(0xFF63131C),
         iconTheme: const IconThemeData(color: Colors.white),
         toolbarHeight: 100,
         shape: const RoundedRectangleBorder(
@@ -152,7 +159,7 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
             ),
             const SizedBox(height: 20),
             ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: widget.cartItems.length,
               itemBuilder: (context, index) {
@@ -161,8 +168,8 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
                   children: [
                     ListTile(
                       title: Text(widget.cartItems[index].productName),
-                      subtitle:
-                          Text('Quantity: ${widget.cartItems[index].quantity} kgs'),
+                      subtitle: Text(
+                          'Quantity: ${widget.cartItems[index].quantity} kgs'),
                     ),
                     BoxDropdown(
                         title: 'Box Design',
@@ -175,10 +182,9 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
                               value!,
                               index);
                           setState(() {
-                            _selectedBoxDesigns[index] = value!;
+                            _selectedBoxDesigns[index] = value;
                           });
                         }),
-
                     BoxDropdown(
                         title: 'Wrapping Design',
                         selectedValue: selectedWrappingDesign[index],
@@ -190,10 +196,9 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
                               value!,
                               index);
                           setState(() {
-                            selectedWrappingDesign[index] = value!;
+                            selectedWrappingDesign[index] = value;
                           });
                         }),
-
                     BoxDropdown(
                         title: 'Ribbon Design',
                         selectedValue: selectedRibbonDesigns[index],
@@ -205,10 +210,9 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
                               value!,
                               index);
                           setState(() {
-                            selectedRibbonDesigns[index] = value!;
+                            selectedRibbonDesigns[index] = value;
                           });
                         }),
-
                     const Divider(),
                   ],
                 );
@@ -216,16 +220,28 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
             ),
             ElevatedButton.icon(
               onPressed: () {
-                Navigator.of(context).pop();
-                Provider.of<CartProvider>(context, listen: false).updateCustomize(true);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CheckoutScreen(
+                              cartItems: widget.cartItems,
+                              totalAmount: _calculateTotal(widget.cartItems),
+                              name: widget.name,
+                              email: widget.email,
+                              contact: widget.contact,
+                              loggedIn: widget.email != null,
+                              iscustomized: Provider.of<CartProvider>(context, listen: false).customizationOptions.isNotEmpty,
+                            )));
+                Provider.of<CartProvider>(context, listen: false)
+                    .updateCustomize(true);
                 Provider.of<CartProvider>(context, listen: false)
                     .updateCustomizationOptions(customizationOptions);
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.logout_outlined,
                 color: Color(0xFF63131C),
               ),
-              label: Text(
+              label: const Text(
                 'Proceed with Customization',
                 style: TextStyle(
                   color: Color(0xFF63131C),
@@ -237,4 +253,12 @@ class _BoxCustomizationPageState extends State<BoxCustomizationPage> {
       ),
     );
   }
+}
+
+double _calculateTotal(List<Cart> items) {
+  double total = 0;
+  for (int i = 0; i < items.length; i++) {
+    total += double.parse(items[i].price.replaceFirst("Rs.", "").trim());
+  }
+  return total;
 }

@@ -4,7 +4,8 @@ class SenderMessageContainer extends StatelessWidget {
   final String message;
   final String timestamp;
 
-  const SenderMessageContainer({super.key,
+  const SenderMessageContainer({
+    super.key,
     required this.message,
     required this.timestamp,
   });
@@ -26,7 +27,7 @@ class SenderMessageContainer extends StatelessWidget {
             ),
             child: const Center(
               child: Text(
-                "A", // Display initials or user icon
+                "FT", // Display initials or user icon
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 16,
@@ -35,7 +36,8 @@ class SenderMessageContainer extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 8), // Add spacing between avatar and message container
+          const SizedBox(width: 8),
+          // Add spacing between avatar and message container
           // Message Container on the right
           Container(
             constraints: BoxConstraints(
@@ -56,7 +58,8 @@ class SenderMessageContainer extends StatelessWidget {
                     fontSize: 13,
                   ),
                 ),
-                const SizedBox(height: 8), // Add spacing between message and timestamp
+                const SizedBox(height: 8),
+                // Add spacing between message and timestamp
                 Text(
                   timestamp,
                   style: const TextStyle(

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ftmithaimart/inventory/add_products.dart';
 import 'package:ftmithaimart/inventory/update_delete_products.dart';
@@ -11,7 +10,7 @@ class inventory extends StatefulWidget {
   final String? email;
   final String? contact;
 
-  inventory({required this.name, this.email, this.contact});
+  const inventory({super.key, required this.name, this.email, this.contact});
 
   @override
   State<inventory> createState() => _inventoryState();
@@ -31,7 +30,7 @@ class _inventoryState extends State<inventory>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         toolbarHeight: 100,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -65,7 +64,7 @@ class _inventoryState extends State<inventory>
         ],
         bottom: TabBar(
           controller: _tabController,
-          tabs: [
+          tabs: const [
             Tab(
               text: 'Classic Sweets',
             ),
@@ -73,9 +72,9 @@ class _inventoryState extends State<inventory>
             Tab(text: 'Malai Khaja'),
           ],
           indicatorColor: Colors.white,
-          labelColor: Color(0xffffC937),
+          labelColor: const Color(0xffffC937),
           unselectedLabelColor: Colors.white,
-          labelPadding: EdgeInsets.symmetric(horizontal: 2.0),
+          labelPadding: const EdgeInsets.symmetric(horizontal: 2.0),
         ),
       ),
       drawer: AdminDrawer(
@@ -124,8 +123,9 @@ class _inventoryState extends State<inventory>
                 },
                 child: Card(
                   elevation: 5,
-                  color: Color(0xff801924),
-                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                  color: const Color(0xff801924),
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -140,11 +140,11 @@ class _inventoryState extends State<inventory>
                       ListTile(
                         title: Text(
                           product.name,
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
                         subtitle: Text(
                           'Price: Rs.${product.price}/kg\nStock: ${product.stock}kgs\nCategory: ${product.category}\nDiscount: ${product.discount}%\nDiscounted Price: Rs.${product.discountedPrice}',
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
                       ),
                     ],

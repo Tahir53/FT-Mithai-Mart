@@ -60,7 +60,7 @@ class ReceiverMessageContainer extends StatelessWidget {
             ),
             child: const Center(
               child: Text(
-                "B", // Display initials or user icon
+                "U", // Display initials or user icon
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 16,

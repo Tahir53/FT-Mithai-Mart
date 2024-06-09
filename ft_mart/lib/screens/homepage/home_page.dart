@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:ftmithaimart/components/box_customization.dart';
@@ -13,7 +12,6 @@ import 'package:ftmithaimart/components/total_card.dart';
 import 'package:ftmithaimart/dbHelper/mongodb.dart';
 import 'package:ftmithaimart/model/cart_provider.dart';
 import 'package:intl/intl.dart';
-import 'package:kommunicate_flutter/kommunicate_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../components/drawer.dart';
@@ -27,13 +25,14 @@ class homepage extends StatefulWidget {
   final String? email;
   final String? contact;
 
-  homepage({required this.name, this.email, this.contact});
+  const homepage({super.key, required this.name, this.email, this.contact});
 
   @override
   State<homepage> createState() => _homepageState();
 }
 
 class _homepageState extends State<homepage> {
+  @override
   void initState() {
     super.initState();
     _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -61,7 +60,7 @@ class _homepageState extends State<homepage> {
     final stock = await MongoDatabase.getStock(product);
     if (stock == 0 || stock == 0.0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('No Stock Available, please select another item!'),
           backgroundColor: Color(0xff63131C),
         ),
@@ -90,17 +89,7 @@ class _homepageState extends State<homepage> {
         onPressed: () async {
           // Navigator.of(context)
           //     .push(MaterialPageRoute(builder: ((context) => ChatPage())));
-          try {
-            dynamic conversationObject = {
-              'appId': '11a65db28cf0b097c521704aba3748e24'
-              //'1ab9cf22e8c3fd473afac209140745943'
-            };
-            dynamic result = await KommunicateFlutterPlugin.buildConversation(
-                conversationObject);
-            print("Conversation builder success : " + result.toString());
-          } on Exception catch (e) {
-            print("Conversation builder error occurred : " + e.toString());
-          }
+          try {} on Exception {}
         },
         child: const Icon(
           Icons.message,
@@ -185,9 +174,9 @@ class _homepageState extends State<homepage> {
                 ] else if (cartProvider.items.isNotEmpty) ...[
                   displayCartSubTitles(),
                   displayCartItems(cartProvider),
-                  cartProvider.isCustomized
-                      ? Text("Your order is customized")
-                      : SizedBox.shrink(),
+                  // cartProvider.isCustomized
+                  //     ? Text("Your order is customized")
+                  //     : SizedBox.shrink(),
                   const Padding(padding: EdgeInsets.only(top: 40)),
                   SizedBox(
                     child: Column(
@@ -198,7 +187,11 @@ class _homepageState extends State<homepage> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => BoxCustomizationPage(
-                                      cartItems: cartProvider.items)),
+                                        cartItems: cartProvider.items,
+                                        name: widget.name,
+                                        email: widget.email,
+                                        contact: widget.contact,
+                                      )),
                             );
                           },
                           icon: const Icon(
@@ -319,7 +312,6 @@ class _homepageState extends State<homepage> {
                             itemCount: _searchResults.length,
                             itemBuilder: (context, index) {
                               final result = _searchResults[index];
-                              print(result);
                               return SearchDataField(
                                   name: result['name'],
                                   category: result['category'],
@@ -495,7 +487,7 @@ class _homepageState extends State<homepage> {
 
   Widget displayCartItems(cartProvider) {
     return ListView.builder(
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: cartProvider.items.length + 1,
       itemBuilder: (BuildContext context, int index) {

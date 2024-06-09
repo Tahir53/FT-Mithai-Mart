@@ -9,7 +9,7 @@ class SearchDataField extends StatelessWidget {
   final String description;
   final double discount; // Add this line
   final Function(String name, String price, double stock)
-  onPopupMenuButtonPressed;
+      onPopupMenuButtonPressed;
 
   const SearchDataField({
     Key? key,
@@ -30,8 +30,8 @@ class SearchDataField extends StatelessWidget {
         showProductDialog(context);
       },
       child: Card(
-        color: Color(0xFF63131C),
-        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        color: const Color(0xFF63131C),
+        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -92,7 +92,8 @@ class SearchDataField extends StatelessWidget {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 15.0),
-                        child: buildPopupMenuButton(name, int.parse(price), discount),
+                        child: buildPopupMenuButton(
+                            name, int.parse(price), discount),
                       ),
                     ],
                   ),
@@ -111,7 +112,8 @@ class SearchDataField extends StatelessWidget {
       onSelected: (value) {
         num calculatedPrice = value == 0.5 ? price * 0.5 : price;
         double discountedPrice = calculatedPrice * (1 - discount / 100);
-        onPopupMenuButtonPressed(product, discountedPrice.toStringAsFixed(0), value);
+        onPopupMenuButtonPressed(
+            product, discountedPrice.toStringAsFixed(0), value);
       },
       itemBuilder: (BuildContext context) {
         return [1.0, 0.5].map((double choice) {
@@ -144,7 +146,7 @@ class SearchDataField extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(
+                      const Text(
                         'Original: ',
                         style: TextStyle(
                           color: Color(0xFF63131C),
@@ -154,10 +156,9 @@ class SearchDataField extends StatelessWidget {
                       Text(
                         'Rs.${calculatedPrice.truncate()}',
                         style: TextStyle(
-                          decoration: discount > 0
-                              ? TextDecoration.lineThrough
-                              : null,
-                          color: Color(0xFF63131C),
+                          decoration:
+                              discount > 0 ? TextDecoration.lineThrough : null,
+                          color: const Color(0xFF63131C),
                           fontSize: 15,
                         ),
                       ),
@@ -200,13 +201,12 @@ class SearchDataField extends StatelessWidget {
     );
   }
 
-
   void showProductDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Color(0xFF63131C),
+          backgroundColor: const Color(0xFF63131C),
           title: Text(
             name,
             style: const TextStyle(

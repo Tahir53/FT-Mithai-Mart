@@ -9,15 +9,14 @@ class CustomerModel {
   final String? password;
   final String? deviceToken;
 
-  CustomerModel({
-    this.id,
-    this.name,
-    this.email,
-    this.address,
-    this.contact,
-    this.password,
-    this.deviceToken
-  });
+  CustomerModel(
+      {this.id,
+      this.name,
+      this.email,
+      this.address,
+      this.contact,
+      this.password,
+      this.deviceToken});
 
   factory CustomerModel.fromJson(Map<String, dynamic> json) {
     return CustomerModel(

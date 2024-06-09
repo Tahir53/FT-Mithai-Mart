@@ -16,7 +16,7 @@ class ForgotPassword {
     if (EmailController.text.isEmpty) {
       Fluttertoast.showToast(
         msg: "Please enter your email first",
-        backgroundColor: Color(0xff63131C),
+        backgroundColor: const Color(0xff63131C),
         textColor: Colors.white,
         gravity: ToastGravity.BOTTOM,
         toastLength: Toast.LENGTH_LONG,
@@ -36,7 +36,7 @@ class ForgotPassword {
                   height: 70,
                   width: 50,
                 ),
-                title: Text("Forgot Password"),
+                title: const Text("Forgot Password"),
                 content: Column(
                   children: [
                     const Text(
@@ -74,6 +74,7 @@ class ForgotPassword {
                         if (value == null || value.isEmpty) {
                           return "Please enter your Contact Number";
                         }
+                        return null;
                       },
                       onChanged: (value) {
                         securityAnswer = value;
@@ -113,7 +114,7 @@ class ForgotPassword {
                           context: context,
                           builder: (context) {
                             return AlertDialog(
-                              title: Text("Reset Password"),
+                              title: const Text("Reset Password"),
                               content: Form(
                                 key: newPasswordFormKey,
                                 autovalidateMode:
@@ -122,7 +123,7 @@ class ForgotPassword {
                                   children: [
                                     Container(
                                       alignment: Alignment.centerLeft,
-                                      child: Text(
+                                      child: const Text(
                                         "Enter Your New Password:",
                                         style: TextStyle(
                                           color: Color(0xff63131C),
@@ -135,7 +136,7 @@ class ForgotPassword {
                                       controller: newPasswordController,
                                       obscureText: true,
                                       decoration: InputDecoration(
-                                        focusedBorder: OutlineInputBorder(
+                                        focusedBorder: const OutlineInputBorder(
                                           borderSide: BorderSide(
                                               width: 2,
                                               color: Color(0xff63131C)),
@@ -150,19 +151,20 @@ class ForgotPassword {
                                         if (value == null || value.isEmpty) {
                                           return "Please enter your new password";
                                         }
+                                        return null;
                                       },
                                       onChanged: (value) {
                                         newPassword = value;
                                       },
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 20,
                                     ),
                                     TextFormField(
                                       controller: retypePasswordController,
                                       obscureText: true,
                                       decoration: InputDecoration(
-                                        focusedBorder: OutlineInputBorder(
+                                        focusedBorder: const OutlineInputBorder(
                                           borderSide: BorderSide(
                                               width: 2,
                                               color: Color(0xff63131C)),
@@ -192,7 +194,7 @@ class ForgotPassword {
                                   onPressed: () {
                                     Navigator.of(context).pop();
                                   },
-                                  child: Text(
+                                  child: const Text(
                                     "Cancel",
                                     style: TextStyle(
                                       color: Color(0xff63131C),
@@ -207,7 +209,8 @@ class ForgotPassword {
                                           retypePasswordController.text) {
                                         Fluttertoast.showToast(
                                           msg: "Passwords do not match",
-                                          backgroundColor: Color(0xff63131C),
+                                          backgroundColor:
+                                              const Color(0xff63131C),
                                           textColor: Colors.white,
                                           gravity: ToastGravity.BOTTOM,
                                           toastLength: Toast.LENGTH_LONG,
@@ -215,10 +218,10 @@ class ForgotPassword {
                                       } else {
                                         await MongoDatabase.changePassword(
                                             EmailController.text, newPassword);
-                                        print("Password changed successfully");
                                         Fluttertoast.showToast(
                                           msg: "Password reset successful",
-                                          backgroundColor: Color(0xff63131C),
+                                          backgroundColor:
+                                              const Color(0xff63131C),
                                           textColor: Colors.white,
                                           gravity: ToastGravity.BOTTOM,
                                           toastLength: Toast.LENGTH_LONG,
@@ -228,7 +231,7 @@ class ForgotPassword {
                                       }
                                     }
                                   },
-                                  child: Text("Reset Password"),
+                                  child: const Text("Reset Password"),
                                 ),
                               ],
                             );
@@ -237,14 +240,14 @@ class ForgotPassword {
                       } else {
                         Fluttertoast.showToast(
                           msg: "Invalid security answer",
-                          backgroundColor: Color(0xff63131C),
+                          backgroundColor: const Color(0xff63131C),
                           textColor: Colors.white,
                           gravity: ToastGravity.BOTTOM,
                           toastLength: Toast.LENGTH_LONG,
                         );
                       }
                     },
-                    child: Text("Next"),
+                    child: const Text("Next"),
                   ),
                 ],
               );
